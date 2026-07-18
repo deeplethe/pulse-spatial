@@ -1,0 +1,66 @@
+(* Proposed PULSE-S research grammar; parser implementation is pending. *)
+
+model               = model_header, { declaration } ;
+model_header        = "model", identifier, "version", string ;
+
+declaration         = crs | region | entity | process | spatial_constraint
+                    | instance | observation | scenario ;
+
+crs                 = "crs", identifier, "=", string ;
+region              = "region", identifier, "crs", identifier, "=", polygon ;
+
+entity              = "entity", identifier, "{", { entity_member }, "}" ;
+entity_member       = property | spatial_property | state ;
+property            = "property", identifier, ":", scalar_type,
+                      [ "unit", string ] ;
+spatial_property    = "property", identifier, ":", geometry_type,
+                      "crs", identifier ;
+state               = "state", identifier, "oneof", "[", identifier,
+                      { ",", identifier }, "]" ;
+
+process             = "process", identifier, "(", parameter, ")", "{",
+                      spatial_guard, transition, { transition }, "}" ;
+parameter           = identifier, ":", identifier ;
+spatial_guard       = "when", spatial_event, "(", reference, ",",
+                      identifier, ")", [ "for", number, duration_unit ] ;
+spatial_event       = "enters" | "leaves" | "inside" | "coveredBy" ;
+transition          = "changes", reference, ":", identifier, "->", identifier ;
+
+spatial_constraint  = "constraint", identifier, "{",
+                      "must", spatial_predicate, "(", reference, ",",
+                      identifier, ")",
+                      [ "while", type_reference, "==", identifier ], "}" ;
+spatial_predicate   = "inside" | "coveredBy" ;
+
+instance            = "instance", identifier, ":", identifier, "{",
+                      { identifier, "=", value }, "}" ;
+observation         = "observe", reference, "=", geometry, "{",
+                      "at", string, "source", identifier,
+                      [ "confidence", number ],
+                      [ "accuracy", number, distance_unit ], "}" ;
+
+scenario            = "scenario", identifier, "{",
+                      { assumption }, [ run ], { question }, "}" ;
+assumption          = "assume", reference, "==", value ;
+run                 = "run", number, duration_unit ;
+question            = "ask", spatial_predicate, "(", reference, ",",
+                      identifier, ")" | "ask", reference ;
+
+geometry            = point | polygon ;
+point               = "point", "(", number, ",", number, ")" ;
+polygon             = "polygon", "[", coordinate,
+                      { ",", coordinate }, "]" ;
+coordinate          = "[", number, ",", number, "]" ;
+value               = scalar | geometry ;
+
+reference           = identifier, ".", identifier ;
+type_reference      = identifier, ".", identifier ;
+scalar_type         = "String" | "Integer" | "Decimal" | "Boolean"
+                    | identifier ;
+geometry_type       = "Point" | "LineString" | "Polygon" | "Trajectory" ;
+duration_unit       = "ms" | "s" | "min" | "h" | "day" ;
+distance_unit       = "m" | "km" ;
+scalar              = number | string | identifier | "true" | "false" ;
+identifier          = letter, { letter | digit | "_" | "-" } ;
+number              = [ "-" ], digit, { digit }, [ ".", digit, { digit } ] ;
+string              = '"', { ? any character except '"' ? }, '"' ;

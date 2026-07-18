@@ -1,0 +1,47 @@
+model ColdChainSpatial version "0.1"
+
+crs WGS84 = "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+
+region ColdZone crs WGS84 = polygon [
+  [121.490, 31.190],
+  [121.510, 31.190],
+  [121.510, 31.210],
+  [121.490, 31.210],
+  [121.490, 31.190]
+]
+
+entity Shipment {
+  property position: Point crs WGS84
+  property temperature: Decimal unit "Cel"
+  state condition oneof [Safe, AtRisk, Spoiled]
+}
+
+instance batch_102: Shipment {
+  position = point(121.500, 31.200)
+  temperature = 7.2
+  condition = Safe
+}
+
+observe batch_102.position = point(121.512, 31.201) {
+  at "2026-07-18T09:12:00+08:00"
+  source gps_07
+  confidence 0.98
+  accuracy 5 m
+}
+
+constraint ColdZoneContainment {
+  must inside(batch_102.position, ColdZone)
+  while Shipment.condition == Safe
+}
+
+process ZoneDeparture(s: Shipment) {
+  when leaves(s.position, ColdZone)
+  changes s.condition: Safe -> AtRisk
+}
+
+scenario EmergencyReroute {
+  assume batch_102.position == point(121.515, 31.205)
+  run 20 min
+  ask inside(batch_102.position, ColdZone)
+  ask batch_102.condition
+}
