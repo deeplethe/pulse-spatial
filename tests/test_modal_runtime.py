@@ -74,6 +74,16 @@ class ModalRuntimeTests(unittest.TestCase):
         self.assertEqual(result.world.positions["batch_102"], Point(12, 5))
         self.assertEqual(result.world.states["batch_102"], "AtRisk")
 
+    def test_cross_crs_move_fails_without_mutating_world(self) -> None:
+        world = self.make_world()
+        original = world.positions["batch_102"]
+        with self.assertRaisesRegex(ValueError, "between CRSs"):
+            SpatialRuntime(world).move(
+                "batch_102",
+                Point(12, 5, "https://example.org/crs/local"),
+            )
+        self.assertEqual(world.positions["batch_102"], original)
+
     def test_normative_constraint_and_projection(self) -> None:
         world = self.make_world()
         constraint = GeofenceConstraint(

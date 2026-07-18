@@ -28,5 +28,8 @@ classifiers = [
 Homepage = "https://github.com/deeplethe/pulse-spatial"
 Repository = "https://github.com/deeplethe/pulse-spatial"
 
+[project.scripts]
+pulse-spatial = "pulse_spatial.__main__:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]

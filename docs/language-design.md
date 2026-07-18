@@ -31,6 +31,16 @@ The first slice contains:
 Line strings, trajectories, coordinate transformation, buffers, metric
 distance, and uncertain geometry are deliberately deferred.
 
+## Executable alpha boundary
+
+The current implementation tokenizes and parses the checked-in EBNF subset,
+then resolves names and validates geometry types, state domains, CRS use,
+observations, constraints, processes, and scenarios before constructing a
+runtime world. `Point` instance properties and `Polygon` regions are executable.
+Duration-qualified process guards are parsed but rejected by the compiler until
+their clock and sampling semantics are defined. A scenario `run` duration is
+retained as a horizon annotation; it does not imply continuous simulation.
+
 ## Operational sketch
 
 Let `A_t(i)` be the asserted position of instance `i` at step `t`, and let
@@ -62,6 +72,7 @@ unchanged.
 3. CRS safety: mixed-CRS predicates fail explicitly.
 4. Topological determinism: fixed geometry and rule order yield one result.
 5. State-domain preservation: rules only assign declared state values.
+6. Diagnostic locality: malformed source reports its source line and column.
 
 ## Research questions
 

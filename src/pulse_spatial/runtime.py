@@ -47,12 +47,19 @@ class SpatialRuntime:
 
     def move(self, subject: str, target: Point) -> tuple[GeofenceEvent, ...]:
         source = self.world.positions.get(subject)
-        self.world.assert_position(subject, target)
         if source is None:
+            self.world.assert_position(subject, target)
             return ()
+        if source.crs != target.crs:
+            raise ValueError(
+                f"Cannot move {subject!r} between CRSs: "
+                f"{source.crs!r} != {target.crs!r}"
+            )
 
         events: list[GeofenceEvent] = []
         for region_name, region in self.world.regions.items():
+            if region.crs != source.crs:
+                continue
             was_inside = covered_by(source, region)
             is_inside = covered_by(target, region)
             if not was_inside and is_inside:
@@ -60,6 +67,7 @@ class SpatialRuntime:
             elif was_inside and not is_inside:
                 events.append(GeofenceEvent(EventKind.LEAVES, subject, region_name))
 
+        self.world.assert_position(subject, target)
         for rule in self.rules:
             if self.world.states.get(rule.subject) != rule.from_state:
                 continue

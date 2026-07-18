@@ -23,6 +23,8 @@ PULSE-S aims to answer four distinct questions in one authoritative model:
 The first executable slice derives `enters` and `leaves` events from position
 changes, applies declaration-ordered geofence rules, keeps observations from
 overwriting asserted positions, and evaluates scenarios on cloned worlds.
+PULSE-S source is parsed into an immutable typed document and then compiled
+into a validated runtime model; syntax and semantic failures are kept distinct.
 
 ## Quick start
 
@@ -31,6 +33,19 @@ python -m venv .venv
 .\.venv\Scripts\python -m pip install -e .
 .\.venv\Scripts\python -m unittest discover -s tests -v
 ```
+
+Compile the example and execute its counterfactual reroute:
+
+```powershell
+.\.venv\Scripts\pulse-spatial examples\cold_chain_geofence.pulse `
+  --scenario EmergencyReroute
+```
+
+The command reports the model inventory, normative violations, derived
+`leaves` event, and scenario answers as JSON. The example's asserted position
+remains inside `ColdZone`; its later GPS observation is outside but does not
+silently replace that assertion. The scenario moves an isolated copy and
+changes its state from `Safe` to `AtRisk`.
 
 No runtime dependency is required for the initial topological kernel. Geometry
 adapters for GEOS/JTS/PostGIS are planned rather than reimplementing a full GIS
@@ -41,16 +56,19 @@ engine here.
 - `docs/language-design.md` — semantic scope, formal sketch, and research plan
 - `docs/standards-map.md` — standards alignment and non-equivalence boundaries
 - `grammar/pulse-s.ebnf` — proposed PULSE-S surface syntax
-- `src/pulse_spatial/` — executable geometry, modal state, runtime, and RDF view
+- `src/pulse_spatial/language.py` — immutable typed syntax model
+- `src/pulse_spatial/parser.py` — lexer and recursive-descent parser
+- `src/pulse_spatial/compiler.py` — name resolution and semantic validation
+- `src/pulse_spatial/` — geometry, modal runtime, CLI, and RDF view
 - `examples/cold_chain_geofence.pulse` — motivating language example
 - `tests/` — executable semantic contracts
 
 ## Near-term roadmap
 
 1. Freeze the minimal spatial value and predicate model.
-2. Add a parser from the PULSE-S syntax to the typed IR.
-3. Project asserted geometries to GeoSPARQL and observations to SOSA/SSN.
-4. Add explicit accuracy regions and coordinate transformations.
+2. Project observations to SOSA/SSN and constraints to SHACL-SPARQL.
+3. Add explicit accuracy regions and coordinate transformations.
+4. Add duration-qualified spatial event semantics.
 5. Replay a real trajectory dataset with chronological holdout tests.
 6. Compare against GeoSPARQL + workflow glue and a Moving Features baseline.
 

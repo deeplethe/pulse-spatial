@@ -1,4 +1,4 @@
-(* Proposed PULSE-S research grammar; parser implementation is pending. *)
+(* Executable PULSE-S alpha grammar. Line comments begin with // or #. *)
 
 model               = model_header, { declaration } ;
 model_header        = "model", identifier, "version", string ;
