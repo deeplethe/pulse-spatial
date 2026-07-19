@@ -1,0 +1,55 @@
+{
+  "experiment": "ibtracs-four-mode-end-to-end-v1",
+  "generatedAt": "2026-07-19T11:14:26.816617+00:00",
+  "dataset": {
+    "name": "NOAA IBTrACS v04r01 normalized main-track snapshot",
+    "doi": "10.25921/82ty-9e16",
+    "sourceUrl": "https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/csv/ibtracs.last3years.list.v04r01.csv",
+    "path": "experiments/ibtracs/snapshots/ibtracs-last3years-main-2026-07-16.csv",
+    "sha256": "6ee7ad5684598d250de0ecd099972ccd249d1e1a285920ba359aea6fb2d22b6c",
+    "track": "2023251N16334",
+    "trackName": "MARGOT",
+    "points": 91,
+    "transitions": 90
+  },
+  "policy": {
+    "region": "NorthAtlanticStudyZone",
+    "trigger": "sampled leaves for 6 hours",
+    "transition": "Safe -> AtRisk",
+    "acceptanceBoundary": "record_observation appends evidence; the runner separately accepts a sample through move_at to update asserted position"
+  },
+  "modalExecution": {
+    "assertedMoves": 90,
+    "observations": 91,
+    "observationNonOverwriteChecks": 91,
+    "normativeViolatingStepsBeforeGuardDeactivation": 2,
+    "scenarioSourcePreserved": true,
+    "scenarioEvents": 1
+  },
+  "trace": {
+    "instantaneousEvents": 3,
+    "sustainedEvents": 1,
+    "stateChanges": 1,
+    "finalState": "AtRisk"
+  },
+  "projection": {
+    "dataTriples": 926,
+    "shapeTriples": 6,
+    "internalConforms": true,
+    "projectedConforms": true,
+    "crossViewMatches": true
+  },
+  "summary": {
+    "allFourModesExercised": true,
+    "allChecksPass": true
+  },
+  "claimBoundary": "One frozen real trajectory exercises the asserted, observed, normative, and hypothetical contracts together with duration execution and RDF/SHACL projection parity. It is an integration case, not an industrial deployment or productivity study.",
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "rdflib": "7.6.0",
+    "pyshacl": "0.40.0",
+    "shapely": "2.1.2",
+    "geos": "3.13.1"
+  }
+}

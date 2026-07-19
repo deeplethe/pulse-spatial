@@ -40,13 +40,20 @@ experiment-defined and are not official NOAA basin or warning boundaries.
 - 223 tracks and 13,784 points
 - 13,561 transitions
 - 67,805 transition-zone pairs
-- 175 instantaneous events
+- 175 event and 67,630 non-event transition-zone pairs
+- 96 tracks with at least one instantaneous event
 - 525 sustained-monitor starts
 - 475 sustained events
 - 50 monitors not emitted because of an inverse crossing or track end
 - 0 membership mismatches
 - 0 instantaneous-event mismatches
 - 0 sustained-event mismatches
+
+The report disaggregates all membership, entry, exit, and sustained-event
+counts by zone. Event pairs range from 7 in `SouthIndianStudyZone` to 78 in
+`NorthernTropics`; sustained events range from 20 to 217. Thus the zero-error
+total can be audited per zone rather than being inferred from an aggregate
+dominated by non-events.
 
 The result also reports the lag from `effective_at` to `emitted_at`. This is a
 property of observation spacing, not geometry-engine performance, and makes

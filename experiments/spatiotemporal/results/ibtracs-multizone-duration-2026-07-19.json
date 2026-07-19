@@ -1,6 +1,6 @@
 {
   "experiment": "ibtracs-multizone-duration-parity-v1",
-  "generatedAt": "2026-07-19T03:02:29.305607+00:00",
+  "generatedAt": "2026-07-19T11:14:34.914384+00:00",
   "claimBoundary": "Exact discrete sample-and-hold parity for five experiment-defined Point/Polygon zones and 6/12/24-hour sustained events; not continuous trajectory, geodesic, or full GeoSPARQL conformance.",
   "dataset": {
     "name": "NOAA IBTrACS v04r01 normalized main-track snapshot",
@@ -166,6 +166,9 @@
   "workload": {
     "transitionZonePairs": 67805,
     "instantaneousEvents": 175,
+    "eventTransitionZonePairs": 175,
+    "nonEventTransitionZonePairs": 67630,
+    "tracksWithInstantaneousEvents": 96,
     "sustainedMonitorStarts": 525,
     "sustainedEvents": 475,
     "unemittedByTrackEndOrInverseCrossing": 50,
@@ -177,6 +180,108 @@
       "6h:enters": 35,
       "6h:leaves": 132
     },
+    "byRegion": [
+      {
+        "region": "EquatorialBand",
+        "transitionPairs": 13561,
+        "insidePairs": 768,
+        "outsidePairs": 12793,
+        "eventPairs": 38,
+        "nonEventPairs": 13523,
+        "tracksWithEvents": 31,
+        "enters": 6,
+        "leaves": 32,
+        "sustainedEvents": 110,
+        "sustainedCounts": {
+          "12h:enters": 6,
+          "12h:leaves": 31,
+          "24h:enters": 4,
+          "24h:leaves": 31,
+          "6h:enters": 6,
+          "6h:leaves": 32
+        }
+      },
+      {
+        "region": "NorthernTropics",
+        "transitionPairs": 13561,
+        "insidePairs": 7768,
+        "outsidePairs": 5793,
+        "eventPairs": 78,
+        "nonEventPairs": 13483,
+        "tracksWithEvents": 66,
+        "enters": 22,
+        "leaves": 56,
+        "sustainedEvents": 217,
+        "sustainedCounts": {
+          "12h:enters": 21,
+          "12h:leaves": 52,
+          "24h:enters": 20,
+          "24h:leaves": 49,
+          "6h:enters": 22,
+          "6h:leaves": 53
+        }
+      },
+      {
+        "region": "NorthAtlanticStudyZone",
+        "transitionPairs": 13561,
+        "insidePairs": 2623,
+        "outsidePairs": 10938,
+        "eventPairs": 38,
+        "nonEventPairs": 13523,
+        "tracksWithEvents": 33,
+        "enters": 3,
+        "leaves": 35,
+        "sustainedEvents": 100,
+        "sustainedCounts": {
+          "12h:enters": 3,
+          "12h:leaves": 31,
+          "24h:enters": 3,
+          "24h:leaves": 27,
+          "6h:enters": 3,
+          "6h:leaves": 33
+        }
+      },
+      {
+        "region": "WesternPacificStudyZone",
+        "transitionPairs": 13561,
+        "insidePairs": 3383,
+        "outsidePairs": 10178,
+        "eventPairs": 14,
+        "nonEventPairs": 13547,
+        "tracksWithEvents": 13,
+        "enters": 1,
+        "leaves": 13,
+        "sustainedEvents": 28,
+        "sustainedCounts": {
+          "12h:enters": 1,
+          "12h:leaves": 9,
+          "24h:enters": 1,
+          "24h:leaves": 6,
+          "6h:enters": 1,
+          "6h:leaves": 10
+        }
+      },
+      {
+        "region": "SouthIndianStudyZone",
+        "transitionPairs": 13561,
+        "insidePairs": 2153,
+        "outsidePairs": 11408,
+        "eventPairs": 7,
+        "nonEventPairs": 13554,
+        "tracksWithEvents": 5,
+        "enters": 3,
+        "leaves": 4,
+        "sustainedEvents": 20,
+        "sustainedCounts": {
+          "12h:enters": 3,
+          "12h:leaves": 4,
+          "24h:enters": 3,
+          "24h:leaves": 3,
+          "6h:enters": 3,
+          "6h:leaves": 4
+        }
+      }
+    ],
     "emissionLag": {
       "emittedAtDeadline": 472,
       "medianSeconds": 0.0,
@@ -196,23 +301,23 @@
   "timing": {
     "repetitions": 5,
     "internalSeconds": [
-      0.6828900999971665,
-      0.6846836000331677,
-      0.6933316999929957,
-      0.7050525000086054,
-      0.7122111999779008
+      0.7657558000064455,
+      0.746991700027138,
+      0.7577676000073552,
+      0.9025147000211291,
+      1.5571237000403926
     ],
     "referenceSeconds": [
-      0.4441528000170365,
-      0.30822900001658127,
-      0.3429695999948308,
-      0.3586595999659039,
-      0.3652974999858998
+      0.7905074000009336,
+      0.5135748999891803,
+      0.5243260000133887,
+      0.5774439999950118,
+      0.5621857999940403
     ],
-    "internalMedianSeconds": 0.6933316999929957,
-    "referenceMedianSeconds": 0.3586595999659039,
-    "internalTransitionZonePairsPerSecond": 97795.90346249132,
-    "referenceTransitionZonePairsPerSecond": 189051.12258655814
+    "internalMedianSeconds": 0.7657558000064455,
+    "referenceMedianSeconds": 0.5621857999940403,
+    "internalTransitionZonePairsPerSecond": 88546.50529506832,
+    "referenceTransitionZonePairsPerSecond": 120609.59206141243
   },
   "environment": {
     "python": "3.12.3",

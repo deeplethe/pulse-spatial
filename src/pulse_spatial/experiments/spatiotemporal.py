@@ -331,6 +331,46 @@ def _counts_by_duration(labels: Iterable[SustainedEventLabel]) -> dict[str, int]
     return dict(sorted(counts.items()))
 
 
+def _workload_breakdown(trace: ExperimentTrace) -> list[dict[str, object]]:
+    """Disaggregate the workload so parity is not hidden by non-events."""
+
+    rows: list[dict[str, object]] = []
+    for region_name, _ in STUDY_ZONES:
+        memberships = tuple(
+            label for label in trace.memberships if label.region == region_name
+        )
+        instantaneous = tuple(
+            label for label in trace.instantaneous if label.region == region_name
+        )
+        sustained = tuple(
+            label for label in trace.sustained if label.region == region_name
+        )
+        rows.append(
+            {
+                "region": region_name,
+                "transitionPairs": len(memberships),
+                "insidePairs": sum(label.is_covered_by for label in memberships),
+                "outsidePairs": sum(
+                    not label.is_covered_by for label in memberships
+                ),
+                "eventPairs": len(instantaneous),
+                "nonEventPairs": len(memberships) - len(instantaneous),
+                "tracksWithEvents": len({label.sid for label in instantaneous}),
+                "enters": sum(
+                    label.kind == EventKind.ENTERS.value
+                    for label in instantaneous
+                ),
+                "leaves": sum(
+                    label.kind == EventKind.LEAVES.value
+                    for label in instantaneous
+                ),
+                "sustainedEvents": len(sustained),
+                "sustainedCounts": _counts_by_duration(sustained),
+            }
+        )
+    return rows
+
+
 def _lag_summary(labels: Iterable[SustainedEventLabel]) -> dict[str, float | int]:
     lags = sorted(
         (
@@ -433,12 +473,20 @@ def run_experiment(
         "workload": {
             "transitionZonePairs": transitions * len(STUDY_ZONES),
             "instantaneousEvents": len(internal.instantaneous),
+            "eventTransitionZonePairs": len(internal.instantaneous),
+            "nonEventTransitionZonePairs": (
+                transitions * len(STUDY_ZONES) - len(internal.instantaneous)
+            ),
+            "tracksWithInstantaneousEvents": len(
+                {label.sid for label in internal.instantaneous}
+            ),
             "sustainedMonitorStarts": monitor_starts,
             "sustainedEvents": len(internal.sustained),
             "unemittedByTrackEndOrInverseCrossing": (
                 monitor_starts - len(internal.sustained)
             ),
             "sustainedCounts": _counts_by_duration(internal.sustained),
+            "byRegion": _workload_breakdown(internal),
             "emissionLag": _lag_summary(internal.sustained),
         },
         "parity": {
@@ -501,12 +549,18 @@ def render_markdown(result: dict[str, object]) -> str:
             f"- Transitions: {dataset['transitions']:,}",
             f"- Transition-zone pairs: {workload['transitionZonePairs']:,}",
             f"- Instantaneous events: {workload['instantaneousEvents']:,}",
+            "- Event/non-event transition-zone pairs: "
+            f"{workload['eventTransitionZonePairs']:,} / "
+            f"{workload['nonEventTransitionZonePairs']:,}",
+            "- Tracks with an instantaneous event: "
+            f"{workload['tracksWithInstantaneousEvents']:,}",
             f"- Sustained monitor starts: {workload['sustainedMonitorStarts']:,}",
             f"- Sustained events: {workload['sustainedEvents']:,}",
             "- Unemitted by track end or inverse crossing: "
             f"{workload['unemittedByTrackEndOrInverseCrossing']:,}",
             f"- Sustained counts: `{workload['sustainedCounts']}`",
             f"- Emission lag: `{workload['emissionLag']}`",
+            f"- Per-region breakdown: `{workload['byRegion']}`",
             "",
             "## Exact parity",
             "",

@@ -74,7 +74,7 @@ checks; server adapters for Jena/PostGIS-class engines remain planned.
 The repository includes an executed NOAA IBTrACS experiment, not only toy
 examples. It replays 223 tropical-cyclone tracks (13,784 points and 13,561
 consecutive transitions) through an experiment-defined geofence and compares
-the complete event-label trace with an independent Shapely/GEOS implementation.
+the complete event-label trace with a Shapely/GEOS reference implementation.
 The two paths produced 0 mismatches across all transitions, including 38
 event-bearing transitions. See the
 [`experiments/ibtracs` protocol and provenance](experiments/ibtracs/README.md)
@@ -86,9 +86,9 @@ tested Point/Polygon workload. It is not a claim of full GeoSPARQL conformance,
 geodesic accuracy, prediction quality, or industrial performance.
 
 A second executed experiment covers five overlapping study zones and
-duration-qualified events. Across 67,805 transition-zone pairs, PULSE and an
-independent GEOS plus event-sweep baseline had zero membership, instantaneous
-event, or sustained-event mismatches. The run produced 175 instantaneous and
+duration-qualified events. Across 67,805 transition-zone pairs, PULSE and a
+separately implemented GEOS plus event-sweep baseline had zero membership,
+instantaneous event, or sustained-event mismatches. The run produced 175 instantaneous and
 475 sustained events at 6, 12, and 24-hour thresholds. See the
 [`spatiotemporal experiment`](experiments/spatiotemporal/README.md).
 
@@ -106,6 +106,18 @@ invalid inputs as declared. This is a differential regression corpus, not an
 OGC or GeoSPARQL conformance suite; see the
 [`topology corpus`](experiments/topology/README.md).
 
+A fifth experiment replays one frozen 91-point IBTrACS track through the full
+four-mode chain: evidence recording, explicit authoritative acceptance,
+duration-qualified process execution, guarded normative validation, an
+isolated scenario, and RDF/SHACL projection. All checks pass and internal
+validation matches the projected result; see the
+[`end-to-end protocol`](experiments/end-to-end/README.md).
+
+A sixth experiment checks whether six declared semantic policies are
+observable by executing a counterexample against one alternative per policy.
+All six alternatives change a modal state or event trace; see the
+[`semantic sensitivity protocol`](experiments/semantic-sensitivity/README.md).
+
 ## Repository map
 
 - `docs/language-design.md` — semantic scope, formal sketch, and research plan
@@ -117,6 +129,8 @@ OGC or GeoSPARQL conformance suite; see the
 - `experiments/spatiotemporal/` — multizone duration protocol and results
 - `experiments/composition/` — three-path executable composition comparison
 - `experiments/topology/` — Point/Polygon boundary differential corpus
+- `experiments/end-to-end/` — real-track four-mode integration case
+- `experiments/semantic-sensitivity/` — semantic policy mutation checks
 - `grammar/pulse-s.ebnf` — proposed PULSE-S surface syntax
 - `src/pulse_spatial/language.py` — immutable typed syntax model
 - `src/pulse_spatial/parser.py` — lexer and recursive-descent parser

@@ -1,0 +1,66 @@
+{
+  "experiment": "pulse-semantic-policy-sensitivity-v1",
+  "generatedAt": "2026-07-19T11:14:25.980129+00:00",
+  "summary": {
+    "policies": 6,
+    "distinguishedAlternatives": 6,
+    "allAlternativesChangeObservableOutcome": true
+  },
+  "checks": [
+    {
+      "name": "boundary-inclusion",
+      "contract": "coveredBy treats a shell point as inside",
+      "pulse_outcome": "sampled events=0",
+      "alternative": "strict within excludes the shell",
+      "alternative_outcome": "sampled leaves=1",
+      "distinguishable": true
+    },
+    {
+      "name": "observation-non-overwrite",
+      "contract": "record(o) appends evidence and preserves asserted position",
+      "pulse_outcome": "assertedInside=true",
+      "alternative": "sensor value silently replaces the assertion",
+      "alternative_outcome": "assertedInside=false",
+      "distinguishable": true
+    },
+    {
+      "name": "scenario-isolation",
+      "contract": "assumptions execute on a cloned world",
+      "pulse_outcome": "source=Safe,scenario=AtRisk",
+      "alternative": "assumptions execute on the source world",
+      "alternative_outcome": "source=AtRisk",
+      "distinguishable": true
+    },
+    {
+      "name": "inverse-cancellation",
+      "contract": "inverse sampled entry before the deadline cancels a leave monitor",
+      "pulse_outcome": "sustained events=0",
+      "alternative": "pending monitors are never cancelled",
+      "alternative_outcome": "sustained events=1",
+      "distinguishable": true
+    },
+    {
+      "name": "deadline-ordering",
+      "contract": "due timers fire before a move at the same timestamp",
+      "pulse_outcome": "sustained events=1",
+      "alternative": "same-time move cancels before timers are exposed",
+      "alternative_outcome": "sustained events=0",
+      "distinguishable": true
+    },
+    {
+      "name": "sample-and-hold",
+      "contract": "sampled entry/exit depends only on consecutive memberships",
+      "pulse_outcome": "sampled events=0",
+      "alternative": "linear segment interpolation detects intervening boundary contacts",
+      "alternative_outcome": "boundary contacts=2",
+      "distinguishable": true
+    }
+  ],
+  "claimBoundary": "Constructed sensitivity cases show that six declared policies change observable traces or modal state. They are mutation-adequacy checks, not evidence that each PULSE policy is universally preferable.",
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "shapely": "2.1.2",
+    "geos": "3.13.1"
+  }
+}

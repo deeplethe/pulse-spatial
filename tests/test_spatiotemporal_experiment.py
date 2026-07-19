@@ -23,6 +23,12 @@ class SpatiotemporalExperimentTests(unittest.TestCase):
         )
         self.assertEqual(result["parity"]["sustainedEventMismatches"], 0)
         self.assertEqual(result["workload"]["transitionZonePairs"], 20)
+        self.assertEqual(
+            result["workload"]["eventTransitionZonePairs"]
+            + result["workload"]["nonEventTransitionZonePairs"],
+            20,
+        )
+        self.assertEqual(len(result["workload"]["byRegion"]), 5)
         self.assertEqual(result["workload"]["sustainedEvents"], 2)
 
 
