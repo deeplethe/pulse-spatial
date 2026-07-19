@@ -58,6 +58,13 @@ repetitions was 0.093984 s for PULSE-S and 0.082853 s for the GEOS reference.
 These timings establish that the experiment is executable; the scientific
 claim is event-label parity for this Point/Polygon workload.
 
+The larger `since1980` run is recorded separately in
+`results/ibtracs-since1980-2026-07-19.*`. It covers 4,775 tracks, 300,033
+points, and 295,258 transitions from 1980--2025 across seven basins. All 571
+event-bearing transitions match the GEOS path. The 143 MB official input is
+identified by URL, DOI, and SHA-256 in the report and remains under ignored
+`.data/`; it is not duplicated in the repository.
+
 ## Reproduce from the immutable snapshot
 
 ```powershell

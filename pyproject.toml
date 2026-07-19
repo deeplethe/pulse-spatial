@@ -36,6 +36,9 @@ pulse-spatial-composition = "pulse_spatial.experiments.composition:main"
 pulse-spatial-topology-corpus = "pulse_spatial.experiments.topology_corpus:main"
 pulse-spatial-semantic-sensitivity = "pulse_spatial.experiments.semantic_sensitivity:main"
 pulse-spatial-end-to-end = "pulse_spatial.experiments.end_to_end:main"
+pulse-spatial-geosparql-external = "pulse_spatial.experiments.geosparql_external:main"
+pulse-spatial-formal-properties = "pulse_spatial.experiments.formal_properties:main"
+pulse-spatial-scalability = "pulse_spatial.experiments.scalability:main"
 
 [project.optional-dependencies]
 validation = [

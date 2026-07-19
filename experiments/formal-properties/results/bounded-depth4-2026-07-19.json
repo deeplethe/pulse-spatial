@@ -1,0 +1,38 @@
+{
+  "experiment": "pulse-core-bounded-metatheory-check-v1",
+  "generatedAt": "2026-07-19T13:33:34.173871+00:00",
+  "claimBoundary": "Exhaustive exploration of every action sequence through the finite four-position abstraction up to depth 4. It supports testing of the proof assumptions but is not a general, machine-checked proof of the unbounded calculus.",
+  "abstraction": {
+    "positions": [
+      "west",
+      "boundary",
+      "inside",
+      "east"
+    ],
+    "states": [
+      "Inside",
+      "Outside",
+      "Safe"
+    ],
+    "maxDepth": 4,
+    "sequenceCount": 340,
+    "executedMoveSteps": 2504
+  },
+  "checks": {
+    "determinism": 340,
+    "preservation": 2504,
+    "finiteAdvance": 680,
+    "atomicFailure": 2,
+    "observationNonInterference": 4,
+    "scenarioIsolation": 4
+  },
+  "summary": {
+    "totalChecks": 3534,
+    "failures": 0,
+    "allChecksPass": true
+  },
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Windows-11-10.0.26200-SP0"
+  }
+}

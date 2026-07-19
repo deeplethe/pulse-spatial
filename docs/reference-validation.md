@@ -21,7 +21,7 @@ functions:
 | Function | GEOS-backed operation |
 |---|---|
 | `geof:sfWithin(a, b)` | `within(a, b)` |
-| `geof:ehCoveredBy(a, b)` | `covers(b, a)` |
+| `geof:sfIntersects(a, b)` | `intersects(a, b)` |
 
 The adapter accepts GeoSPARQL WKT literals, defaults omitted CRS identifiers to
 CRS84, and rejects comparisons whose explicit CRS identifiers differ. Existing

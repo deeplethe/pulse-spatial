@@ -52,7 +52,7 @@ def geosparql_reference_functions() -> Iterator[None]:
             unregister_custom_function,
         )
         from rdflib.plugins.sparql.sparql import SPARQLError
-        from shapely import covers, from_wkt, within
+        from shapely import from_wkt, intersects, within
         from shapely.errors import GEOSException
     except ImportError as error:
         raise _dependency_error(error) from error
@@ -89,13 +89,13 @@ def geosparql_reference_functions() -> Iterator[None]:
         left_geometry, right_geometry = operands(left, right)
         return Literal(bool(within(left_geometry, right_geometry)))
 
-    def eh_covered_by(left, right):
+    def sf_intersects(left, right):
         left_geometry, right_geometry = operands(left, right)
-        return Literal(bool(covers(right_geometry, left_geometry)))
+        return Literal(bool(intersects(left_geometry, right_geometry)))
 
     functions = (
         (URIRef(f"{_GEOF}sfWithin"), sf_within),
-        (URIRef(f"{_GEOF}ehCoveredBy"), eh_covered_by),
+        (URIRef(f"{_GEOF}sfIntersects"), sf_intersects),
     )
     registered = []
     try:

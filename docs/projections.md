@@ -49,7 +49,7 @@ instance. The SPARQL body reads the instance and region WKT literals and uses:
 | PULSE-S predicate | GeoSPARQL function |
 |---|---|
 | `inside` | `geof:sfWithin` |
-| `coveredBy` | `geof:ehCoveredBy` |
+| `coveredBy` (Point/Polygon only) | `geof:sfIntersects` |
 
 A `while` state guard becomes a `pulse:state` graph pattern, matching the
 runtime rule that the constraint is inactive when the guarded state is absent

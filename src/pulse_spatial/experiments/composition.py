@@ -231,8 +231,8 @@ def run_semantic_web(root: str | Path = DEFAULT_ROOT) -> PathExecution:
     )
     if any(value is None for value in required):
         raise ValueError("Semantic Web policy is incomplete")
-    if _local_name(boundary_predicate) != "ehCoveredBy":
-        raise ValueError("Comparison requires GeoSPARQL ehCoveredBy")
+    if _local_name(boundary_predicate) != "sfIntersects":
+        raise ValueError("Comparison requires GeoSPARQL sfIntersects")
     unit_seconds = {"unitMinute": 60.0}
     unit_name = _local_name(duration_unit)
     if unit_name not in unit_seconds:
@@ -259,7 +259,7 @@ SELECT ?time ?inside WHERE {
     sosa:hasFeatureOfInterest ?subject ;
     sosa:resultTime ?time ;
     sosa:hasResult/geo:asWKT ?pointWkt .
-  BIND(geof:ehCoveredBy(?pointWkt, ?regionWkt) AS ?inside)
+  BIND(geof:sfIntersects(?pointWkt, ?regionWkt) AS ?inside)
 }
 ORDER BY ?time
 """

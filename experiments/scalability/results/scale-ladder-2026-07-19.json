@@ -1,0 +1,109 @@
+{
+  "experiment": "pulse-deterministic-scale-ladder-v1",
+  "generatedAt": "2026-07-19T13:49:44.171107+00:00",
+  "claimBoundary": "Single-process deterministic scale ladder for one Point/Polygon geofence and append-only evidence projection. Tracemalloc reports Python-managed allocations, not total process RSS. Results are not a concurrency, distributed deployment, database, or industrial service-level benchmark.",
+  "protocol": {
+    "sizes": [
+      1000,
+      10000,
+      100000
+    ],
+    "repetitions": 3,
+    "execution": "alternating outside/inside moves; one event per move",
+    "evidence": "append-only observations with time, source, confidence, accuracy",
+    "projection": "SOSA/GeoSPARQL Turtle string materialization"
+  },
+  "rows": [
+    {
+      "observationsOrMoves": 1000,
+      "execution": {
+        "repetitions": 3,
+        "seconds": [
+          0.009502300003077835,
+          0.007876399962697178,
+          0.010177599964663386
+        ],
+        "medianSeconds": 0.009502300003077835,
+        "movesPerSecond": 105237.67926460918,
+        "events": 1000
+      },
+      "evidenceAndProjection": {
+        "ingestSeconds": 0.006634199991822243,
+        "ingestObservationsPerSecond": 150734.07513078692,
+        "projectionSeconds": 0.041934499982744455,
+        "projectionObservationsPerSecond": 23846.71333654838,
+        "projectedBytes": 799961,
+        "projectedBytesPerObservation": 799.961,
+        "allocatedBytesAfterIngest": 146016,
+        "peakAllocatedBytesAfterIngest": 146184,
+        "allocatedBytesAfterProjection": 949149,
+        "peakAllocatedBytesAfterProjection": 1806846,
+        "observationResources": 1000
+      }
+    },
+    {
+      "observationsOrMoves": 10000,
+      "execution": {
+        "repetitions": 3,
+        "seconds": [
+          0.0795835999888368,
+          0.07838819996686652,
+          0.07810169999720529
+        ],
+        "medianSeconds": 0.07838819996686652,
+        "movesPerSecond": 127570.22108208691,
+        "events": 10000
+      },
+      "evidenceAndProjection": {
+        "ingestSeconds": 0.06301420001545921,
+        "ingestObservationsPerSecond": 158694.38947962062,
+        "projectionSeconds": 0.40741899999557063,
+        "projectionObservationsPerSecond": 24544.75613584226,
+        "projectedBytes": 7995464,
+        "projectedBytesPerObservation": 799.5464,
+        "allocatedBytesAfterIngest": 1445386,
+        "peakAllocatedBytesAfterIngest": 1445554,
+        "allocatedBytesAfterProjection": 9448547,
+        "peakAllocatedBytesAfterProjection": 18014547,
+        "observationResources": 10000
+      }
+    },
+    {
+      "observationsOrMoves": 100000,
+      "execution": {
+        "repetitions": 3,
+        "seconds": [
+          0.8285598999937065,
+          0.9818463000119664,
+          1.1387231000117026
+        ],
+        "medianSeconds": 0.9818463000119664,
+        "movesPerSecond": 101848.9350102773,
+        "events": 100000
+      },
+      "evidenceAndProjection": {
+        "ingestSeconds": 0.9529159999801777,
+        "ingestObservationsPerSecond": 104941.04412359554,
+        "projectionSeconds": 5.766365100047551,
+        "projectionObservationsPerSecond": 17341.94735591324,
+        "projectedBytes": 80220467,
+        "projectedBytesPerObservation": 802.20467,
+        "allocatedBytesAfterIngest": 14401738,
+        "peakAllocatedBytesAfterIngest": 14401882,
+        "allocatedBytesAfterProjection": 94624950,
+        "peakAllocatedBytesAfterProjection": 180448825,
+        "observationResources": 100000
+      }
+    }
+  ],
+  "summary": {
+    "largestSize": 100000,
+    "largestExecutionEvents": 100000,
+    "largestProjectionBytes": 80220467,
+    "allChecksPass": true
+  },
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Windows-11-10.0.26200-SP0"
+  }
+}

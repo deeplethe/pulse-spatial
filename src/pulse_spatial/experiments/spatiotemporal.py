@@ -20,7 +20,7 @@ from ..runtime import (
     SustainedEventSpec,
     TemporalSpatialRuntime,
 )
-from .ibtracs import SOURCE_DOI, SOURCE_URL, Track, _sha256, load_ibtracs
+from .ibtracs import SOURCE_DOI, Track, _sha256, load_ibtracs, source_descriptor
 
 
 STUDY_ZONES: tuple[tuple[str, tuple[tuple[float, float], ...]], ...] = (
@@ -433,6 +433,7 @@ def run_experiment(
     except ImportError as error:
         raise RuntimeError("Shapely is required for reference execution") from error
 
+    dataset_name, source_url = source_descriptor(path)
     transitions = sum(max(len(track.points) - 1, 0) for track in dataset.tracks)
     monitor_starts = len(internal.instantaneous) * len(DURATIONS_HOURS)
     internal_median = statistics.median(internal_times)
@@ -446,9 +447,9 @@ def run_experiment(
             "continuous trajectory, geodesic, or full GeoSPARQL conformance."
         ),
         "dataset": {
-            "name": "NOAA IBTrACS v04r01 normalized main-track snapshot",
+            "name": dataset_name,
             "doi": SOURCE_DOI,
-            "sourceUrl": SOURCE_URL,
+            "sourceUrl": source_url,
             "path": path.as_posix(),
             "bytes": path.stat().st_size,
             "sha256": _sha256(path),

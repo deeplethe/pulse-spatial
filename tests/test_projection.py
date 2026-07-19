@@ -59,7 +59,8 @@ class StandardsProjectionTests(unittest.TestCase):
                 ),
             )
         )
-        self.assertIn("geof:ehCoveredBy", graph)
+        self.assertIn("geof:sfIntersects", graph)
+        self.assertNotIn("geof:ehCoveredBy", graph)
 
     def test_bundle_is_deterministic_and_writes_lf_turtle(self) -> None:
         first = project_standards(self.model.world, self.model.constraints)

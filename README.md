@@ -61,13 +61,14 @@ Executing those shapes requires a SHACL engine with GeoSPARQL function support;
 SHACL Core alone is insufficient.
 
 The optional reference validator executes the generated shapes with pySHACL
-and supplies `geof:sfWithin` and `geof:ehCoveredBy` through Shapely/GEOS. It
+and supplies `geof:sfWithin` and `geof:sfIntersects` through Shapely/GEOS. It
 compares conformance and violation counts with the internal PULSE-S validator.
 This is a cross-view parity backend, not a claim of full GeoSPARQL conformance.
 
 No runtime dependency is required for the core topological kernel. The
 `validation` extra adds pySHACL and Shapely/GEOS for independent projection
-checks; server adapters for Jena/PostGIS-class engines remain planned.
+checks. A pinned Apache Jena GeoSPARQL 6.1.0 container provides a genuinely
+external query-engine comparison without adding Java to the core runtime.
 
 ## Executed real-trajectory experiment
 
@@ -84,6 +85,15 @@ and the
 This result supports execution feasibility and event-label parity for the
 tested Point/Polygon workload. It is not a claim of full GeoSPARQL conformance,
 geodesic accuracy, prediction quality, or industrial performance.
+
+The scale run uses the official `since1980` subset rather than the small
+checked-in snapshot. It covers 4,775 tracks, 300,033 points, and 295,258
+transitions from 1980--2025 across seven basins. All 571 event-bearing
+transitions agree with the GEOS path. The five-zone duration run evaluates
+1,476,290 transition-zone pairs, including 4,832 instantaneous and 12,870
+sustained events, with zero membership, event, or timestamp differences. The
+143 MB source is downloaded by DOI/URL and verified by SHA-256; it is not
+vendored into the repository.
 
 A second executed experiment covers five overlapping study zones and
 duration-qualified events. Across 67,805 transition-zone pairs, PULSE and a
@@ -118,36 +128,50 @@ observable by executing a counterexample against one alternative per policy.
 All six alternatives change a modal state or event trace; see the
 [`semantic sensitivity protocol`](experiments/semantic-sensitivity/README.md).
 
+A seventh experiment evaluates the generated graph with unmodified Apache Jena
+GeoSPARQL 6.1.0. The full 14 x 14 topology cross product produces 196 query
+pairs, including eight intended boundary cases, with zero differences for
+`sfWithin` and boundary-inclusive `sfIntersects`; see the
+[`external GeoSPARQL protocol`](experiments/geosparql-external/README.md).
+
+An eighth experiment supports the general proofs with bounded exhaustive
+checking. Every sequence through a four-position abstraction up to depth four
+is executed twice. The recorded run performs 3,534 determinism, preservation,
+finite-advance, atomic-failure, observation, and scenario checks with no
+failure; see the [`formal property protocol`](experiments/formal-properties/README.md).
+
 ## Repository map
 
-- `docs/language-design.md` — semantic scope, formal sketch, and research plan
+- `docs/formal-semantics.md` — core calculus, judgments, theorems, and proofs
+- `docs/language-design.md` — semantic scope and research plan
 - `docs/projections.md` — RDF projection contract and portability boundary
 - `docs/reference-validation.md` — cross-view parity protocol and limitations
 - `docs/standards-map.md` — standards alignment and non-equivalence boundaries
 - `docs/evaluation-plan.md` — research questions, experiment matrix, and claims
-- `experiments/ibtracs/` — real-data protocol, snapshot, results, and provenance
+- `experiments/ibtracs/` — real-data protocol, snapshot, and scale results
 - `experiments/spatiotemporal/` — multizone duration protocol and results
+- `experiments/geosparql-external/` — Apache Jena external-system agreement
+- `experiments/formal-properties/` — bounded exhaustive semantic checks
 - `experiments/composition/` — three-path executable composition comparison
 - `experiments/topology/` — Point/Polygon boundary differential corpus
 - `experiments/end-to-end/` — real-track four-mode integration case
 - `experiments/semantic-sensitivity/` — semantic policy mutation checks
+- `external/jena-geosparql/` — pinned Java/Docker comparison harness
 - `grammar/pulse-s.ebnf` — proposed PULSE-S surface syntax
-- `src/pulse_spatial/language.py` — immutable typed syntax model
-- `src/pulse_spatial/parser.py` — lexer and recursive-descent parser
-- `src/pulse_spatial/compiler.py` — name resolution and semantic validation
-- `src/pulse_spatial/` — geometry, modal runtime, CLI, and RDF view
-- `examples/cold_chain_geofence.pulse` — motivating language example
+- `src/pulse_spatial/` — language, compiler, geometry, runtime, and projections
+- `examples/` — executable language examples
 - `tests/` — executable semantic contracts
 
 ## Near-term roadmap
 
-1. Add a full external GeoSPARQL service adapter and conformance corpus.
+1. Extend the external Jena comparison from topology cases to projected
+   real-trajectory batches and repeat steady-state queries.
 2. Add explicit accuracy regions and coordinate transformations.
 3. Add polygon holes, multipolygons, and explicit antimeridian handling.
 4. Project temporal events and intervals through an OWL-Time profile.
-5. Add chronological rule-freezing and holdout evaluation.
-6. Repeat the composition comparison with an external GeoSPARQL service and
-   larger frozen workloads.
+5. Add synthetic observation/entity scaling with peak-memory measurement.
+6. Mechanize the core calculus in a proof assistant after the paper-level
+   proofs and executable abstraction have stabilized.
 
 ## License
 

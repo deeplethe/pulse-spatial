@@ -1,0 +1,120 @@
+{
+  "experiment": "ibtracs-geofence-parity-v1",
+  "generatedAt": "2026-07-19T13:43:09.125333+00:00",
+  "claimBoundary": "Feasibility and event-label parity for Point/Polygon geofences; not GeoSPARQL conformance, geodesic accuracy, prediction, or industrial performance.",
+  "dataset": {
+    "name": "NOAA IBTrACS v04r01 since1980 list CSV",
+    "doi": "10.25921/82ty-9e16",
+    "sourceUrl": "https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/csv/ibtracs.since1980.list.v04r01.csv",
+    "path": ".data/ibtracs.since1980.list.v04r01.csv",
+    "bytes": 142982689,
+    "sha256": "9f3db13f92bdc47d49edcdec677e64bafe9f20c67529552a65a10882205bb7fe",
+    "rowsTotal": 307382,
+    "rowsValidMainTrack": 300033,
+    "rowsFilteredTrackType": 7348,
+    "rowsInvalidOrMetadata": 1
+  },
+  "selection": {
+    "trackType": "main",
+    "coordinateReferenceSystem": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+    "studyZone": {
+      "name": "NorthAtlanticStudyZone",
+      "status": "experiment-defined; not an official NOAA boundary",
+      "polygon": [
+        [
+          -100.0,
+          5.0
+        ],
+        [
+          -100.0,
+          45.0
+        ],
+        [
+          -75.0,
+          45.0
+        ],
+        [
+          -60.0,
+          35.0
+        ],
+        [
+          -15.0,
+          35.0
+        ],
+        [
+          -15.0,
+          5.0
+        ],
+        [
+          -100.0,
+          5.0
+        ]
+      ],
+      "boundaryPolicy": "coveredBy (boundary included)"
+    },
+    "maxTracks": null
+  },
+  "workload": {
+    "tracksLoaded": 4775,
+    "tracksReplayed": 4768,
+    "eventfulTracks": 501,
+    "points": 300033,
+    "transitions": 295258,
+    "seasons": [
+      1980,
+      2025
+    ],
+    "timeRange": [
+      "1980-01-01T00:00:00+00:00",
+      "2025-11-01T06:00:00+00:00"
+    ],
+    "basins": [
+      "EP",
+      "NA",
+      "NI",
+      "SA",
+      "SI",
+      "SP",
+      "WP"
+    ]
+  },
+  "parity": {
+    "matches": true,
+    "transitionMismatches": 0,
+    "transitionAgreement": 1.0,
+    "eventBearingTransitions": 571,
+    "eventAgreement": 1.0,
+    "internalEvents": {
+      "enters": 50,
+      "leaves": 521
+    },
+    "referenceEvents": {
+      "enters": 50,
+      "leaves": 521
+    },
+    "mismatchSample": []
+  },
+  "timing": {
+    "repetitions": 3,
+    "internalSeconds": [
+      3.2390182000235654,
+      3.509459299966693,
+      3.3680925000226125
+    ],
+    "referenceSeconds": [
+      2.233123300014995,
+      2.023919700004626,
+      2.0901539999758825
+    ],
+    "internalMedianSeconds": 3.3680925000226125,
+    "referenceMedianSeconds": 2.0901539999758825,
+    "internalTransitionsPerSecond": 87663.26934251886,
+    "referenceTransitionsPerSecond": 141261.3616046506
+  },
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "shapely": "2.1.2",
+    "geos": "3.13.1"
+  }
+}

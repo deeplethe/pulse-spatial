@@ -252,7 +252,11 @@ def _constraint_query(
     region_iri = _iri(base_iri, "region", constraint.region)
     function = {
         "inside": "geof:sfWithin",
-        "coveredBy": "geof:ehCoveredBy",
+        # In the executable Point/Polygon fragment, boundary-inclusive point
+        # membership is exactly intersection. GeoSPARQL ehCoveredBy is not a
+        # drop-in synonym: Apache Jena correctly returns false for a strictly
+        # interior point because the Egenhofer relation is boundary-sensitive.
+        "coveredBy": "geof:sfIntersects",
     }.get(constraint.predicate)
     if function is None:
         raise ValueError(

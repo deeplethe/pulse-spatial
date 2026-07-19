@@ -6,7 +6,7 @@
 ex:SustainedDeparturePolicy a ex:GeofencePolicy ;
   ex:subject ex:shipment_102 ;
   ex:region ex:ColdZone ;
-  ex:boundaryPredicate geof:ehCoveredBy ;
+  ex:boundaryPredicate geof:sfIntersects ;
   ex:trigger ex:leaves ;
   ex:fromState ex:Safe ;
   ex:toState ex:AtRisk ;

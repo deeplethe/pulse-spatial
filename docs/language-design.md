@@ -94,23 +94,23 @@ with internal validation. This does not establish full GeoSPARQL conformance.
 
 ## Empirical status and evaluation direction
 
-The first real-data experiment replays NOAA IBTrACS main tracks through one
-frozen, experiment-defined polygon. The internal runtime and an independent
-Shapely/GEOS path compare complete, ordered transition labels. The recorded
-2026-07-19 run covered 223 tracks and 13,561 transitions with no label
-mismatches. This establishes feasibility and Point/Polygon event-trace parity
-for the tested workload, not full GeoSPARQL conformance or general validity.
+The scale real-data experiment replays the official NOAA IBTrACS `since1980`
+main tracks through frozen experiment-defined polygons. It covers 4,775 tracks,
+300,033 points, and 295,258 transitions. The single-zone trace has 571 event
+transitions; the five-zone duration protocol evaluates 1,476,290
+transition-region pairs, 4,832 instantaneous events, and 12,870 sustained
+events. PULSE and the separately implemented GEOS/event-sweep path have zero
+differences at membership, instantaneous-event, and timestamp layers.
 
-The second experiment replays the same immutable snapshot through five
-overlapping, experiment-defined regions and monitors 6, 12, and 24-hour
-qualifications. It compares membership at every transition-region pair,
-instantaneous crossings, and sustained-event timestamps with an independent
-GEOS plus event-sweep implementation. The 2026-07-19 run covered 67,805
-transition-region pairs and produced zero mismatches at all three layers.
+The projection experiment now includes unmodified Apache Jena GeoSPARQL 6.1.0.
+Fourteen CRS84 topology points and regions create a 196-pair query cross
+product; `sfWithin` and `sfIntersects` agree with PULSE on every row, including
+the intended boundary cases. This externally exposed that `ehCoveredBy` was
+not the correct realization of the language's Point/Polygon boundary-inclusive
+membership, so the generated projection was corrected.
 
-The next experiment should introduce multiple overlapping geofences and a
-chronological split. Freeze regions and event rules from the earlier segment,
-then replay later trajectories without tuning routes or geofences. Compare with
-an external GeoSPARQL service and a Moving Features/workflow baseline while
-continuing to test observation non-overwrite, scenario isolation, CRS
-rejection, and projection parsing independently.
+General safety proofs are supported by 3,534 bounded exhaustive checks, and a
+synthetic scale ladder separates move execution, evidence ingestion, and RDF
+materialization through 100,000 items. Remaining evaluation priorities are a
+persistent indexed spatial store, explicit antimeridian and CRS-transformation
+policies, a proof-assistant model, and a preregistered modeling study.

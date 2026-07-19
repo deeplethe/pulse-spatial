@@ -7,9 +7,9 @@
 
 | Path | Expected outcome | Input files | Substantive lines | Components | Median |
 |---|---:|---:|---:|---:|---:|
-| pulse | True | 1 | 40 | 3 | 0.000651 s |
-| semanticWebComposition | True | 3 | 123 | 5 | 0.016313 s |
-| movingFeaturesComposition | True | 2 | 48 | 3 | 0.000400 s |
+| pulse | True | 1 | 40 | 3 | 0.000515 s |
+| semanticWebComposition | True | 3 | 123 | 5 | 0.014558 s |
+| movingFeaturesComposition | True | 2 | 48 | 3 | 0.000304 s |
 
 Metrics are descriptive properties of these checked-in artifacts;
 they are not usability or maintainability measurements.

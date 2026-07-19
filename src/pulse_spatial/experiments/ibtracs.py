@@ -27,6 +27,11 @@ SOURCE_URL = (
     "international-best-track-archive-for-climate-stewardship-ibtracs/"
     "v04r01/access/csv/ibtracs.last3years.list.v04r01.csv"
 )
+SINCE_1980_SOURCE_URL = (
+    "https://www.ncei.noaa.gov/data/"
+    "international-best-track-archive-for-climate-stewardship-ibtracs/"
+    "v04r01/access/csv/ibtracs.since1980.list.v04r01.csv"
+)
 SOURCE_DOI = "10.25921/82ty-9e16"
 STUDY_ZONE_NAME = "NorthAtlanticStudyZone"
 STUDY_ZONE_COORDINATES = (
@@ -83,6 +88,29 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: source.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def source_descriptor(
+    path: str | Path, source_url: str | None = None
+) -> tuple[str, str]:
+    """Return an accurate label and official URL for a supported subset."""
+
+    source_path = Path(path)
+    evidence = f"{source_path.name} {source_url or ''}".lower()
+    if "since1980" in evidence:
+        return (
+            "NOAA IBTrACS v04r01 since1980 list CSV",
+            source_url or SINCE_1980_SOURCE_URL,
+        )
+    if "last3years" in evidence:
+        return (
+            "NOAA IBTrACS v04r01 last3years list CSV",
+            source_url or SOURCE_URL,
+        )
+    return (
+        "NOAA IBTrACS v04r01 normalized main-track snapshot",
+        source_url or SOURCE_URL,
+    )
 
 
 def _parse_time(value: str) -> datetime:
@@ -408,6 +436,7 @@ def run_experiment(
 
     internal_median = statistics.median(internal_times)
     reference_median = statistics.median(reference_times)
+    dataset_name, canonical_source_url = source_descriptor(path, source_url)
     return {
         "experiment": "ibtracs-geofence-parity-v1",
         "generatedAt": datetime.now(UTC).isoformat(),
@@ -417,9 +446,9 @@ def run_experiment(
             "industrial performance."
         ),
         "dataset": {
-            "name": "NOAA IBTrACS v04r01 last3years list CSV",
+            "name": dataset_name,
             "doi": SOURCE_DOI,
-            "sourceUrl": source_url,
+            "sourceUrl": canonical_source_url,
             "path": path.as_posix(),
             "bytes": path.stat().st_size,
             "sha256": _sha256(path),

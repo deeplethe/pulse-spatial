@@ -65,6 +65,14 @@ The recorded run uses the immutable IBTrACS snapshot documented in
 [`../ibtracs/snapshots/PROVENANCE.md`](../ibtracs/snapshots/PROVENANCE.md).
 Machine-readable and Markdown reports are in [`results/`](results/).
 
+The full `since1980` report is
+`results/ibtracs-since1980-multizone-duration-2026-07-19.*`. It covers 4,775
+tracks and 1,476,290 transition-zone pairs, including 4,832 instantaneous and
+12,870 sustained events. Membership, instantaneous-event, and sustained-event
+timestamp comparisons all have zero differences. The smaller snapshot above
+remains the self-contained artifact/CI workload; the large input is fetched
+from NOAA and verified by the hash in its result.
+
 ## Reproduce
 
 ```powershell

@@ -7,6 +7,7 @@ from pulse_spatial.experiments.ibtracs import (
     load_ibtracs,
     run_experiment,
     write_normalized_snapshot,
+    source_descriptor,
 )
 
 
@@ -19,6 +20,11 @@ FIXTURE = (
 
 
 class IbtracsExperimentTests(unittest.TestCase):
+    def test_since1980_source_is_labelled_accurately(self) -> None:
+        name, url = source_descriptor("ibtracs.since1980.list.v04r01.csv")
+        self.assertIn("since1980", name)
+        self.assertIn("since1980", url)
+
     def test_wrapped_longitude_has_stable_decimal_representation(self) -> None:
         self.assertEqual(_normalize_longitude(180.4), -179.6)
 

@@ -1,0 +1,31 @@
+{
+  "experiment": "apache-jena-geosparql-external-agreement-v1",
+  "generatedAt": "2026-07-19T13:31:48.981763+00:00",
+  "claimBoundary": "Agreement with unmodified Apache Jena GeoSPARQL 6.1.0 for the checked-in CRS84 Point/Polygon graph using sfWithin and sfIntersects. This is not a complete GeoSPARQL conformance test, continuous-trajectory comparison, or like-for-like performance contest between a native event runtime and a triplestore.",
+  "summary": {
+    "points": 14,
+    "regions": 14,
+    "pairs": 196,
+    "rows": 196,
+    "boundaryPairs": 8,
+    "mismatches": 0,
+    "boundaryMismatches": 0,
+    "allChecksPass": true
+  },
+  "timingSeconds": {
+    "imageBuild": 9.345427000022028,
+    "pulseProjection": 0.00038139999378472567,
+    "containerProcess": 1.6445461999974214,
+    "jenaInitialization": 0.58883623,
+    "jenaRdfLoad": 0.144846283,
+    "jenaQueryMaterialization": 0.273854179
+  },
+  "mismatches": [],
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "externalSystem": "Apache Jena GeoSPARQL 6.1.0",
+    "containerImage": "pulse-jena-geosparql:6.1.0",
+    "containerImageId": "sha256:fc715298dfb2c6ad2eea2e1699dec1ea4685ee4f094d46ecbedf4f2ce96954e2"
+  }
+}
