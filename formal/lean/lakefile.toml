@@ -1,4 +1,4 @@
-name = "pulse_formal"
+name = "PulseFormal"
 version = "0.1.0"
 defaultTargets = ["PulseFormal"]
 
