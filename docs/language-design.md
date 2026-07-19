@@ -37,9 +37,14 @@ The current implementation tokenizes and parses the checked-in EBNF subset,
 then resolves names and validates geometry types, state domains, CRS use,
 observations, constraints, processes, and scenarios before constructing a
 runtime world. `Point` instance properties and `Polygon` regions are executable.
-Duration-qualified process guards are parsed but rejected by the compiler until
-their clock and sampling semantics are defined. A scenario `run` duration is
-retained as a horizon annotation; it does not imply continuous simulation.
+Duration-qualified `enters` and `leaves` process guards are executable under a
+timestamp-ordered, discrete sample-and-hold clock. The position asserted at one
+sample is retained until the next move. An inverse crossing before the deadline
+cancels a pending qualification. Timers due at the same time as a move fire
+first. `started_at` records the crossing, `effective_at` the duration deadline,
+and `emitted_at` the runtime clock advance that exposed the event. A scenario
+`run` duration remains a horizon annotation; it does not imply continuous
+simulation.
 
 ## Operational sketch
 
@@ -95,6 +100,13 @@ Shapely/GEOS path compare complete, ordered transition labels. The recorded
 2026-07-19 run covered 223 tracks and 13,561 transitions with no label
 mismatches. This establishes feasibility and Point/Polygon event-trace parity
 for the tested workload, not full GeoSPARQL conformance or general validity.
+
+The second experiment replays the same immutable snapshot through five
+overlapping, experiment-defined regions and monitors 6, 12, and 24-hour
+qualifications. It compares membership at every transition-region pair,
+instantaneous crossings, and sustained-event timestamps with an independent
+GEOS plus event-sweep implementation. The 2026-07-19 run covered 67,805
+transition-region pairs and produced zero mismatches at all three layers.
 
 The next experiment should introduce multiple overlapping geofences and a
 chronological split. Freeze regions and event rules from the earlier segment,

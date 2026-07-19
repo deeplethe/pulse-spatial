@@ -31,6 +31,7 @@ from .runtime import (
     GeofenceRule,
     ScenarioResult,
     SpatialRuntime,
+    TemporalSpatialRuntime,
 )
 
 
@@ -72,6 +73,9 @@ class CompiledModel:
 
     def runtime(self) -> SpatialRuntime:
         return SpatialRuntime(self.world, self.rules)
+
+    def temporal_runtime(self, initial_time: datetime) -> TemporalSpatialRuntime:
+        return TemporalSpatialRuntime(self.world, initial_time, self.rules)
 
     def validate(self) -> tuple[SpatialViolation, ...]:
         return self.world.validate(self.constraints)
@@ -440,10 +444,6 @@ def compile_document(document: ModelDocument) -> CompiledModel:
             raise PulseModelError(
                 f"process {name!r} requires an enters or leaves event"
             )
-        if declaration.duration is not None:
-            raise PulseModelError(
-                f"duration-qualified event in process {name!r} is not executable yet"
-            )
         if declaration.guard_reference.owner != declaration.parameter:
             raise PulseModelError(
                 f"process {name!r} guard must use parameter {declaration.parameter!r}"
@@ -485,6 +485,7 @@ def compile_document(document: ModelDocument) -> CompiledModel:
                         declaration.region,
                         declaration.from_state,
                         declaration.to_state,
+                        _duration_seconds(declaration.duration),
                     )
                 )
 

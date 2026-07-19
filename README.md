@@ -1,9 +1,11 @@
-# PULSE Spatial
+# PULSE spatiotemporal research
 
-PULSE Spatial (PULSE-S) is an experimental spatial extension of the PULSE
-process-aware semantic language. It studies how one spatial proposition can be
-treated differently when it is asserted, observed, normative, or hypothetical,
-and how topological changes can drive deterministic process transitions.
+This repository incubates first-class time and space semantics for PULSE 1.0.
+The PULSE-S name identifies the spatial implementation module; it is not
+intended to become a separate language. The work studies how one
+spatiotemporal proposition can be treated differently when it is asserted,
+observed, normative, or hypothetical, and how topological and temporal changes
+can drive deterministic process transitions.
 
 The repository is intentionally separate from the PULSE v0.1 paper artifact.
 It is a pre-alpha research workspace, not a GeoSPARQL, OGC Moving Features, or
@@ -20,11 +22,14 @@ PULSE-S aims to answer four distinct questions in one authoritative model:
 | Normative | Where must or must not it be? |
 | Hypothetical | What would happen if it were somewhere else? |
 
-The first executable slice derives `enters` and `leaves` events from position
+The executable slice derives `enters` and `leaves` events from position
 changes, applies declaration-ordered geofence rules, keeps observations from
 overwriting asserted positions, and evaluates scenarios on cloned worlds.
 PULSE-S source is parsed into an immutable typed document and then compiled
 into a validated runtime model; syntax and semantic failures are kept distinct.
+Duration-qualified spatial events use an explicit discrete sample-and-hold
+clock: an inverse crossing before the deadline cancels the pending event, while
+a reached deadline records start, effective, and emission times separately.
 
 ## Quick start
 
@@ -80,13 +85,22 @@ This result supports execution feasibility and event-label parity for the
 tested Point/Polygon workload. It is not a claim of full GeoSPARQL conformance,
 geodesic accuracy, prediction quality, or industrial performance.
 
+A second executed experiment covers five overlapping study zones and
+duration-qualified events. Across 67,805 transition-zone pairs, PULSE and an
+independent GEOS plus event-sweep baseline had zero membership, instantaneous
+event, or sustained-event mismatches. The run produced 175 instantaneous and
+475 sustained events at 6, 12, and 24-hour thresholds. See the
+[`spatiotemporal experiment`](experiments/spatiotemporal/README.md).
+
 ## Repository map
 
 - `docs/language-design.md` — semantic scope, formal sketch, and research plan
 - `docs/projections.md` — RDF projection contract and portability boundary
 - `docs/reference-validation.md` — cross-view parity protocol and limitations
 - `docs/standards-map.md` — standards alignment and non-equivalence boundaries
+- `docs/evaluation-plan.md` — research questions, experiment matrix, and claims
 - `experiments/ibtracs/` — real-data protocol, snapshot, results, and provenance
+- `experiments/spatiotemporal/` — multizone duration protocol and results
 - `grammar/pulse-s.ebnf` — proposed PULSE-S surface syntax
 - `src/pulse_spatial/language.py` — immutable typed syntax model
 - `src/pulse_spatial/parser.py` — lexer and recursive-descent parser
@@ -99,8 +113,8 @@ geodesic accuracy, prediction quality, or industrial performance.
 
 1. Add a full external GeoSPARQL service adapter and conformance corpus.
 2. Add explicit accuracy regions and coordinate transformations.
-3. Generalize replay to multiple overlapping geofences and richer polygons.
-4. Add duration-qualified spatial event semantics.
+3. Add polygon holes, multipolygons, and explicit antimeridian handling.
+4. Project temporal events and intervals through an OWL-Time profile.
 5. Add chronological rule-freezing and holdout evaluation.
 6. Compare against GeoSPARQL + workflow glue and a Moving Features baseline.
 

@@ -31,6 +31,7 @@ Repository = "https://github.com/deeplethe/pulse-spatial"
 [project.scripts]
 pulse-spatial = "pulse_spatial.__main__:main"
 pulse-spatial-ibtracs = "pulse_spatial.experiments.ibtracs:main"
+pulse-spatial-spatiotemporal = "pulse_spatial.experiments.spatiotemporal:main"
 
 [project.optional-dependencies]
 validation = [

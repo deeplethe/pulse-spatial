@@ -1,0 +1,223 @@
+{
+  "experiment": "ibtracs-multizone-duration-parity-v1",
+  "generatedAt": "2026-07-19T03:02:29.305607+00:00",
+  "claimBoundary": "Exact discrete sample-and-hold parity for five experiment-defined Point/Polygon zones and 6/12/24-hour sustained events; not continuous trajectory, geodesic, or full GeoSPARQL conformance.",
+  "dataset": {
+    "name": "NOAA IBTrACS v04r01 normalized main-track snapshot",
+    "doi": "10.25921/82ty-9e16",
+    "sourceUrl": "https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/csv/ibtracs.last3years.list.v04r01.csv",
+    "path": "experiments/ibtracs/snapshots/ibtracs-last3years-main-2026-07-16.csv",
+    "bytes": 891190,
+    "sha256": "6ee7ad5684598d250de0ecd099972ccd249d1e1a285920ba359aea6fb2d22b6c",
+    "tracks": 223,
+    "points": 13784,
+    "transitions": 13561
+  },
+  "semantics": {
+    "clock": "timestamp-ordered discrete event time",
+    "betweenSamples": "sample-and-hold",
+    "deadlineOrdering": "due timers fire before a move at the same time",
+    "regions": [
+      {
+        "name": "EquatorialBand",
+        "coordinates": [
+          [
+            -179.999,
+            -10.0
+          ],
+          [
+            179.999,
+            -10.0
+          ],
+          [
+            179.999,
+            10.0
+          ],
+          [
+            -179.999,
+            10.0
+          ],
+          [
+            -179.999,
+            -10.0
+          ]
+        ],
+        "status": "experiment-defined; not an official boundary"
+      },
+      {
+        "name": "NorthernTropics",
+        "coordinates": [
+          [
+            -179.999,
+            10.0
+          ],
+          [
+            179.999,
+            10.0
+          ],
+          [
+            179.999,
+            30.0
+          ],
+          [
+            -179.999,
+            30.0
+          ],
+          [
+            -179.999,
+            10.0
+          ]
+        ],
+        "status": "experiment-defined; not an official boundary"
+      },
+      {
+        "name": "NorthAtlanticStudyZone",
+        "coordinates": [
+          [
+            -100.0,
+            5.0
+          ],
+          [
+            -100.0,
+            45.0
+          ],
+          [
+            -75.0,
+            45.0
+          ],
+          [
+            -60.0,
+            35.0
+          ],
+          [
+            -15.0,
+            35.0
+          ],
+          [
+            -15.0,
+            5.0
+          ],
+          [
+            -100.0,
+            5.0
+          ]
+        ],
+        "status": "experiment-defined; not an official boundary"
+      },
+      {
+        "name": "WesternPacificStudyZone",
+        "coordinates": [
+          [
+            100.0,
+            0.0
+          ],
+          [
+            179.999,
+            0.0
+          ],
+          [
+            179.999,
+            45.0
+          ],
+          [
+            100.0,
+            45.0
+          ],
+          [
+            100.0,
+            0.0
+          ]
+        ],
+        "status": "experiment-defined; not an official boundary"
+      },
+      {
+        "name": "SouthIndianStudyZone",
+        "coordinates": [
+          [
+            20.0,
+            -50.0
+          ],
+          [
+            120.0,
+            -50.0
+          ],
+          [
+            120.0,
+            0.0
+          ],
+          [
+            20.0,
+            0.0
+          ],
+          [
+            20.0,
+            -50.0
+          ]
+        ],
+        "status": "experiment-defined; not an official boundary"
+      }
+    ],
+    "durationsHours": [
+      6,
+      12,
+      24
+    ]
+  },
+  "workload": {
+    "transitionZonePairs": 67805,
+    "instantaneousEvents": 175,
+    "sustainedMonitorStarts": 525,
+    "sustainedEvents": 475,
+    "unemittedByTrackEndOrInverseCrossing": 50,
+    "sustainedCounts": {
+      "12h:enters": 34,
+      "12h:leaves": 127,
+      "24h:enters": 31,
+      "24h:leaves": 116,
+      "6h:enters": 35,
+      "6h:leaves": 132
+    },
+    "emissionLag": {
+      "emittedAtDeadline": 472,
+      "medianSeconds": 0.0,
+      "p95Seconds": 0.0,
+      "maximumSeconds": 3600.0
+    }
+  },
+  "parity": {
+    "matches": true,
+    "membershipMismatches": 0,
+    "instantaneousEventMismatches": 0,
+    "sustainedEventMismatches": 0,
+    "membershipDifferenceSample": [],
+    "instantaneousDifferenceSample": [],
+    "sustainedDifferenceSample": []
+  },
+  "timing": {
+    "repetitions": 5,
+    "internalSeconds": [
+      0.6828900999971665,
+      0.6846836000331677,
+      0.6933316999929957,
+      0.7050525000086054,
+      0.7122111999779008
+    ],
+    "referenceSeconds": [
+      0.4441528000170365,
+      0.30822900001658127,
+      0.3429695999948308,
+      0.3586595999659039,
+      0.3652974999858998
+    ],
+    "internalMedianSeconds": 0.6933316999929957,
+    "referenceMedianSeconds": 0.3586595999659039,
+    "internalTransitionZonePairsPerSecond": 97795.90346249132,
+    "referenceTransitionZonePairsPerSecond": 189051.12258655814
+  },
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "shapely": "2.1.2",
+    "geos": "3.13.1"
+  }
+}

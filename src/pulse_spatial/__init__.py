@@ -28,7 +28,17 @@ from .projection import (
     write_projection_bundle,
 )
 from .parser import PulseSyntaxError, parse_pulse
-from .runtime import EventKind, GeofenceEvent, GeofenceRule, ScenarioResult, SpatialRuntime
+from .runtime import (
+    EventKind,
+    GeofenceEvent,
+    GeofenceRule,
+    ScenarioResult,
+    SpatialRuntime,
+    SustainedEventSpec,
+    SustainedGeofenceEvent,
+    TemporalSpatialRuntime,
+    TemporalStepResult,
+)
 from .validation import (
     CrossViewValidation,
     ReferenceBackendUnavailable,
@@ -59,6 +69,10 @@ __all__ = [
     "SpatialRuntime",
     "SpatialViolation",
     "SpatialWorld",
+    "SustainedEventSpec",
+    "SustainedGeofenceEvent",
+    "TemporalSpatialRuntime",
+    "TemporalStepResult",
     "covered_by",
     "compile_document",
     "compile_pulse",

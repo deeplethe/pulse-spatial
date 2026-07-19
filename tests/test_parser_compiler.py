@@ -1,8 +1,10 @@
 import unittest
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from pulse_spatial import (
     EventKind,
+    Point,
     PulseModelError,
     PulseSyntaxError,
     compile_pulse,
@@ -15,6 +17,11 @@ EXAMPLE = (
     Path(__file__).resolve().parents[1]
     / "examples"
     / "cold_chain_geofence.pulse"
+)
+TEMPORAL_EXAMPLE = (
+    Path(__file__).resolve().parents[1]
+    / "examples"
+    / "cold_chain_spatiotemporal.pulse"
 )
 
 
@@ -46,6 +53,23 @@ class ParserCompilerTests(unittest.TestCase):
         )
         self.assertEqual(model.world.states["batch_102"], "Safe")
         self.assertEqual(model.world.positions["batch_102"].x, 121.5)
+
+    def test_duration_qualified_process_compiles_and_executes(self) -> None:
+        model = load_pulse(TEMPORAL_EXAMPLE)
+        self.assertEqual(model.rules[0].minimum_duration_seconds, 600)
+        with self.assertRaisesRegex(ValueError, "TemporalSpatialRuntime"):
+            model.runtime()
+
+        started = datetime.fromisoformat("2026-07-19T08:00:00+00:00")
+        runtime = model.temporal_runtime(started)
+        runtime.move_at("shipment_102", Point(117, 40), started)
+        self.assertEqual(
+            runtime.advance_to(started + timedelta(minutes=9)),
+            (),
+        )
+        events = runtime.advance_to(started + timedelta(minutes=10))
+        self.assertEqual(len(events), 1)
+        self.assertEqual(runtime.world.states["shipment_102"], "AtRisk")
 
     def test_syntax_error_includes_source_location(self) -> None:
         with self.assertRaisesRegex(PulseSyntaxError, r"broken\.pulse:2:1"):

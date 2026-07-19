@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from pulse_spatial import (
     CRS84,
@@ -12,6 +12,8 @@ from pulse_spatial import (
     Polygon,
     SpatialRuntime,
     SpatialWorld,
+    SustainedEventSpec,
+    TemporalSpatialRuntime,
     project_geosparql,
 )
 
@@ -101,6 +103,94 @@ class ModalRuntimeTests(unittest.TestCase):
         self.assertIn("geo:asWKT", turtle)
         self.assertIn("POINT (12 5)", turtle)
         self.assertIn(CRS84, turtle)
+
+    def test_sustained_leave_fires_at_deadline(self) -> None:
+        started = datetime.fromisoformat("2026-07-19T08:00:00+00:00")
+        rule = GeofenceRule(
+            name="SustainedDeparture",
+            kind=EventKind.LEAVES,
+            subject="batch_102",
+            region="ColdZone",
+            from_state="Safe",
+            to_state="AtRisk",
+            minimum_duration_seconds=600,
+        )
+        runtime = TemporalSpatialRuntime(self.make_world(), started, [rule])
+        step = runtime.move_at("batch_102", Point(12, 5), started)
+        self.assertEqual(len(step.instantaneous), 1)
+        self.assertEqual(runtime.world.states["batch_102"], "Safe")
+
+        events = runtime.advance_to(started + timedelta(minutes=10))
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0].effective_at, started + timedelta(minutes=10))
+        self.assertEqual(runtime.world.states["batch_102"], "AtRisk")
+
+    def test_sustained_leave_is_cancelled_by_reentry(self) -> None:
+        started = datetime.fromisoformat("2026-07-19T08:00:00+00:00")
+        monitor = SustainedEventSpec(
+            "OutsideForTenMinutes",
+            EventKind.LEAVES,
+            "batch_102",
+            "ColdZone",
+            600,
+        )
+        runtime = TemporalSpatialRuntime(
+            self.make_world(),
+            started,
+            sustained_events=[monitor],
+        )
+        runtime.move_at("batch_102", Point(12, 5), started)
+        runtime.move_at(
+            "batch_102",
+            Point(5, 5),
+            started + timedelta(minutes=9),
+        )
+        self.assertEqual(
+            runtime.advance_to(started + timedelta(minutes=20)),
+            (),
+        )
+
+    def test_deadline_fires_before_move_at_same_timestamp(self) -> None:
+        started = datetime.fromisoformat("2026-07-19T08:00:00+00:00")
+        monitor = SustainedEventSpec(
+            "OutsideForTenMinutes",
+            EventKind.LEAVES,
+            "batch_102",
+            "ColdZone",
+            600,
+        )
+        runtime = TemporalSpatialRuntime(
+            self.make_world(),
+            started,
+            sustained_events=[monitor],
+        )
+        runtime.move_at("batch_102", Point(12, 5), started)
+        result = runtime.move_at(
+            "batch_102",
+            Point(5, 5),
+            started + timedelta(minutes=10),
+        )
+        self.assertEqual(len(result.sustained), 1)
+        self.assertEqual(result.sustained[0].emitted_at, result.observed_at)
+        self.assertEqual(result.instantaneous[0].kind, EventKind.ENTERS)
+
+    def test_temporal_runtime_rejects_backwards_time(self) -> None:
+        started = datetime.fromisoformat("2026-07-19T08:00:00+00:00")
+        runtime = TemporalSpatialRuntime(self.make_world(), started)
+        with self.assertRaisesRegex(ValueError, "backwards"):
+            runtime.advance_to(started - timedelta(seconds=1))
+
+    def test_invalid_temporal_move_is_atomic(self) -> None:
+        started = datetime.fromisoformat("2026-07-19T08:00:00+00:00")
+        runtime = TemporalSpatialRuntime(self.make_world(), started)
+        with self.assertRaisesRegex(ValueError, "between CRSs"):
+            runtime.move_at(
+                "batch_102",
+                Point(12, 5, "https://example.org/crs/local"),
+                started + timedelta(minutes=5),
+            )
+        self.assertEqual(runtime.current_time, started)
+        self.assertEqual(runtime.world.positions["batch_102"], Point(5, 5))
 
 
 if __name__ == "__main__":
