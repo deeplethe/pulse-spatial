@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from fractions import Fraction
 from math import isfinite
 from typing import Iterable, TypeAlias
 
 
 CRS84 = "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
-_EPSILON = 1e-12
+_ORIENTATION_ERROR_FACTOR = 4.0 * 2.220446049250313e-16
 
 
 @dataclass(frozen=True, slots=True)
@@ -35,6 +36,26 @@ class Polygon:
             raise ValueError("Polygon shell must be closed")
         if any(point.crs != self.shell[0].crs for point in self.shell):
             raise ValueError("Polygon coordinates must share one CRS")
+        vertices = self.shell[:-1]
+        if len(set(vertices)) < 3:
+            raise ValueError("Polygon shell requires three distinct vertices")
+        if any(start == end for start, end in zip(self.shell, self.shell[1:])):
+            raise ValueError("Polygon shell cannot contain zero-length edges")
+        if not any(
+            _orientation(vertices[0], vertices[index], vertices[index + 1])
+            for index in range(1, len(vertices) - 1)
+        ):
+            raise ValueError("Polygon shell cannot be collinear")
+        edges = tuple(zip(self.shell, self.shell[1:]))
+        for first_index, first in enumerate(edges):
+            for second_index in range(first_index + 1, len(edges)):
+                adjacent = second_index == first_index + 1 or (
+                    first_index == 0 and second_index == len(edges) - 1
+                )
+                if adjacent:
+                    continue
+                if _segments_intersect(*first, *edges[second_index]):
+                    raise ValueError("Polygon shell must be simple")
 
     @classmethod
     def from_xy(
@@ -58,19 +79,56 @@ def _require_same_crs(point: Point, polygon: Polygon) -> None:
         raise ValueError(f"CRS mismatch: {point.crs!r} != {polygon.crs!r}")
 
 
+def _orientation(first: Point, second: Point, third: Point) -> int:
+    """Return the robust orientation sign for three binary64 points.
+
+    The common floating-point path is used unless its determinant is within a
+    conservative rounding-error bound. Ambiguous cases fall back to exact
+    rational arithmetic over the supplied binary64 values. This keeps topology
+    independent of an arbitrary coordinate-unit epsilon.
+    """
+
+    left = (second.x - first.x) * (third.y - first.y)
+    right = (second.y - first.y) * (third.x - first.x)
+    determinant = left - right
+    error_bound = _ORIENTATION_ERROR_FACTOR * (abs(left) + abs(right))
+    if determinant > error_bound:
+        return 1
+    if determinant < -error_bound:
+        return -1
+
+    fx = Fraction
+    exact = (fx(second.x) - fx(first.x)) * (fx(third.y) - fx(first.y)) - (
+        fx(second.y) - fx(first.y)
+    ) * (fx(third.x) - fx(first.x))
+    return (exact > 0) - (exact < 0)
+
+
 def _point_on_segment(point: Point, start: Point, end: Point) -> bool:
-    cross = (point.y - start.y) * (end.x - start.x) - (
-        point.x - start.x
-    ) * (end.y - start.y)
-    if abs(cross) > _EPSILON:
-        return False
-    dot = (point.x - start.x) * (end.x - start.x) + (
-        point.y - start.y
-    ) * (end.y - start.y)
-    if dot < -_EPSILON:
-        return False
-    length_squared = (end.x - start.x) ** 2 + (end.y - start.y) ** 2
-    return dot <= length_squared + _EPSILON
+    return _orientation(start, end, point) == 0 and (
+        min(start.x, end.x) <= point.x <= max(start.x, end.x)
+        and min(start.y, end.y) <= point.y <= max(start.y, end.y)
+    )
+
+
+def _segments_intersect(
+    first_start: Point,
+    first_end: Point,
+    second_start: Point,
+    second_end: Point,
+) -> bool:
+    first_a = _orientation(first_start, first_end, second_start)
+    first_b = _orientation(first_start, first_end, second_end)
+    second_a = _orientation(second_start, second_end, first_start)
+    second_b = _orientation(second_start, second_end, first_end)
+    if first_a != first_b and second_a != second_b:
+        return True
+    return (
+        (first_a == 0 and _point_on_segment(second_start, first_start, first_end))
+        or (first_b == 0 and _point_on_segment(second_end, first_start, first_end))
+        or (second_a == 0 and _point_on_segment(first_start, second_start, second_end))
+        or (second_b == 0 and _point_on_segment(first_end, second_start, second_end))
+    )
 
 
 def on_boundary(point: Point, polygon: Polygon) -> bool:

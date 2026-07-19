@@ -1,0 +1,788 @@
+{
+  "experiment": "point-polygon-boundary-differential-corpus-v1",
+  "generatedAt": "2026-07-19T09:00:04.762656+00:00",
+  "claimBoundary": "Differential agreement with Shapely/GEOS for the checked-in, two-dimensional Point/simple-Polygon cases and explicit rejection contracts. This is not an OGC or GeoSPARQL conformance suite and does not cover holes, multipolygons, coordinate transformation, geodesic predicates, or antimeridian semantics.",
+  "semantics": {
+    "within": "strict interior; polygon boundary excluded",
+    "onBoundary": "point lies on a polygon shell segment",
+    "coveredBy": "strict interior or polygon boundary",
+    "numericPolicy": "binary64 fast orientation with exact-rational fallback near the floating-point error bound; no coordinate-unit epsilon"
+  },
+  "summary": {
+    "topologyCases": 17,
+    "topologyMismatches": 0,
+    "rejectionCases": 9,
+    "rejectionMismatches": 0,
+    "allChecksPass": true
+  },
+  "topologyCases": [
+    {
+      "name": "square-interior",
+      "feature": "interior",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          0.0,
+          10.0
+        ]
+      ],
+      "point": [
+        5.0,
+        5.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "square-exterior",
+      "feature": "exterior",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          0.0,
+          10.0
+        ]
+      ],
+      "point": [
+        11.0,
+        5.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "horizontal-edge",
+      "feature": "boundary edge",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          0.0,
+          10.0
+        ]
+      ],
+      "point": [
+        5.0,
+        0.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "vertical-edge",
+      "feature": "boundary edge",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          0.0,
+          10.0
+        ]
+      ],
+      "point": [
+        0.0,
+        5.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "square-vertex",
+      "feature": "boundary vertex",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          0.0,
+          10.0
+        ]
+      ],
+      "point": [
+        0.0,
+        0.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "near-boundary-inside",
+      "feature": "1e-13 inside boundary",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          0.0,
+          10.0
+        ]
+      ],
+      "point": [
+        1e-13,
+        5.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "near-boundary-outside",
+      "feature": "1e-13 outside boundary",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          0.0,
+          10.0
+        ]
+      ],
+      "point": [
+        -1e-13,
+        5.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "concave-interior",
+      "feature": "concave interior",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          6.0,
+          0.0
+        ],
+        [
+          6.0,
+          6.0
+        ],
+        [
+          4.0,
+          6.0
+        ],
+        [
+          4.0,
+          2.0
+        ],
+        [
+          2.0,
+          2.0
+        ],
+        [
+          2.0,
+          6.0
+        ],
+        [
+          0.0,
+          6.0
+        ]
+      ],
+      "point": [
+        1.0,
+        3.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "concave-notch",
+      "feature": "concave exterior",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          6.0,
+          0.0
+        ],
+        [
+          6.0,
+          6.0
+        ],
+        [
+          4.0,
+          6.0
+        ],
+        [
+          4.0,
+          2.0
+        ],
+        [
+          2.0,
+          2.0
+        ],
+        [
+          2.0,
+          6.0
+        ],
+        [
+          0.0,
+          6.0
+        ]
+      ],
+      "point": [
+        3.0,
+        3.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "concave-horizontal-edge",
+      "feature": "concave boundary edge",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          6.0,
+          0.0
+        ],
+        [
+          6.0,
+          6.0
+        ],
+        [
+          4.0,
+          6.0
+        ],
+        [
+          4.0,
+          2.0
+        ],
+        [
+          2.0,
+          2.0
+        ],
+        [
+          2.0,
+          6.0
+        ],
+        [
+          0.0,
+          6.0
+        ]
+      ],
+      "point": [
+        3.0,
+        2.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "concave-reflex-vertex",
+      "feature": "concave boundary vertex",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          6.0,
+          0.0
+        ],
+        [
+          6.0,
+          6.0
+        ],
+        [
+          4.0,
+          6.0
+        ],
+        [
+          4.0,
+          2.0
+        ],
+        [
+          2.0,
+          2.0
+        ],
+        [
+          2.0,
+          6.0
+        ],
+        [
+          0.0,
+          6.0
+        ]
+      ],
+      "point": [
+        2.0,
+        2.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "reversed-ring",
+      "feature": "clockwise orientation",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          10.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          10.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "point": [
+        5.0,
+        5.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "slanted-edge",
+      "feature": "non-axis-aligned boundary",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          10.0,
+          0.0
+        ]
+      ],
+      "point": [
+        5.0,
+        5.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "tiny-polygon",
+      "feature": "1e-9-scale interior",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          1e-09,
+          0.0
+        ],
+        [
+          1e-09,
+          1e-09
+        ],
+        [
+          0.0,
+          1e-09
+        ]
+      ],
+      "point": [
+        5e-10,
+        5e-10
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "large-offset-grid",
+      "feature": "1e9-offset local grid",
+      "crs": "urn:pulse:test:grid",
+      "shell": [
+        [
+          1000000000.0,
+          1000000000.0
+        ],
+        [
+          1000000010.0,
+          1000000000.0
+        ],
+        [
+          1000000010.0,
+          1000000010.0
+        ],
+        [
+          1000000000.0,
+          1000000010.0
+        ]
+      ],
+      "point": [
+        1000000005.0,
+        1000000005.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "thin-polygon",
+      "feature": "1e-12-height interior",
+      "crs": "urn:pulse:test:grid",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1e-12
+        ],
+        [
+          0.0,
+          1e-12
+        ]
+      ],
+      "point": [
+        0.5,
+        5e-13
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "negative-coordinates",
+      "feature": "negative-coordinate interior",
+      "crs": "urn:pulse:test:grid",
+      "shell": [
+        [
+          -10.0,
+          -10.0
+        ],
+        [
+          -2.0,
+          -10.0
+        ],
+        [
+          -2.0,
+          -2.0
+        ],
+        [
+          -10.0,
+          -2.0
+        ]
+      ],
+      "point": [
+        -6.0,
+        -6.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    }
+  ],
+  "rejectionCases": [
+    {
+      "name": "too-few-coordinates",
+      "expectedMessageFragment": "at least four coordinates",
+      "actualError": "Polygon shell requires at least four coordinates",
+      "rejectedAsExpected": true
+    },
+    {
+      "name": "open-shell",
+      "expectedMessageFragment": "must be closed",
+      "actualError": "Polygon shell must be closed",
+      "rejectedAsExpected": true
+    },
+    {
+      "name": "mixed-shell-crs",
+      "expectedMessageFragment": "share one CRS",
+      "actualError": "Polygon coordinates must share one CRS",
+      "rejectedAsExpected": true
+    },
+    {
+      "name": "non-finite-coordinate",
+      "expectedMessageFragment": "must be finite",
+      "actualError": "Point coordinates must be finite",
+      "rejectedAsExpected": true
+    },
+    {
+      "name": "missing-crs",
+      "expectedMessageFragment": "must be explicit",
+      "actualError": "Point CRS must be explicit",
+      "rejectedAsExpected": true
+    },
+    {
+      "name": "collinear-shell",
+      "expectedMessageFragment": "cannot be collinear",
+      "actualError": "Polygon shell cannot be collinear",
+      "rejectedAsExpected": true
+    },
+    {
+      "name": "self-intersecting-shell",
+      "expectedMessageFragment": "must be simple",
+      "actualError": "Polygon shell must be simple",
+      "rejectedAsExpected": true
+    },
+    {
+      "name": "zero-length-edge",
+      "expectedMessageFragment": "zero-length edges",
+      "actualError": "Polygon shell cannot contain zero-length edges",
+      "rejectedAsExpected": true
+    },
+    {
+      "name": "query-crs-mismatch",
+      "expectedMessageFragment": "CRS mismatch",
+      "actualError": "CRS mismatch: 'urn:pulse:test:grid' != 'http://www.opengis.net/def/crs/OGC/1.3/CRS84'",
+      "rejectedAsExpected": true
+    }
+  ],
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "shapely": "2.1.2",
+    "geos": "3.13.1"
+  }
+}

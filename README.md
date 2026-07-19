@@ -99,6 +99,13 @@ duration-qualified event, and final state. The checked-in artifact metrics are
 descriptive rather than a usability claim; see the
 [`composition comparison`](experiments/composition/README.md).
 
+A fourth experiment probes the Point/simple-Polygon kernel with 17 boundary,
+concavity, ring-orientation, and numeric-scale cases plus 9 explicit rejection
+cases. The checked-in run has zero differences from Shapely/GEOS and rejects all
+invalid inputs as declared. This is a differential regression corpus, not an
+OGC or GeoSPARQL conformance suite; see the
+[`topology corpus`](experiments/topology/README.md).
+
 ## Repository map
 
 - `docs/language-design.md` — semantic scope, formal sketch, and research plan
@@ -109,6 +116,7 @@ descriptive rather than a usability claim; see the
 - `experiments/ibtracs/` — real-data protocol, snapshot, results, and provenance
 - `experiments/spatiotemporal/` — multizone duration protocol and results
 - `experiments/composition/` — three-path executable composition comparison
+- `experiments/topology/` — Point/Polygon boundary differential corpus
 - `grammar/pulse-s.ebnf` — proposed PULSE-S surface syntax
 - `src/pulse_spatial/language.py` — immutable typed syntax model
 - `src/pulse_spatial/parser.py` — lexer and recursive-descent parser

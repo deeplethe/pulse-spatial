@@ -50,3 +50,6 @@ jobs:
           pulse-spatial-composition
           --repetitions 1
           --require-equivalence
+      - run: >-
+          pulse-spatial-topology-corpus
+          --require-parity

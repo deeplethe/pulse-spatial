@@ -25,11 +25,11 @@ must not be reported as evidence for another.
 
 | ID | Evidence | Baseline | Status | Permitted claim |
 |---|---|---|---|---|
-| E0 | 37 semantic and integration tests | Explicit expected contracts | Executed | Core invariants hold for tested cases |
+| E0 | 42 semantic and integration tests | Explicit expected contracts | Executed | Core invariants hold for tested cases |
 | E1 | RDF/SHACL cross-view validation | pySHACL + GEOS functions | Executed | Tested projection outcomes agree |
 | E2 | 223 IBTrACS tracks, one polygon | Shapely/GEOS `covers` | Executed | Single-zone event-label parity |
 | E3 | Five zones; 6/12/24-hour events | GEOS + independent event sweep | Executed | Discrete multizone spatiotemporal parity |
-| E4 | Boundary, holes, invalid geometry corpus | OGC/GeoSPARQL reference cases | Planned | Predicate-subset conformance |
+| E4 | 17 boundary/numeric cases; 9 rejection cases | Shapely/GEOS | Executed | Differential parity for the frozen Point/simple-Polygon corpus |
 | E5 | Frozen cold-chain implementation | GeoSPARQL/SHACL and MF-JSON Prism compositions | Executed | Outcome equivalence and descriptive composition only |
 | E6 | Chronological frozen-rule holdout | Moving Features/workflow baseline | Planned | Limited temporal transfer |
 | E7 | Counterbalanced modeling tasks | Qualified participants | Planned | Usability differences with uncertainty |
@@ -68,11 +68,22 @@ Artifact file count, substantive lines, declared components, and warm-process
 timing are recorded as descriptive facts about the checked-in implementations.
 They are not treated as proxies for usability, maintainability, or productivity.
 
+## E4 topology-corpus protocol
+
+E4 is deliberately a differential regression corpus rather than an official
+standards-conformance suite. It compares the complete `within`, `onBoundary`,
+and `coveredBy` result tuple for every valid case and checks explicit rejection
+contracts for invalid geometry and CRS use. The cases cover boundary edges and
+vertices, concavity, ring orientation, near-boundary coordinates, very small
+and thin polygons, and large-offset local grids. Holes and antimeridian cases
+are excluded because the current language slice cannot represent them.
+
 ## Reporting rules
 
 - Always publish source/snapshot hashes, environment versions, and raw JSON.
 - Treat timing as a local microbenchmark unless a database benchmark is run.
 - Report exact mismatch counts and samples, not only aggregate event counts.
 - Do not call E2 or E3 GeoSPARQL conformance tests.
+- Do not call E4 an OGC or GeoSPARQL conformance suite.
 - Do not infer usability from syntax length or artifact count.
 - Do not extrapolate sample-and-hold results to continuous trajectories.

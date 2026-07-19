@@ -9,7 +9,15 @@ from .compiler import (
     compile_pulse,
     load_pulse,
 )
-from .geometry import CRS84, Point, Polygon, covered_by, to_geosparql_wkt, within
+from .geometry import (
+    CRS84,
+    Point,
+    Polygon,
+    covered_by,
+    on_boundary,
+    to_geosparql_wkt,
+    within,
+)
 from .model import (
     GeofenceConstraint,
     LocationObservation,
@@ -78,6 +86,7 @@ __all__ = [
     "compile_pulse",
     "load_pulse",
     "geosparql_reference_functions",
+    "on_boundary",
     "parse_pulse",
     "project_data_graph",
     "project_geosparql",

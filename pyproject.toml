@@ -33,6 +33,7 @@ pulse-spatial = "pulse_spatial.__main__:main"
 pulse-spatial-ibtracs = "pulse_spatial.experiments.ibtracs:main"
 pulse-spatial-spatiotemporal = "pulse_spatial.experiments.spatiotemporal:main"
 pulse-spatial-composition = "pulse_spatial.experiments.composition:main"
+pulse-spatial-topology-corpus = "pulse_spatial.experiments.topology_corpus:main"
 
 [project.optional-dependencies]
 validation = [
