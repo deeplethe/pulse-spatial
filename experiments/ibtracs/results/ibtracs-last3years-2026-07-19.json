@@ -1,0 +1,138 @@
+{
+  "experiment": "ibtracs-geofence-parity-v1",
+  "generatedAt": "2026-07-19T02:48:14.001576+00:00",
+  "claimBoundary": "Feasibility and event-label parity for Point/Polygon geofences; not GeoSPARQL conformance, geodesic accuracy, prediction, or industrial performance.",
+  "dataset": {
+    "name": "NOAA IBTrACS v04r01 last3years list CSV",
+    "doi": "10.25921/82ty-9e16",
+    "sourceUrl": "https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/csv/ibtracs.last3years.list.v04r01.csv",
+    "path": ".data/ibtracs.last3years.list.v04r01.csv",
+    "bytes": 9468292,
+    "sha256": "95199b7ef1e92e7e32f1681c27d197f8bed86afcaa0dc55adc3b2ea273037dce",
+    "rowsTotal": 19989,
+    "rowsValidMainTrack": 13784,
+    "rowsFilteredTrackType": 6204,
+    "rowsInvalidOrMetadata": 1
+  },
+  "selection": {
+    "trackType": "main",
+    "coordinateReferenceSystem": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+    "studyZone": {
+      "name": "NorthAtlanticStudyZone",
+      "status": "experiment-defined; not an official NOAA boundary",
+      "polygon": [
+        [
+          -100.0,
+          5.0
+        ],
+        [
+          -100.0,
+          45.0
+        ],
+        [
+          -75.0,
+          45.0
+        ],
+        [
+          -60.0,
+          35.0
+        ],
+        [
+          -15.0,
+          35.0
+        ],
+        [
+          -15.0,
+          5.0
+        ],
+        [
+          -100.0,
+          5.0
+        ]
+      ],
+      "boundaryPolicy": "coveredBy (boundary included)"
+    },
+    "maxTracks": null
+  },
+  "workload": {
+    "tracksLoaded": 223,
+    "tracksReplayed": 223,
+    "eventfulTracks": 33,
+    "points": 13784,
+    "transitions": 13561,
+    "seasons": [
+      2023,
+      2025
+    ],
+    "timeRange": [
+      "2023-01-04T18:00:00+00:00",
+      "2025-11-01T06:00:00+00:00"
+    ],
+    "basins": [
+      "EP",
+      "NA",
+      "NI",
+      "SI",
+      "SP",
+      "WP"
+    ]
+  },
+  "parity": {
+    "matches": true,
+    "transitionMismatches": 0,
+    "transitionAgreement": 1.0,
+    "eventBearingTransitions": 38,
+    "eventAgreement": 1.0,
+    "internalEvents": {
+      "enters": 3,
+      "leaves": 35
+    },
+    "referenceEvents": {
+      "enters": 3,
+      "leaves": 35
+    },
+    "mismatchSample": []
+  },
+  "timing": {
+    "repetitions": 5,
+    "internalSeconds": [
+      0.09411309997085482,
+      0.09398409997811541,
+      0.09246359998360276,
+      0.09746000001905486,
+      0.09268589998828247
+    ],
+    "referenceSeconds": [
+      0.1752691000001505,
+      0.0788194999913685,
+      0.07922939996933565,
+      0.08285270002670586,
+      0.09077469998737797
+    ],
+    "internalMedianSeconds": 0.09398409997811541,
+    "referenceMedianSeconds": 0.08285270002670586,
+    "internalTransitionsPerSecond": 144290.36404197876,
+    "referenceTransitionsPerSecond": 163676.01774750723
+  },
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "shapely": "2.1.2",
+    "geos": "3.13.1"
+  },
+  "snapshot": {
+    "path": "experiments/ibtracs/snapshots/ibtracs-last3years-main-2026-07-16.csv",
+    "bytes": 891190,
+    "sha256": "6ee7ad5684598d250de0ecd099972ccd249d1e1a285920ba359aea6fb2d22b6c",
+    "columns": [
+      "SID",
+      "SEASON",
+      "BASIN",
+      "NAME",
+      "ISO_TIME",
+      "LAT",
+      "LON",
+      "TRACK_TYPE"
+    ]
+  }
+}

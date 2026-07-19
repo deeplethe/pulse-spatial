@@ -64,12 +64,29 @@ No runtime dependency is required for the core topological kernel. The
 `validation` extra adds pySHACL and Shapely/GEOS for independent projection
 checks; server adapters for Jena/PostGIS-class engines remain planned.
 
+## Executed real-trajectory experiment
+
+The repository includes an executed NOAA IBTrACS experiment, not only toy
+examples. It replays 223 tropical-cyclone tracks (13,784 points and 13,561
+consecutive transitions) through an experiment-defined geofence and compares
+the complete event-label trace with an independent Shapely/GEOS implementation.
+The two paths produced 0 mismatches across all transitions, including 38
+event-bearing transitions. See the
+[`experiments/ibtracs` protocol and provenance](experiments/ibtracs/README.md)
+and the
+[`machine-readable result`](experiments/ibtracs/results/ibtracs-last3years-2026-07-19.json).
+
+This result supports execution feasibility and event-label parity for the
+tested Point/Polygon workload. It is not a claim of full GeoSPARQL conformance,
+geodesic accuracy, prediction quality, or industrial performance.
+
 ## Repository map
 
 - `docs/language-design.md` — semantic scope, formal sketch, and research plan
 - `docs/projections.md` — RDF projection contract and portability boundary
 - `docs/reference-validation.md` — cross-view parity protocol and limitations
 - `docs/standards-map.md` — standards alignment and non-equivalence boundaries
+- `experiments/ibtracs/` — real-data protocol, snapshot, results, and provenance
 - `grammar/pulse-s.ebnf` — proposed PULSE-S surface syntax
 - `src/pulse_spatial/language.py` — immutable typed syntax model
 - `src/pulse_spatial/parser.py` — lexer and recursive-descent parser
@@ -80,11 +97,11 @@ checks; server adapters for Jena/PostGIS-class engines remain planned.
 
 ## Near-term roadmap
 
-1. Freeze the minimal spatial value and predicate model.
-2. Add a full external GeoSPARQL service adapter and conformance corpus.
-3. Add explicit accuracy regions and coordinate transformations.
+1. Add a full external GeoSPARQL service adapter and conformance corpus.
+2. Add explicit accuracy regions and coordinate transformations.
+3. Generalize replay to multiple overlapping geofences and richer polygons.
 4. Add duration-qualified spatial event semantics.
-5. Replay a real trajectory dataset with chronological holdout tests.
+5. Add chronological rule-freezing and holdout evaluation.
 6. Compare against GeoSPARQL + workflow glue and a Moving Features baseline.
 
 ## License

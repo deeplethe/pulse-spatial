@@ -36,3 +36,8 @@ jobs:
           pulse-spatial examples/cold_chain_geofence.pulse
           --scenario EmergencyReroute
           --validate-projections
+      - run: >-
+          pulse-spatial-ibtracs
+          --data experiments/ibtracs/snapshots/ibtracs-last3years-main-2026-07-16.csv
+          --repetitions 1
+          --require-parity

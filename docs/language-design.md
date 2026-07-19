@@ -87,10 +87,18 @@ with internal validation. This does not establish full GeoSPARQL conformance.
 - RQ4: Does the language reduce modeling errors relative to a composed
   GeoSPARQL + SHACL + workflow implementation?
 
-## Evaluation direction
+## Empirical status and evaluation direction
 
-Use a real moving-object dataset with a chronological split. Freeze regions and
-event rules from the earlier segment, then replay later trajectories without
-adding routes or geofences. Compare event traces against a reference spatial
-engine and test observation non-overwrite, scenario isolation, CRS rejection,
-and projection parsing independently.
+The first real-data experiment replays NOAA IBTrACS main tracks through one
+frozen, experiment-defined polygon. The internal runtime and an independent
+Shapely/GEOS path compare complete, ordered transition labels. The recorded
+2026-07-19 run covered 223 tracks and 13,561 transitions with no label
+mismatches. This establishes feasibility and Point/Polygon event-trace parity
+for the tested workload, not full GeoSPARQL conformance or general validity.
+
+The next experiment should introduce multiple overlapping geofences and a
+chronological split. Freeze regions and event rules from the earlier segment,
+then replay later trajectories without tuning routes or geofences. Compare with
+an external GeoSPARQL service and a Moving Features/workflow baseline while
+continuing to test observation non-overwrite, scenario isolation, CRS
+rejection, and projection parsing independently.
