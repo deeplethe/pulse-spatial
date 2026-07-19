@@ -8,6 +8,18 @@ permissions:
   contents: read
 
 jobs:
+  core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e .
+      - run: >-
+          pulse-spatial examples/cold_chain_geofence.pulse
+          --scenario EmergencyReroute
+
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -23,3 +35,4 @@ jobs:
       - run: >-
           pulse-spatial examples/cold_chain_geofence.pulse
           --scenario EmergencyReroute
+          --validate-projections

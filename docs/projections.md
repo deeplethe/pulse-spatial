@@ -59,7 +59,8 @@ or different.
 
 The generated shapes require SHACL-SPARQL plus GeoSPARQL query functions. A
 SHACL Core processor without those functions cannot evaluate the spatial
-filter. The automated suite uses RDFLib to parse the Turtle graphs and embedded
-SPARQL, which verifies syntax but does not claim GeoSPARQL function execution or
-cross-view semantic equivalence. Those checks belong in the next integration
-layer against a named conforming spatial engine.
+filter. RDFLib tests verify the Turtle and SPARQL syntax. The optional reference
+validator additionally executes the shapes using pySHACL and Shapely/GEOS
+implementations of the two projected functions. This establishes a reproducible
+cross-view parity check, not conformance of the adapter or language to the full
+GeoSPARQL standard. See `reference-validation.md`.

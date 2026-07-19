@@ -19,6 +19,10 @@ modality, confidence, accuracy, and runtime state where the target standards do
 not encode the language's distinction directly. See `projections.md` for the
 precise mapping and execution boundary.
 
+An optional reference adapter executes only `geof:sfWithin` and
+`geof:ehCoveredBy` through GEOS and pySHACL. It is intentionally narrower than
+a GeoSPARQL implementation and is used to detect cross-view semantic drift.
+
 Authoritative references:
 
 - https://www.ogc.org/standards/geosparql/

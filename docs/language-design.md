@@ -66,9 +66,9 @@ unchanged.
 - OWL/RDF views are descriptive and are not the execution substrate.
 
 The checked-in tests parse both Turtle graphs and their embedded SPARQL with
-RDFLib. This establishes syntactic validity, not SHACL or GeoSPARQL entailment.
-Constraint execution requires an engine that implements both SHACL-SPARQL and
-the referenced GeoSPARQL functions.
+RDFLib. Optional integration tests execute the shapes with pySHACL and a
+Shapely/GEOS implementation of the referenced functions, then compare results
+with internal validation. This does not establish full GeoSPARQL conformance.
 
 ## Safety properties to test
 

@@ -10,6 +10,7 @@ from enum import Enum
 from .compiler import PulseModelError, load_pulse
 from .parser import PulseSyntaxError
 from .projection import project_standards, write_projection_bundle
+from .validation import ReferenceBackendUnavailable, validate_projection_parity
 
 
 def _json_value(value: object) -> object:
@@ -35,6 +36,11 @@ def main() -> None:
         "--emit-projections",
         metavar="DIRECTORY",
         help="write standards-oriented Turtle data and SHACL shapes graphs",
+    )
+    argument_parser.add_argument(
+        "--validate-projections",
+        action="store_true",
+        help="compare internal constraints with the optional SHACL/GEOS backend",
     )
     arguments = argument_parser.parse_args()
 
@@ -66,7 +72,16 @@ def main() -> None:
                 "dataGraph": str(paths.data_graph.resolve()),
                 "shapesGraph": str(paths.shapes_graph.resolve()),
             }
-    except (OSError, PulseSyntaxError, PulseModelError) as error:
+        if arguments.validate_projections:
+            output["projectionValidation"] = _json_value(
+                validate_projection_parity(model.world, model.constraints)
+            )
+    except (
+        OSError,
+        PulseSyntaxError,
+        PulseModelError,
+        ReferenceBackendUnavailable,
+    ) as error:
         argument_parser.error(str(error))
     print(json.dumps(output, indent=2, ensure_ascii=False))
 

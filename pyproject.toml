@@ -32,7 +32,15 @@ Repository = "https://github.com/deeplethe/pulse-spatial"
 pulse-spatial = "pulse_spatial.__main__:main"
 
 [project.optional-dependencies]
-test = ["rdflib>=7.1,<8"]
+validation = [
+  "pyshacl>=0.40,<1",
+  "shapely>=2.1,<3"
+]
+test = [
+  "pyshacl>=0.40,<1",
+  "rdflib>=7.1,<8",
+  "shapely>=2.1,<3"
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -39,7 +39,8 @@ Compile the example and execute its counterfactual reroute:
 ```powershell
 .\.venv\Scripts\pulse-spatial examples\cold_chain_geofence.pulse `
   --scenario EmergencyReroute `
-  --emit-projections build\projections
+  --emit-projections build\projections `
+  --validate-projections
 ```
 
 The command reports the model inventory, normative violations, derived
@@ -54,14 +55,20 @@ annotations. The shapes graph expresses normative geofences as SHACL-SPARQL.
 Executing those shapes requires a SHACL engine with GeoSPARQL function support;
 SHACL Core alone is insufficient.
 
-No runtime dependency is required for the initial topological kernel. Geometry
-adapters for GEOS/JTS/PostGIS are planned rather than reimplementing a full GIS
-engine here.
+The optional reference validator executes the generated shapes with pySHACL
+and supplies `geof:sfWithin` and `geof:ehCoveredBy` through Shapely/GEOS. It
+compares conformance and violation counts with the internal PULSE-S validator.
+This is a cross-view parity backend, not a claim of full GeoSPARQL conformance.
+
+No runtime dependency is required for the core topological kernel. The
+`validation` extra adds pySHACL and Shapely/GEOS for independent projection
+checks; server adapters for Jena/PostGIS-class engines remain planned.
 
 ## Repository map
 
 - `docs/language-design.md` — semantic scope, formal sketch, and research plan
 - `docs/projections.md` — RDF projection contract and portability boundary
+- `docs/reference-validation.md` — cross-view parity protocol and limitations
 - `docs/standards-map.md` — standards alignment and non-equivalence boundaries
 - `grammar/pulse-s.ebnf` — proposed PULSE-S surface syntax
 - `src/pulse_spatial/language.py` — immutable typed syntax model
@@ -74,7 +81,7 @@ engine here.
 ## Near-term roadmap
 
 1. Freeze the minimal spatial value and predicate model.
-2. Validate projection behavior against a GeoSPARQL-enabled SHACL engine.
+2. Add a full external GeoSPARQL service adapter and conformance corpus.
 3. Add explicit accuracy regions and coordinate transformations.
 4. Add duration-qualified spatial event semantics.
 5. Replay a real trajectory dataset with chronological holdout tests.

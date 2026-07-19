@@ -29,10 +29,17 @@ from .projection import (
 )
 from .parser import PulseSyntaxError, parse_pulse
 from .runtime import EventKind, GeofenceEvent, GeofenceRule, ScenarioResult, SpatialRuntime
+from .validation import (
+    CrossViewValidation,
+    ReferenceBackendUnavailable,
+    geosparql_reference_functions,
+    validate_projection_parity,
+)
 
 __all__ = [
     "CRS84",
     "CompiledModel",
+    "CrossViewValidation",
     "DEFAULT_BASE_IRI",
     "EventKind",
     "GeofenceConstraint",
@@ -46,6 +53,7 @@ __all__ = [
     "PulseModelError",
     "PulseSyntaxError",
     "QuestionAnswer",
+    "ReferenceBackendUnavailable",
     "ScenarioResult",
     "ScenarioReport",
     "SpatialRuntime",
@@ -55,6 +63,7 @@ __all__ = [
     "compile_document",
     "compile_pulse",
     "load_pulse",
+    "geosparql_reference_functions",
     "parse_pulse",
     "project_data_graph",
     "project_geosparql",
@@ -62,6 +71,7 @@ __all__ = [
     "project_sosa",
     "project_standards",
     "to_geosparql_wkt",
+    "validate_projection_parity",
     "within",
     "write_projection_bundle",
 ]
