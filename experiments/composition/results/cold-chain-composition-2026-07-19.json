@@ -1,0 +1,289 @@
+{
+  "experiment": "cold-chain-composition-comparison-v1",
+  "generatedAt": "2026-07-19T06:02:36.244055+00:00",
+  "task": {
+    "description": "A shipment briefly leaves and re-enters a geofence, then leaves for at least ten minutes and changes Safe to AtRisk.",
+    "clock": "discrete sample-and-hold; due timers precede same-time moves",
+    "boundaryPolicy": "coveredBy"
+  },
+  "standardRoles": {
+    "GeoSPARQL": "RDF spatial representation and topological query",
+    "SHACL": "RDF structural validation",
+    "OWL-Time": "duration and instant description",
+    "MF-JSON": "trajectory exchange",
+    "workflow": "required in both composed baselines for timer cancellation and state transition"
+  },
+  "expectedOutcome": {
+    "final_state": "AtRisk",
+    "instantaneous": [
+      {
+        "kind": "leaves",
+        "subject": "shipment_102",
+        "region": "ColdZone",
+        "at": "2026-07-19T08:05:00Z"
+      },
+      {
+        "kind": "enters",
+        "subject": "shipment_102",
+        "region": "ColdZone",
+        "at": "2026-07-19T08:12:00Z"
+      },
+      {
+        "kind": "leaves",
+        "subject": "shipment_102",
+        "region": "ColdZone",
+        "at": "2026-07-19T08:20:00Z"
+      }
+    ],
+    "sustained": [
+      {
+        "kind": "leaves",
+        "subject": "shipment_102",
+        "region": "ColdZone",
+        "duration_seconds": 600.0,
+        "started_at": "2026-07-19T08:20:00Z",
+        "effective_at": "2026-07-19T08:30:00Z",
+        "emitted_at": "2026-07-19T08:31:00Z"
+      }
+    ]
+  },
+  "paths": {
+    "pulse": {
+      "outcome": {
+        "final_state": "AtRisk",
+        "instantaneous": [
+          {
+            "kind": "leaves",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "at": "2026-07-19T08:05:00Z"
+          },
+          {
+            "kind": "enters",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "at": "2026-07-19T08:12:00Z"
+          },
+          {
+            "kind": "leaves",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "at": "2026-07-19T08:20:00Z"
+          }
+        ],
+        "sustained": [
+          {
+            "kind": "leaves",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "duration_seconds": 600.0,
+            "started_at": "2026-07-19T08:20:00Z",
+            "effective_at": "2026-07-19T08:30:00Z",
+            "emitted_at": "2026-07-19T08:31:00Z"
+          }
+        ]
+      },
+      "matchesExpected": true,
+      "validation": {
+        "compiled": true,
+        "typedRules": 1,
+        "observations": 5
+      }
+    },
+    "semanticWebComposition": {
+      "outcome": {
+        "final_state": "AtRisk",
+        "instantaneous": [
+          {
+            "kind": "leaves",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "at": "2026-07-19T08:05:00Z"
+          },
+          {
+            "kind": "enters",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "at": "2026-07-19T08:12:00Z"
+          },
+          {
+            "kind": "leaves",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "at": "2026-07-19T08:20:00Z"
+          }
+        ],
+        "sustained": [
+          {
+            "kind": "leaves",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "duration_seconds": 600.0,
+            "started_at": "2026-07-19T08:20:00Z",
+            "effective_at": "2026-07-19T08:30:00Z",
+            "emitted_at": "2026-07-19T08:31:00Z"
+          }
+        ]
+      },
+      "matchesExpected": true,
+      "validation": {
+        "shaclConforms": true,
+        "rdfTriples": 61,
+        "shapeTriples": 60,
+        "orderedQueryRows": 5,
+        "geoSparqlFunctionAdapter": "Shapely/GEOS reference adapter",
+        "dateTimeLiteralAdapter": "explicit xsd:dateTimeStamp lexical parse"
+      }
+    },
+    "movingFeaturesComposition": {
+      "outcome": {
+        "final_state": "AtRisk",
+        "instantaneous": [
+          {
+            "kind": "leaves",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "at": "2026-07-19T08:05:00Z"
+          },
+          {
+            "kind": "enters",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "at": "2026-07-19T08:12:00Z"
+          },
+          {
+            "kind": "leaves",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "at": "2026-07-19T08:20:00Z"
+          }
+        ],
+        "sustained": [
+          {
+            "kind": "leaves",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "duration_seconds": 600.0,
+            "started_at": "2026-07-19T08:20:00Z",
+            "effective_at": "2026-07-19T08:30:00Z",
+            "emitted_at": "2026-07-19T08:31:00Z"
+          }
+        ]
+      },
+      "matchesExpected": true,
+      "validation": {
+        "mfJsonPrismSubsetValid": true,
+        "checkedRequirements": "local checks corresponding to portions of OGC 19-045r3 Prism requirements 2.4-2.8 and 2.12; not a complete conformance suite",
+        "coordinates": 5,
+        "timestamps": 5,
+        "policyIsNonStandardWorkflowConfiguration": true
+      }
+    }
+  },
+  "equivalence": {
+    "allPathsMatchExpected": true,
+    "allPathOutcomesEquivalent": true
+  },
+  "descriptiveCompositionMetrics": {
+    "pulse": {
+      "inputFiles": [
+        "pulse/model.pulse"
+      ],
+      "inputFileCount": 1,
+      "inputBytes": 961,
+      "substantiveLines": 40,
+      "executionComponents": [
+        "PULSE parser/compiler",
+        "PULSE geometry kernel",
+        "PULSE temporal runtime"
+      ],
+      "executionComponentCount": 3,
+      "declaredStandardsOrVocabularies": [
+        "PULSE"
+      ]
+    },
+    "semanticWebComposition": {
+      "inputFiles": [
+        "semantic-web/data.ttl",
+        "semantic-web/policy.ttl",
+        "semantic-web/shapes.ttl"
+      ],
+      "inputFileCount": 3,
+      "inputBytes": 4864,
+      "substantiveLines": 123,
+      "executionComponents": [
+        "RDF parser and SPARQL engine",
+        "SHACL engine",
+        "GeoSPARQL function adapter",
+        "dateTime literal adapter",
+        "duration workflow"
+      ],
+      "executionComponentCount": 5,
+      "declaredStandardsOrVocabularies": [
+        "RDF",
+        "SOSA",
+        "GeoSPARQL",
+        "OWL-Time",
+        "SHACL",
+        "XSD"
+      ]
+    },
+    "movingFeaturesComposition": {
+      "inputFiles": [
+        "moving-features/moving-feature.json",
+        "moving-features/policy.json"
+      ],
+      "inputFileCount": 2,
+      "inputBytes": 926,
+      "substantiveLines": 48,
+      "executionComponents": [
+        "MF-JSON Prism subset validator",
+        "geometry engine",
+        "duration workflow"
+      ],
+      "executionComponentCount": 3,
+      "declaredStandardsOrVocabularies": [
+        "OGC MF-JSON Prism",
+        "GeoJSON",
+        "custom policy JSON"
+      ]
+    }
+  },
+  "timing": {
+    "scope": "warm-process local end-to-end microbenchmark including parse and validation; one untimed warm-up per path",
+    "repetitions": 5,
+    "paths": {
+      "pulse": {
+        "seconds": [
+          0.0011119000264443457,
+          0.0009537000441923738,
+          0.0006447999621741474,
+          0.0006510000093840063,
+          0.0006238999776542187
+        ],
+        "medianSeconds": 0.0006510000093840063
+      },
+      "semanticWebComposition": {
+        "seconds": [
+          0.03670280001824722,
+          0.015819499967619777,
+          0.016933700011577457,
+          0.01631269999779761,
+          0.014946800016332418
+        ],
+        "medianSeconds": 0.01631269999779761
+      },
+      "movingFeaturesComposition": {
+        "seconds": [
+          0.0004944999818690121,
+          0.0004000000189989805,
+          0.0004287000047042966,
+          0.00035119999665766954,
+          0.0003779999678954482
+        ],
+        "medianSeconds": 0.0004000000189989805
+      }
+    }
+  },
+  "claimBoundary": "Executable outcome equivalence and descriptive artifact composition for one frozen task; not standards conformance, maintainability, usability, or general productivity evidence."
+}

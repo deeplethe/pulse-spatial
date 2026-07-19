@@ -28,6 +28,7 @@ Authoritative references:
 - https://www.ogc.org/standards/geosparql/
 - https://www.w3.org/TR/owl-time/
 - https://www.w3.org/TR/vocab-ssn-2023/
+- https://docs.ogc.org/is/19-045r3/19-045r3.html
 - https://docs.ogc.org/is/22-003r3/22-003r3.pdf
 - https://docs.ogc.org/is/15-078r6/15-078r6.html
 - https://www.ogc.org/standards/indoorgml/

@@ -1,0 +1,50 @@
+model ColdChainCompositionComparison version "1.0"
+
+crs WGS84 = "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+
+region ColdZone crs WGS84 = polygon[
+  [0, 0],
+  [10, 0],
+  [10, 10],
+  [0, 10]
+]
+
+entity Shipment {
+  property position: Point crs WGS84
+  state status oneof [Safe, AtRisk]
+}
+
+instance shipment_102: Shipment {
+  position = point(5, 5)
+  status = Safe
+}
+
+observe shipment_102.position = point(5, 5) {
+  at "2026-07-19T08:00:00Z"
+  source gps_07
+}
+
+observe shipment_102.position = point(12, 5) {
+  at "2026-07-19T08:05:00Z"
+  source gps_07
+}
+
+observe shipment_102.position = point(5, 5) {
+  at "2026-07-19T08:12:00Z"
+  source gps_07
+}
+
+observe shipment_102.position = point(12, 5) {
+  at "2026-07-19T08:20:00Z"
+  source gps_07
+}
+
+observe shipment_102.position = point(13, 5) {
+  at "2026-07-19T08:31:00Z"
+  source gps_07
+}
+
+process SustainedDeparture(s: Shipment) {
+  when leaves(s.position, ColdZone) for 10 min
+  changes s.status: Safe -> AtRisk
+}

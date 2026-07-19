@@ -1,0 +1,23 @@
+{
+  "type": "GeofencePolicy",
+  "name": "SustainedDeparturePolicy",
+  "subject": "shipment_102",
+  "regionName": "ColdZone",
+  "region": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [0.0, 0.0],
+        [10.0, 0.0],
+        [10.0, 10.0],
+        [0.0, 10.0],
+        [0.0, 0.0]
+      ]
+    ]
+  },
+  "boundaryPolicy": "coveredBy",
+  "trigger": "leaves",
+  "minimumDurationSeconds": 600,
+  "fromState": "Safe",
+  "toState": "AtRisk"
+}

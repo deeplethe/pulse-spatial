@@ -92,6 +92,13 @@ event, or sustained-event mismatches. The run produced 175 instantaneous and
 475 sustained events at 6, 12, and 24-hour thresholds. See the
 [`spatiotemporal experiment`](experiments/spatiotemporal/README.md).
 
+A third experiment freezes one cold-chain trajectory and policy, then executes
+it as PULSE, a GeoSPARQL/SOSA/OWL-Time + SHACL + workflow composition, and an
+MF-JSON Prism + workflow composition. All three reproduce the same cancellation,
+duration-qualified event, and final state. The checked-in artifact metrics are
+descriptive rather than a usability claim; see the
+[`composition comparison`](experiments/composition/README.md).
+
 ## Repository map
 
 - `docs/language-design.md` — semantic scope, formal sketch, and research plan
@@ -101,6 +108,7 @@ event, or sustained-event mismatches. The run produced 175 instantaneous and
 - `docs/evaluation-plan.md` — research questions, experiment matrix, and claims
 - `experiments/ibtracs/` — real-data protocol, snapshot, results, and provenance
 - `experiments/spatiotemporal/` — multizone duration protocol and results
+- `experiments/composition/` — three-path executable composition comparison
 - `grammar/pulse-s.ebnf` — proposed PULSE-S surface syntax
 - `src/pulse_spatial/language.py` — immutable typed syntax model
 - `src/pulse_spatial/parser.py` — lexer and recursive-descent parser
@@ -116,7 +124,8 @@ event, or sustained-event mismatches. The run produced 175 instantaneous and
 3. Add polygon holes, multipolygons, and explicit antimeridian handling.
 4. Project temporal events and intervals through an OWL-Time profile.
 5. Add chronological rule-freezing and holdout evaluation.
-6. Compare against GeoSPARQL + workflow glue and a Moving Features baseline.
+6. Repeat the composition comparison with an external GeoSPARQL service and
+   larger frozen workloads.
 
 ## License
 

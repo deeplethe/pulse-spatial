@@ -1,0 +1,55 @@
+@prefix ex: <https://example.org/cold-chain/> .
+@prefix geo: <http://www.opengis.net/ont/geosparql#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix time: <http://www.w3.org/2006/time#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:ObservationShape a sh:NodeShape ;
+  sh:targetClass sosa:Observation ;
+  sh:property [
+    sh:path sosa:hasFeatureOfInterest ;
+    sh:minCount 1 ;
+    sh:maxCount 1
+  ] ;
+  sh:property [
+    sh:path sosa:resultTime ;
+    sh:datatype xsd:dateTimeStamp ;
+    sh:minCount 1 ;
+    sh:maxCount 1
+  ] ;
+  sh:property [
+    sh:path sosa:phenomenonTime ;
+    sh:class time:Instant ;
+    sh:minCount 1 ;
+    sh:maxCount 1
+  ] ;
+  sh:property [
+    sh:path sosa:hasResult ;
+    sh:class geo:Geometry ;
+    sh:minCount 1 ;
+    sh:maxCount 1
+  ] .
+
+ex:GeometryShape a sh:NodeShape ;
+  sh:targetClass geo:Geometry ;
+  sh:property [
+    sh:path geo:asWKT ;
+    sh:datatype geo:wktLiteral ;
+    sh:minCount 1 ;
+    sh:maxCount 1
+  ] .
+
+ex:PolicyShape a sh:NodeShape ;
+  sh:targetClass ex:GeofencePolicy ;
+  sh:property [ sh:path ex:subject ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path ex:region ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [
+    sh:path ex:boundaryPredicate ;
+    sh:minCount 1 ;
+    sh:maxCount 1
+  ] ;
+  sh:property [ sh:path ex:trigger ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path ex:fromState ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path ex:toState ; sh:minCount 1 ; sh:maxCount 1 ] ;
+  sh:property [ sh:path time:hasDuration ; sh:minCount 1 ; sh:maxCount 1 ] .

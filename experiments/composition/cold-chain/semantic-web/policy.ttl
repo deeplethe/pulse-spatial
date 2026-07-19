@@ -1,0 +1,16 @@
+@prefix ex: <https://example.org/cold-chain/> .
+@prefix geof: <http://www.opengis.net/def/function/geosparql/> .
+@prefix time: <http://www.w3.org/2006/time#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:SustainedDeparturePolicy a ex:GeofencePolicy ;
+  ex:subject ex:shipment_102 ;
+  ex:region ex:ColdZone ;
+  ex:boundaryPredicate geof:ehCoveredBy ;
+  ex:trigger ex:leaves ;
+  ex:fromState ex:Safe ;
+  ex:toState ex:AtRisk ;
+  time:hasDuration [
+    time:numericDuration "10"^^xsd:decimal ;
+    time:unitType time:unitMinute
+  ] .

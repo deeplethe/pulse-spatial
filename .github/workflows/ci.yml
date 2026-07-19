@@ -46,3 +46,7 @@ jobs:
           --data experiments/ibtracs/snapshots/ibtracs-last3years-main-2026-07-16.csv
           --repetitions 1
           --require-parity
+      - run: >-
+          pulse-spatial-composition
+          --repetitions 1
+          --require-equivalence

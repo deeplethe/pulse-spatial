@@ -25,12 +25,12 @@ must not be reported as evidence for another.
 
 | ID | Evidence | Baseline | Status | Permitted claim |
 |---|---|---|---|---|
-| E0 | 34 semantic and integration tests | Explicit expected contracts | Executed | Core invariants hold for tested cases |
+| E0 | 37 semantic and integration tests | Explicit expected contracts | Executed | Core invariants hold for tested cases |
 | E1 | RDF/SHACL cross-view validation | pySHACL + GEOS functions | Executed | Tested projection outcomes agree |
 | E2 | 223 IBTrACS tracks, one polygon | Shapely/GEOS `covers` | Executed | Single-zone event-label parity |
 | E3 | Five zones; 6/12/24-hour events | GEOS + independent event sweep | Executed | Discrete multizone spatiotemporal parity |
 | E4 | Boundary, holes, invalid geometry corpus | OGC/GeoSPARQL reference cases | Planned | Predicate-subset conformance |
-| E5 | Frozen cold-chain implementation | GeoSPARQL + SHACL + workflow glue | Planned | Descriptive composition burden only |
+| E5 | Frozen cold-chain implementation | GeoSPARQL/SHACL and MF-JSON Prism compositions | Executed | Outcome equivalence and descriptive composition only |
 | E6 | Chronological frozen-rule holdout | Moving Features/workflow baseline | Planned | Limited temporal transfer |
 | E7 | Counterbalanced modeling tasks | Qualified participants | Planned | Usability differences with uncertainty |
 
@@ -54,6 +54,19 @@ unobserved continuous path between samples.
 All five polygons are experiment-defined, may overlap, and are not official
 NOAA boundaries. The independent path uses Shapely/GEOS for membership and a
 separately implemented event-sweep algorithm for duration deadlines.
+
+## E5 composition protocol
+
+E5 freezes one trajectory, boundary policy, timer ordering, duration, and state
+transition. PULSE, a Semantic Web composition, and an MF-JSON Prism composition
+must reproduce the complete expected trace. MF-JSON Prism uses `Step`
+interpolation; MF-JSON Trajectory's linear interpolation would be a different
+task. Non-PULSE paths use explicit workflow code because representation,
+query, and validation standards do not themselves execute the state change.
+
+Artifact file count, substantive lines, declared components, and warm-process
+timing are recorded as descriptive facts about the checked-in implementations.
+They are not treated as proxies for usability, maintainability, or productivity.
 
 ## Reporting rules
 
