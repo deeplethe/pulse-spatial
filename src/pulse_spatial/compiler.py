@@ -367,6 +367,7 @@ def compile_document(document: ModelDocument) -> CompiledModel:
                     observation.source,
                     observation.confidence,
                     accuracy_m,
+                    property_name=observation.reference.member,
                 )
             )
         except ValueError as error:
@@ -424,6 +425,7 @@ def compile_document(document: ModelDocument) -> CompiledModel:
                 declaration.region,
                 declaration.predicate,
                 while_state,
+                property_name=declaration.reference.member,
             )
         )
 

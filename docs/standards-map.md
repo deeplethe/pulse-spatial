@@ -13,6 +13,12 @@ claim equivalence to or conformance with them in the pre-alpha kernel.
 | IndoorGML | Navigable cells and adjacency | Process-aware indoor state changes |
 | SHACL | RDF graph validation | Internal normative execution contract |
 
+Current executable projections cover GeoSPARQL geometry, SOSA observation
+records, and SHACL-SPARQL geofence constraints. PULSE-S-specific terms retain
+modality, confidence, accuracy, and runtime state where the target standards do
+not encode the language's distinction directly. See `projections.md` for the
+precise mapping and execution boundary.
+
 Authoritative references:
 
 - https://www.ogc.org/standards/geosparql/

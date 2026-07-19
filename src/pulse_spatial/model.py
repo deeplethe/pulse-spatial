@@ -16,10 +16,13 @@ class LocationObservation:
     source: str
     confidence: float | None = None
     accuracy_m: float | None = None
+    property_name: str = "position"
 
     def __post_init__(self) -> None:
-        if not self.subject or not self.source:
-            raise ValueError("Observation subject and source are required")
+        if not self.subject or not self.source or not self.property_name:
+            raise ValueError(
+                "Observation subject, source, and property name are required"
+            )
         if self.observed_at.utcoffset() is None:
             raise ValueError("Observation time must include a UTC offset")
         if self.confidence is not None and not 0 <= self.confidence <= 1:
@@ -43,6 +46,7 @@ class GeofenceConstraint:
     region: str
     predicate: str = "inside"
     while_state: str | None = None
+    property_name: str = "position"
 
     def evaluate(self, world: "SpatialWorld") -> tuple[SpatialViolation, ...]:
         if self.while_state is not None and world.states.get(self.subject) != self.while_state:

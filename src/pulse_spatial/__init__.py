@@ -16,13 +16,24 @@ from .model import (
     SpatialViolation,
     SpatialWorld,
 )
-from .projection import project_geosparql
+from .projection import (
+    DEFAULT_BASE_IRI,
+    ProjectionBundle,
+    ProjectionPaths,
+    project_data_graph,
+    project_geosparql,
+    project_shacl,
+    project_sosa,
+    project_standards,
+    write_projection_bundle,
+)
 from .parser import PulseSyntaxError, parse_pulse
 from .runtime import EventKind, GeofenceEvent, GeofenceRule, ScenarioResult, SpatialRuntime
 
 __all__ = [
     "CRS84",
     "CompiledModel",
+    "DEFAULT_BASE_IRI",
     "EventKind",
     "GeofenceConstraint",
     "GeofenceEvent",
@@ -30,6 +41,8 @@ __all__ = [
     "LocationObservation",
     "Point",
     "Polygon",
+    "ProjectionBundle",
+    "ProjectionPaths",
     "PulseModelError",
     "PulseSyntaxError",
     "QuestionAnswer",
@@ -43,7 +56,12 @@ __all__ = [
     "compile_pulse",
     "load_pulse",
     "parse_pulse",
+    "project_data_graph",
     "project_geosparql",
+    "project_shacl",
+    "project_sosa",
+    "project_standards",
     "to_geosparql_wkt",
     "within",
+    "write_projection_bundle",
 ]

@@ -30,7 +30,7 @@ into a validated runtime model; syntax and semantic failures are kept distinct.
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\python -m pip install -e .
+.\.venv\Scripts\python -m pip install -e .[test]
 .\.venv\Scripts\python -m unittest discover -s tests -v
 ```
 
@@ -38,7 +38,8 @@ Compile the example and execute its counterfactual reroute:
 
 ```powershell
 .\.venv\Scripts\pulse-spatial examples\cold_chain_geofence.pulse `
-  --scenario EmergencyReroute
+  --scenario EmergencyReroute `
+  --emit-projections build\projections
 ```
 
 The command reports the model inventory, normative violations, derived
@@ -47,6 +48,12 @@ remains inside `ColdZone`; its later GPS observation is outside but does not
 silently replace that assertion. The scenario moves an isolated copy and
 changes its state from `Safe` to `AtRisk`.
 
+Projection export writes two UTF-8 Turtle files. The data graph combines
+asserted GeoSPARQL geometry and SOSA observations while retaining PULSE-S modal
+annotations. The shapes graph expresses normative geofences as SHACL-SPARQL.
+Executing those shapes requires a SHACL engine with GeoSPARQL function support;
+SHACL Core alone is insufficient.
+
 No runtime dependency is required for the initial topological kernel. Geometry
 adapters for GEOS/JTS/PostGIS are planned rather than reimplementing a full GIS
 engine here.
@@ -54,6 +61,7 @@ engine here.
 ## Repository map
 
 - `docs/language-design.md` — semantic scope, formal sketch, and research plan
+- `docs/projections.md` — RDF projection contract and portability boundary
 - `docs/standards-map.md` — standards alignment and non-equivalence boundaries
 - `grammar/pulse-s.ebnf` — proposed PULSE-S surface syntax
 - `src/pulse_spatial/language.py` — immutable typed syntax model
@@ -66,7 +74,7 @@ engine here.
 ## Near-term roadmap
 
 1. Freeze the minimal spatial value and predicate model.
-2. Project observations to SOSA/SSN and constraints to SHACL-SPARQL.
+2. Validate projection behavior against a GeoSPARQL-enabled SHACL engine.
 3. Add explicit accuracy regions and coordinate transformations.
 4. Add duration-qualified spatial event semantics.
 5. Replay a real trajectory dataset with chronological holdout tests.

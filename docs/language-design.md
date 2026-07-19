@@ -59,11 +59,16 @@ unchanged.
 ## Projection contract
 
 - Asserted geometry projects to GeoSPARQL `geo:hasGeometry` / `geo:asWKT`.
-- Observation projection will use SOSA/SSN and retain result time, source,
+- Observation projection uses SOSA and retains result time, source,
   confidence, and accuracy.
-- Normative constraints will project to SHACL-SPARQL where expressible.
+- Normative geofences project to SHACL-SPARQL with GeoSPARQL functions.
 - Scenario state remains a JSON/runtime view unless explicitly published.
 - OWL/RDF views are descriptive and are not the execution substrate.
+
+The checked-in tests parse both Turtle graphs and their embedded SPARQL with
+RDFLib. This establishes syntactic validity, not SHACL or GeoSPARQL entailment.
+Constraint execution requires an engine that implements both SHACL-SPARQL and
+the referenced GeoSPARQL functions.
 
 ## Safety properties to test
 

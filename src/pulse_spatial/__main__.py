@@ -9,6 +9,7 @@ from enum import Enum
 
 from .compiler import PulseModelError, load_pulse
 from .parser import PulseSyntaxError
+from .projection import project_standards, write_projection_bundle
 
 
 def _json_value(value: object) -> object:
@@ -30,6 +31,11 @@ def main() -> None:
     )
     argument_parser.add_argument("source", help="path to a .pulse model")
     argument_parser.add_argument("--scenario", help="scenario name to execute")
+    argument_parser.add_argument(
+        "--emit-projections",
+        metavar="DIRECTORY",
+        help="write standards-oriented Turtle data and SHACL shapes graphs",
+    )
     arguments = argument_parser.parse_args()
 
     try:
@@ -49,6 +55,16 @@ def main() -> None:
                 "horizonSeconds": report.horizon_seconds,
                 "events": _json_value(report.result.events),
                 "answers": _json_value(report.answers),
+            }
+        if arguments.emit_projections:
+            paths = write_projection_bundle(
+                project_standards(model.world, model.constraints),
+                arguments.emit_projections,
+                model.document.name,
+            )
+            output["projections"] = {
+                "dataGraph": str(paths.data_graph.resolve()),
+                "shapesGraph": str(paths.shapes_graph.resolve()),
             }
     except (OSError, PulseSyntaxError, PulseModelError) as error:
         argument_parser.error(str(error))
