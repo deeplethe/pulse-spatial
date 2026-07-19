@@ -53,7 +53,7 @@ jobs:
       - run: >-
           pulse-spatial-topology-corpus
           --require-parity
-      - run: pulse-spatial-semantic-sensitivity --require-all-observable
+      - run: pulse-spatial-semantic-sensitivity --require-all-distinguished
       - run: pulse-spatial-end-to-end --require-all-checks
       - run: pulse-spatial-formal-properties --max-depth 4
       - run: pulse-spatial-scalability --sizes 100,1000 --repetitions 1

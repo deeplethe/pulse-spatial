@@ -146,6 +146,11 @@ def run_experiment(
     with tempfile.TemporaryDirectory(prefix="pulse-jena-") as directory:
         graph_path = Path(directory) / "topology.ttl"
         graph_path.write_text(graph, encoding="utf-8", newline="\n")
+        # TemporaryDirectory is mode 0700 on Linux.  The deliberately
+        # unprivileged Jena container therefore cannot traverse a bind-mounted
+        # directory unless we grant read/traverse access explicitly.
+        graph_path.parent.chmod(0o755)
+        graph_path.chmod(0o644)
         container_started = time.perf_counter()
         completed = subprocess.run(
             [
