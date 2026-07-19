@@ -34,6 +34,79 @@ CONCAVE = (
     (0.0, 6.0),
 )
 
+TRIANGLE = ((0.0, 0.0), (8.0, 0.0), (3.0, 6.0))
+
+
+def _affine_point(
+    point: tuple[float, float], scale: float, dx: float, dy: float
+) -> tuple[float, float]:
+    return (dx + scale * point[0], dy + scale * point[1])
+
+
+def _profile_cases() -> tuple[TopologyCase, ...]:
+    """Generate a deterministic multi-shape, multi-scale CRS84 profile."""
+
+    profiles = (
+        (
+            "rectangle",
+            SQUARE,
+            (
+                ("interior", "interior", (5.0, 5.0)),
+                ("exterior", "exterior", (11.0, 5.0)),
+                ("edge", "boundary edge", (5.0, 0.0)),
+                ("vertex", "boundary vertex", (0.0, 0.0)),
+                ("near-in", "near-boundary interior", (1e-10, 5.0)),
+                ("near-out", "near-boundary exterior", (-1e-10, 5.0)),
+            ),
+        ),
+        (
+            "triangle",
+            TRIANGLE,
+            (
+                ("interior", "interior", (3.0, 2.0)),
+                ("exterior", "exterior", (7.0, 5.0)),
+                ("edge", "boundary edge", (4.0, 0.0)),
+                ("vertex", "boundary vertex", (0.0, 0.0)),
+                ("near-in", "near-boundary interior", (4.0, 1e-10)),
+                ("near-out", "near-boundary exterior", (4.0, -1e-10)),
+            ),
+        ),
+        (
+            "concave",
+            CONCAVE,
+            (
+                ("interior", "concave interior", (1.0, 3.0)),
+                ("notch", "concave exterior", (3.0, 3.0)),
+                ("edge", "concave boundary edge", (3.0, 2.0)),
+                ("reflex", "concave boundary vertex", (2.0, 2.0)),
+                ("outer-edge", "outer boundary edge", (0.0, 3.0)),
+                ("outer-vertex", "outer boundary vertex", (6.0, 6.0)),
+            ),
+        ),
+    )
+    transforms = (
+        ("west-small", 0.5, -160.0, -60.0),
+        ("west", 1.0, -80.0, -20.0),
+        ("east-large", 2.0, 20.0, 10.0),
+        ("east-tiny", 0.25, 120.0, 40.0),
+    )
+    cases: list[TopologyCase] = []
+    for shape_name, shell, probes in profiles:
+        for transform_name, scale, dx, dy in transforms:
+            transformed_shell = tuple(
+                _affine_point(point, scale, dx, dy) for point in shell
+            )
+            for probe_name, feature, point in probes:
+                cases.append(
+                    TopologyCase(
+                        f"profile-{shape_name}-{transform_name}-{probe_name}",
+                        f"{shape_name}; {feature}; scale {scale:g}",
+                        transformed_shell,
+                        _affine_point(point, scale, dx, dy),
+                    )
+                )
+    return tuple(cases)
+
 CASES: tuple[TopologyCase, ...] = (
     TopologyCase("square-interior", "interior", SQUARE, (5.0, 5.0)),
     TopologyCase("square-exterior", "exterior", SQUARE, (11.0, 5.0)),
@@ -110,7 +183,7 @@ CASES: tuple[TopologyCase, ...] = (
         (-6.0, -6.0),
         "urn:pulse:test:grid",
     ),
-)
+) + _profile_cases()
 
 
 def _evaluate(case: TopologyCase) -> dict[str, object]:

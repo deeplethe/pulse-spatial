@@ -12,11 +12,14 @@ class TopologyCorpusTests(unittest.TestCase):
 
     def test_corpus_covers_numeric_and_boundary_risks(self) -> None:
         names = {case.name for case in CASES}
+        self.assertEqual(len(CASES), 89)
         self.assertIn("near-boundary-inside", names)
         self.assertIn("near-boundary-outside", names)
         self.assertIn("concave-reflex-vertex", names)
         self.assertIn("tiny-polygon", names)
         self.assertIn("large-offset-grid", names)
+        self.assertIn("profile-triangle-east-large-edge", names)
+        self.assertIn("profile-concave-east-tiny-notch", names)
 
     def test_claim_is_explicitly_not_conformance(self) -> None:
         result = run_corpus()

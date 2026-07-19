@@ -1,0 +1,66 @@
+{
+  "experiment": "postgis-persistent-gist-baseline-v1",
+  "generatedAt": "2026-07-19T23:05:25.352155+00:00",
+  "claimBoundary": "Persistent PostgreSQL/PostGIS geometry baseline using an on-disk Docker volume, GiST indexes, and ST_Covers for the five experiment-defined Polygon zones. Event and duration labels are derived from returned sampled memberships. This is not a concurrent service benchmark, continuous-trajectory evaluation, or comparison with an RDF triplestore.",
+  "dataset": {
+    "name": "NOAA IBTrACS v04r01 last3years list CSV",
+    "doi": "10.25921/82ty-9e16",
+    "sourceUrl": "https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/csv/ibtracs.last3years.list.v04r01.csv",
+    "path": "experiments/ibtracs/snapshots/ibtracs-last3years-main-2026-07-16.csv",
+    "bytes": 891190,
+    "sha256": "6ee7ad5684598d250de0ecd099972ccd249d1e1a285920ba359aea6fb2d22b6c",
+    "tracks": 223,
+    "points": 13784,
+    "transitions": 13561,
+    "transitionZonePairs": 67805
+  },
+  "database": {
+    "image": "postgis/postgis:18-3.6",
+    "imageId": "sha256:4f755ac224323a73961dfb21bdddffcb97f40bb916fda3e8a627b116489c9e12",
+    "postgresVersion": "PostgreSQL 18.4 (Debian 18.4-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+    "postgisVersion": "POSTGIS=\"3.6.4 94d984b\" [EXTENSION] PGSQL=\"180\" GEOS=\"3.13.1-CAPI-1.19.2\" PROJ=\"9.6.0 NETWORK_ENABLED=OFF URL_ENDPOINT=https://cdn.proj.org USER_WRITABLE_DIRECTORY=/var/lib/postgresql/.local/share/proj DATABASE_PATH=/usr/share/proj/proj.db\" (compiled against PROJ 9.6.0) LIBXML=\"2.9.14\" LIBJSON=\"0.18\" LIBPROTOBUF=\"1.5.1\" WAGYU=\"0.5.0 (Internal)\" TOPOLOGY",
+    "predicate": "ST_Covers(region.geom, sample.geom)",
+    "pointSrid": 4326,
+    "indexMethod": "GiST",
+    "planUsesSamplesGistIndex": true,
+    "positiveMembershipRows": 17017,
+    "sampleTableBytes": 2564096,
+    "sampleIndexBytes": 1720320,
+    "databaseBytes": 23738047,
+    "persistentRestart": {
+      "rows": 13784,
+      "geometryRows": 13784,
+      "indexPresent": true,
+      "verified": true
+    }
+  },
+  "parity": {
+    "matches": true,
+    "membershipMismatches": 0,
+    "instantaneousEventMismatches": 0,
+    "sustainedEventMismatches": 0,
+    "membershipDifferenceSample": [],
+    "instantaneousDifferenceSample": [],
+    "sustainedDifferenceSample": []
+  },
+  "workload": {
+    "instantaneousEvents": 175,
+    "sustainedEvents": 475
+  },
+  "timingSeconds": {
+    "imagePull": null,
+    "csvSerialization": 0.03126810002140701,
+    "initialDatabaseStart": 3.9154876000247896,
+    "schema": 0.19726439996156842,
+    "copyAndMaterialize": 0.2995014999760315,
+    "indexAnalyzeCheckpoint": 0.26123539998661727,
+    "indexedMembershipQuery": 0.18551119999028742,
+    "persistentRestart": 1.6289151000091806,
+    "eventDerivation": 0.19434849999379367,
+    "pulseExecution": 0.9597829999984242
+  },
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Windows-11-10.0.26200-SP0"
+  }
+}

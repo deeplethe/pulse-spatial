@@ -71,3 +71,27 @@ jobs:
           --tag pulse-jena-geosparql:6.1.0
           external/jena-geosparql
       - run: pulse-spatial-geosparql-external --require-parity
+
+  lean-formal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: formal/lean
+          build: true
+          test: false
+          leanchecker: true
+
+  persistent-postgis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e .[test]
+      - run: >-
+          pulse-spatial-postgis
+          --data experiments/ibtracs/snapshots/ibtracs-last3years-main-2026-07-16.csv
+          --require-parity

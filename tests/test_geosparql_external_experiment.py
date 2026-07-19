@@ -11,9 +11,9 @@ from pulse_spatial.experiments.geosparql_external import (
 class ExternalGeoSparqlExperimentTests(unittest.TestCase):
     def test_topology_world_uses_only_crs84_and_has_cross_product(self) -> None:
         world = topology_world()
-        self.assertEqual(len(world.positions), 14)
-        self.assertEqual(len(world.regions), 14)
-        self.assertEqual(len(expected_results(world)), 196)
+        self.assertEqual(len(world.positions), 86)
+        self.assertEqual(len(world.regions), 86)
+        self.assertEqual(len(expected_results(world)), 7396)
         self.assertEqual(
             {point.crs for point in world.positions.values()},
             {"http://www.opengis.net/def/crs/OGC/1.3/CRS84"},
@@ -30,22 +30,46 @@ class ExternalGeoSparqlExperimentTests(unittest.TestCase):
                         "region": {"value": "https://example.test/region/r"},
                         "inside": {"value": "false"},
                         "coveredBy": {"value": "true"},
+                        "disjoint": {"value": "false"},
+                        "onBoundary": {"value": "true"},
                     }
                 ]
             }
         }
         self.assertEqual(
             parse_results(payload),
-            {("a b", "r"): {"inside": False, "coveredBy": True}},
+            {
+                ("a b", "r"): {
+                    "inside": False,
+                    "coveredBy": True,
+                    "disjoint": False,
+                    "onBoundary": True,
+                }
+            },
         )
 
     def test_comparison_reports_missing_and_changed_pairs(self) -> None:
         expected = {
-            ("a", "r"): {"inside": True, "coveredBy": True},
-            ("b", "r"): {"inside": False, "coveredBy": False},
+            ("a", "r"): {
+                "inside": True,
+                "coveredBy": True,
+                "disjoint": False,
+                "onBoundary": False,
+            },
+            ("b", "r"): {
+                "inside": False,
+                "coveredBy": False,
+                "disjoint": True,
+                "onBoundary": False,
+            },
         }
         actual = {
-            ("a", "r"): {"inside": False, "coveredBy": True},
+            ("a", "r"): {
+                "inside": False,
+                "coveredBy": True,
+                "disjoint": False,
+                "onBoundary": False,
+            },
         }
         mismatches = compare_results(expected, actual)
         self.assertEqual(len(mismatches), 2)

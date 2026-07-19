@@ -271,7 +271,30 @@ Apache Jena experiment tests the premise and conclusion over topology cases and
 real trajectories; it does not turn implementation agreement into a proof of
 GeoSPARQL conformance.
 
-## 8. Claims intentionally excluded
+## 8. Mechanized safety kernel
+
+`formal/lean` contains a Lean 4.30.0 model of the pure transition-safety
+kernel. It represents authoritative positions, append-only observations,
+logical time, sampled crossings, finite pending monitors, atomic outcomes, and
+scenario execution. The following declarations are accepted by `lake build`
+without `sorry` placeholders:
+
+- `preservation`;
+- `determinism`;
+- `observation_noninterference`;
+- `scenario_isolation`;
+- `finite_advance`; and
+- `atomic_failure`.
+
+The mechanization is intentionally narrower than this normative draft. It
+abstracts geometry as an environment-supplied total Boolean membership
+function and does not yet encode declaration-ordered rule updates, monitor
+start/cancellation, parsing, or RDF projection. Consequently it checks the
+transition discipline shared by the implementation and calculus; it is not a
+mechanized proof of the floating-point geometry kernel or full-language
+refinement.
+
+## 9. Claims intentionally excluded
 
 The core does not claim continuous trajectory intersection, automatic CRS
 transformation, probabilistic observation fusion, rule confluence, full

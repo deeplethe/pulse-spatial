@@ -28,6 +28,8 @@ public final class GeoSparqlHarness {
         SELECT ?subject ?region
                (geof:sfWithin(?subjectWkt, ?regionWkt) AS ?inside)
                (geof:sfIntersects(?subjectWkt, ?regionWkt) AS ?coveredBy)
+               (geof:sfDisjoint(?subjectWkt, ?regionWkt) AS ?disjoint)
+               (geof:sfTouches(?subjectWkt, ?regionWkt) AS ?onBoundary)
         WHERE {
           ?subject a geo:Feature ;
                    geo:hasGeometry/geo:asWKT ?subjectWkt .

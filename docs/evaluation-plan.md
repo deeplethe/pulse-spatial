@@ -25,14 +25,17 @@ must not be reported as evidence for another.
 
 | ID | Evidence | Baseline | Status | Permitted claim |
 |---|---|---|---|---|
-| E0 | 42 semantic and integration tests | Explicit expected contracts | Executed | Core invariants hold for tested cases |
+| E0 | 52 semantic and integration tests | Explicit expected contracts | Executed | Core invariants hold for tested cases |
 | E1 | RDF/SHACL cross-view validation | pySHACL + GEOS functions | Executed | Tested projection outcomes agree |
 | E2 | 223 IBTrACS tracks, one polygon | Shapely/GEOS `covers` | Executed | Single-zone event-label parity |
 | E3 | Five zones; 6/12/24-hour events | GEOS + independent event sweep | Executed | Discrete multizone spatiotemporal parity |
-| E4 | 17 boundary/numeric cases; 9 rejection cases | Shapely/GEOS | Executed | Differential parity for the frozen Point/simple-Polygon corpus |
+| E4 | 89 boundary/numeric cases; 9 rejection cases | Shapely/GEOS | Executed | Differential parity for the frozen Point/simple-Polygon corpus |
 | E5 | Frozen cold-chain implementation | GeoSPARQL/SHACL and MF-JSON Prism compositions | Executed | Outcome equivalence and descriptive composition only |
 | E6 | Chronological frozen-rule holdout | Moving Features/workflow baseline | Planned | Limited temporal transfer |
 | E7 | Counterbalanced modeling tasks | Qualified participants | Planned | Usability differences with uncertainty |
+| E8 | 7,396 external query rows; four Simple Features relations | Apache Jena GeoSPARQL 6.1.0 | Executed | External-engine agreement for the supported profile |
+| E9 | Pure transition-safety kernel | Lean 4.30.0 | Executed | Six safety properties are proof-checked for the mechanized abstraction |
+| E10 | 300,033 persisted points; 1,476,290 transition-zone pairs | PostgreSQL 18/PostGIS 3.6 with GiST | Executed | Indexed membership and derived-event parity with restart persistence |
 
 ## Current E3 protocol
 
@@ -85,5 +88,8 @@ are excluded because the current language slice cannot represent them.
 - Report exact mismatch counts and samples, not only aggregate event counts.
 - Do not call E2 or E3 GeoSPARQL conformance tests.
 - Do not call E4 an OGC or GeoSPARQL conformance suite.
+- Do not describe E9 as a proof of floating-point geometry or the complete
+  parser/compiler; geometry is abstracted by a total membership function.
+- Do not describe E10 as a concurrent database or service-level benchmark.
 - Do not infer usability from syntax length or artifact count.
 - Do not extrapolate sample-and-hold results to continuous trajectories.

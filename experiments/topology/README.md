@@ -4,7 +4,9 @@ This deterministic corpus probes the current dependency-free topology kernel
 where implementation shortcuts most often change semantic outcomes: horizontal
 and vertical edges, vertices, concave shells, clockwise rings, slanted edges,
 points only `1e-13` from a boundary, `1e-9`-scale polygons, thin polygons, and
-large-offset local grids.
+large-offset local grids. The expanded profile adds deterministic rectangle,
+triangle, and concave-polygon cases under four CRS84 translations/scales,
+bringing the valid corpus to 89 cases.
 
 Each valid case evaluates three PULSE predicates (`within`, `onBoundary`, and
 `coveredBy`) and compares the complete Boolean tuple with Shapely/GEOS. A
@@ -20,8 +22,8 @@ not a fixed coordinate-unit epsilon.
 python -m pip install -e .[test]
 pulse-spatial-topology-corpus `
   --require-parity `
-  --output-json experiments/topology/results/topology-corpus-2026-07-19.json `
-  --output-markdown experiments/topology/results/topology-corpus-2026-07-19.md
+  --output-json experiments/topology/results/topology-corpus-expanded-2026-07-20.json `
+  --output-markdown experiments/topology/results/topology-corpus-expanded-2026-07-20.md
 ```
 
 ## Interpretation boundary

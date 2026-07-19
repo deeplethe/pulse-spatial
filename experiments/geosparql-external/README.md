@@ -6,13 +6,13 @@ harness is in `external/jena-geosparql` and imports no PULSE geometry code.
 
 Protocol:
 
-1. Select the 14 checked-in CRS84 topology cases.
+1. Select the 86 checked-in CRS84 topology cases.
 2. Materialize every case point as an instance and every case polygon as a
    region in one GeoSPARQL graph.
-3. Query the full 14 × 14 cross product with `geof:sfWithin` and
-   `geof:sfIntersects`.
-4. Compare all 196 returned Boolean pairs with PULSE `inside` and
-   boundary-inclusive `coveredBy` results.
+3. Query the full 86 x 86 cross product with `geof:sfWithin`,
+   `geof:sfIntersects`, `geof:sfDisjoint`, and `geof:sfTouches`.
+4. Compare all 7,396 returned rows with PULSE strict-inside,
+   boundary-inclusive membership, disjointness, and boundary results.
 5. Report projection, container, RDF load, and query-materialization timings
    separately.
 

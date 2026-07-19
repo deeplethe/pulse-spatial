@@ -1,0 +1,3812 @@
+{
+  "experiment": "point-polygon-boundary-differential-corpus-v1",
+  "generatedAt": "2026-07-19T22:48:42.959445+00:00",
+  "claimBoundary": "Differential agreement with Shapely/GEOS for the checked-in, two-dimensional Point/simple-Polygon cases and explicit rejection contracts. This is not an OGC or GeoSPARQL conformance suite and does not cover holes, multipolygons, coordinate transformation, geodesic predicates, or antimeridian semantics.",
+  "semantics": {
+    "within": "strict interior; polygon boundary excluded",
+    "onBoundary": "point lies on a polygon shell segment",
+    "coveredBy": "strict interior or polygon boundary",
+    "numericPolicy": "binary64 fast orientation with exact-rational fallback near the floating-point error bound; no coordinate-unit epsilon"
+  },
+  "summary": {
+    "topologyCases": 89,
+    "topologyMismatches": 0,
+    "rejectionCases": 9,
+    "rejectionMismatches": 0,
+    "allChecksPass": true
+  },
+  "topologyCases": [
+    {
+      "name": "square-interior",
+      "feature": "interior",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          0.0,
+          10.0
+        ]
+      ],
+      "point": [
+        5.0,
+        5.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "square-exterior",
+      "feature": "exterior",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          0.0,
+          10.0
+        ]
+      ],
+      "point": [
+        11.0,
+        5.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "horizontal-edge",
+      "feature": "boundary edge",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          0.0,
+          10.0
+        ]
+      ],
+      "point": [
+        5.0,
+        0.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "vertical-edge",
+      "feature": "boundary edge",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          0.0,
+          10.0
+        ]
+      ],
+      "point": [
+        0.0,
+        5.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "square-vertex",
+      "feature": "boundary vertex",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          0.0,
+          10.0
+        ]
+      ],
+      "point": [
+        0.0,
+        0.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "near-boundary-inside",
+      "feature": "1e-13 inside boundary",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          0.0,
+          10.0
+        ]
+      ],
+      "point": [
+        1e-13,
+        5.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "near-boundary-outside",
+      "feature": "1e-13 outside boundary",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          0.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          0.0,
+          10.0
+        ]
+      ],
+      "point": [
+        -1e-13,
+        5.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "concave-interior",
+      "feature": "concave interior",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          6.0,
+          0.0
+        ],
+        [
+          6.0,
+          6.0
+        ],
+        [
+          4.0,
+          6.0
+        ],
+        [
+          4.0,
+          2.0
+        ],
+        [
+          2.0,
+          2.0
+        ],
+        [
+          2.0,
+          6.0
+        ],
+        [
+          0.0,
+          6.0
+        ]
+      ],
+      "point": [
+        1.0,
+        3.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "concave-notch",
+      "feature": "concave exterior",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          6.0,
+          0.0
+        ],
+        [
+          6.0,
+          6.0
+        ],
+        [
+          4.0,
+          6.0
+        ],
+        [
+          4.0,
+          2.0
+        ],
+        [
+          2.0,
+          2.0
+        ],
+        [
+          2.0,
+          6.0
+        ],
+        [
+          0.0,
+          6.0
+        ]
+      ],
+      "point": [
+        3.0,
+        3.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "concave-horizontal-edge",
+      "feature": "concave boundary edge",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          6.0,
+          0.0
+        ],
+        [
+          6.0,
+          6.0
+        ],
+        [
+          4.0,
+          6.0
+        ],
+        [
+          4.0,
+          2.0
+        ],
+        [
+          2.0,
+          2.0
+        ],
+        [
+          2.0,
+          6.0
+        ],
+        [
+          0.0,
+          6.0
+        ]
+      ],
+      "point": [
+        3.0,
+        2.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "concave-reflex-vertex",
+      "feature": "concave boundary vertex",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          6.0,
+          0.0
+        ],
+        [
+          6.0,
+          6.0
+        ],
+        [
+          4.0,
+          6.0
+        ],
+        [
+          4.0,
+          2.0
+        ],
+        [
+          2.0,
+          2.0
+        ],
+        [
+          2.0,
+          6.0
+        ],
+        [
+          0.0,
+          6.0
+        ]
+      ],
+      "point": [
+        2.0,
+        2.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "reversed-ring",
+      "feature": "clockwise orientation",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          10.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          10.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "point": [
+        5.0,
+        5.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "slanted-edge",
+      "feature": "non-axis-aligned boundary",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          10.0,
+          10.0
+        ],
+        [
+          10.0,
+          0.0
+        ]
+      ],
+      "point": [
+        5.0,
+        5.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "tiny-polygon",
+      "feature": "1e-9-scale interior",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          1e-09,
+          0.0
+        ],
+        [
+          1e-09,
+          1e-09
+        ],
+        [
+          0.0,
+          1e-09
+        ]
+      ],
+      "point": [
+        5e-10,
+        5e-10
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "large-offset-grid",
+      "feature": "1e9-offset local grid",
+      "crs": "urn:pulse:test:grid",
+      "shell": [
+        [
+          1000000000.0,
+          1000000000.0
+        ],
+        [
+          1000000010.0,
+          1000000000.0
+        ],
+        [
+          1000000010.0,
+          1000000010.0
+        ],
+        [
+          1000000000.0,
+          1000000010.0
+        ]
+      ],
+      "point": [
+        1000000005.0,
+        1000000005.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "thin-polygon",
+      "feature": "1e-12-height interior",
+      "crs": "urn:pulse:test:grid",
+      "shell": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1e-12
+        ],
+        [
+          0.0,
+          1e-12
+        ]
+      ],
+      "point": [
+        0.5,
+        5e-13
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "negative-coordinates",
+      "feature": "negative-coordinate interior",
+      "crs": "urn:pulse:test:grid",
+      "shell": [
+        [
+          -10.0,
+          -10.0
+        ],
+        [
+          -2.0,
+          -10.0
+        ],
+        [
+          -2.0,
+          -2.0
+        ],
+        [
+          -10.0,
+          -2.0
+        ]
+      ],
+      "point": [
+        -6.0,
+        -6.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-west-small-interior",
+      "feature": "rectangle; interior; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -155.0,
+          -60.0
+        ],
+        [
+          -155.0,
+          -55.0
+        ],
+        [
+          -160.0,
+          -55.0
+        ]
+      ],
+      "point": [
+        -157.5,
+        -57.5
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-west-small-exterior",
+      "feature": "rectangle; exterior; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -155.0,
+          -60.0
+        ],
+        [
+          -155.0,
+          -55.0
+        ],
+        [
+          -160.0,
+          -55.0
+        ]
+      ],
+      "point": [
+        -154.5,
+        -57.5
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-west-small-edge",
+      "feature": "rectangle; boundary edge; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -155.0,
+          -60.0
+        ],
+        [
+          -155.0,
+          -55.0
+        ],
+        [
+          -160.0,
+          -55.0
+        ]
+      ],
+      "point": [
+        -157.5,
+        -60.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-west-small-vertex",
+      "feature": "rectangle; boundary vertex; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -155.0,
+          -60.0
+        ],
+        [
+          -155.0,
+          -55.0
+        ],
+        [
+          -160.0,
+          -55.0
+        ]
+      ],
+      "point": [
+        -160.0,
+        -60.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-west-small-near-in",
+      "feature": "rectangle; near-boundary interior; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -155.0,
+          -60.0
+        ],
+        [
+          -155.0,
+          -55.0
+        ],
+        [
+          -160.0,
+          -55.0
+        ]
+      ],
+      "point": [
+        -159.99999999995,
+        -57.5
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-west-small-near-out",
+      "feature": "rectangle; near-boundary exterior; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -155.0,
+          -60.0
+        ],
+        [
+          -155.0,
+          -55.0
+        ],
+        [
+          -160.0,
+          -55.0
+        ]
+      ],
+      "point": [
+        -160.00000000005,
+        -57.5
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-west-interior",
+      "feature": "rectangle; interior; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -70.0,
+          -20.0
+        ],
+        [
+          -70.0,
+          -10.0
+        ],
+        [
+          -80.0,
+          -10.0
+        ]
+      ],
+      "point": [
+        -75.0,
+        -15.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-west-exterior",
+      "feature": "rectangle; exterior; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -70.0,
+          -20.0
+        ],
+        [
+          -70.0,
+          -10.0
+        ],
+        [
+          -80.0,
+          -10.0
+        ]
+      ],
+      "point": [
+        -69.0,
+        -15.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-west-edge",
+      "feature": "rectangle; boundary edge; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -70.0,
+          -20.0
+        ],
+        [
+          -70.0,
+          -10.0
+        ],
+        [
+          -80.0,
+          -10.0
+        ]
+      ],
+      "point": [
+        -75.0,
+        -20.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-west-vertex",
+      "feature": "rectangle; boundary vertex; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -70.0,
+          -20.0
+        ],
+        [
+          -70.0,
+          -10.0
+        ],
+        [
+          -80.0,
+          -10.0
+        ]
+      ],
+      "point": [
+        -80.0,
+        -20.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-west-near-in",
+      "feature": "rectangle; near-boundary interior; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -70.0,
+          -20.0
+        ],
+        [
+          -70.0,
+          -10.0
+        ],
+        [
+          -80.0,
+          -10.0
+        ]
+      ],
+      "point": [
+        -79.9999999999,
+        -15.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-west-near-out",
+      "feature": "rectangle; near-boundary exterior; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -70.0,
+          -20.0
+        ],
+        [
+          -70.0,
+          -10.0
+        ],
+        [
+          -80.0,
+          -10.0
+        ]
+      ],
+      "point": [
+        -80.0000000001,
+        -15.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-east-large-interior",
+      "feature": "rectangle; interior; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          40.0,
+          10.0
+        ],
+        [
+          40.0,
+          30.0
+        ],
+        [
+          20.0,
+          30.0
+        ]
+      ],
+      "point": [
+        30.0,
+        20.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-east-large-exterior",
+      "feature": "rectangle; exterior; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          40.0,
+          10.0
+        ],
+        [
+          40.0,
+          30.0
+        ],
+        [
+          20.0,
+          30.0
+        ]
+      ],
+      "point": [
+        42.0,
+        20.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-east-large-edge",
+      "feature": "rectangle; boundary edge; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          40.0,
+          10.0
+        ],
+        [
+          40.0,
+          30.0
+        ],
+        [
+          20.0,
+          30.0
+        ]
+      ],
+      "point": [
+        30.0,
+        10.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-east-large-vertex",
+      "feature": "rectangle; boundary vertex; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          40.0,
+          10.0
+        ],
+        [
+          40.0,
+          30.0
+        ],
+        [
+          20.0,
+          30.0
+        ]
+      ],
+      "point": [
+        20.0,
+        10.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-east-large-near-in",
+      "feature": "rectangle; near-boundary interior; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          40.0,
+          10.0
+        ],
+        [
+          40.0,
+          30.0
+        ],
+        [
+          20.0,
+          30.0
+        ]
+      ],
+      "point": [
+        20.0000000002,
+        20.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-east-large-near-out",
+      "feature": "rectangle; near-boundary exterior; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          40.0,
+          10.0
+        ],
+        [
+          40.0,
+          30.0
+        ],
+        [
+          20.0,
+          30.0
+        ]
+      ],
+      "point": [
+        19.9999999998,
+        20.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-east-tiny-interior",
+      "feature": "rectangle; interior; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          122.5,
+          40.0
+        ],
+        [
+          122.5,
+          42.5
+        ],
+        [
+          120.0,
+          42.5
+        ]
+      ],
+      "point": [
+        121.25,
+        41.25
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-east-tiny-exterior",
+      "feature": "rectangle; exterior; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          122.5,
+          40.0
+        ],
+        [
+          122.5,
+          42.5
+        ],
+        [
+          120.0,
+          42.5
+        ]
+      ],
+      "point": [
+        122.75,
+        41.25
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-east-tiny-edge",
+      "feature": "rectangle; boundary edge; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          122.5,
+          40.0
+        ],
+        [
+          122.5,
+          42.5
+        ],
+        [
+          120.0,
+          42.5
+        ]
+      ],
+      "point": [
+        121.25,
+        40.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-east-tiny-vertex",
+      "feature": "rectangle; boundary vertex; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          122.5,
+          40.0
+        ],
+        [
+          122.5,
+          42.5
+        ],
+        [
+          120.0,
+          42.5
+        ]
+      ],
+      "point": [
+        120.0,
+        40.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-east-tiny-near-in",
+      "feature": "rectangle; near-boundary interior; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          122.5,
+          40.0
+        ],
+        [
+          122.5,
+          42.5
+        ],
+        [
+          120.0,
+          42.5
+        ]
+      ],
+      "point": [
+        120.000000000025,
+        41.25
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-rectangle-east-tiny-near-out",
+      "feature": "rectangle; near-boundary exterior; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          122.5,
+          40.0
+        ],
+        [
+          122.5,
+          42.5
+        ],
+        [
+          120.0,
+          42.5
+        ]
+      ],
+      "point": [
+        119.999999999975,
+        41.25
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-west-small-interior",
+      "feature": "triangle; interior; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -156.0,
+          -60.0
+        ],
+        [
+          -158.5,
+          -57.0
+        ]
+      ],
+      "point": [
+        -158.5,
+        -59.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-west-small-exterior",
+      "feature": "triangle; exterior; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -156.0,
+          -60.0
+        ],
+        [
+          -158.5,
+          -57.0
+        ]
+      ],
+      "point": [
+        -156.5,
+        -57.5
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-west-small-edge",
+      "feature": "triangle; boundary edge; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -156.0,
+          -60.0
+        ],
+        [
+          -158.5,
+          -57.0
+        ]
+      ],
+      "point": [
+        -158.0,
+        -60.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-west-small-vertex",
+      "feature": "triangle; boundary vertex; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -156.0,
+          -60.0
+        ],
+        [
+          -158.5,
+          -57.0
+        ]
+      ],
+      "point": [
+        -160.0,
+        -60.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-west-small-near-in",
+      "feature": "triangle; near-boundary interior; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -156.0,
+          -60.0
+        ],
+        [
+          -158.5,
+          -57.0
+        ]
+      ],
+      "point": [
+        -158.0,
+        -59.99999999995
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-west-small-near-out",
+      "feature": "triangle; near-boundary exterior; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -156.0,
+          -60.0
+        ],
+        [
+          -158.5,
+          -57.0
+        ]
+      ],
+      "point": [
+        -158.0,
+        -60.00000000005
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-west-interior",
+      "feature": "triangle; interior; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -72.0,
+          -20.0
+        ],
+        [
+          -77.0,
+          -14.0
+        ]
+      ],
+      "point": [
+        -77.0,
+        -18.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-west-exterior",
+      "feature": "triangle; exterior; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -72.0,
+          -20.0
+        ],
+        [
+          -77.0,
+          -14.0
+        ]
+      ],
+      "point": [
+        -73.0,
+        -15.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-west-edge",
+      "feature": "triangle; boundary edge; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -72.0,
+          -20.0
+        ],
+        [
+          -77.0,
+          -14.0
+        ]
+      ],
+      "point": [
+        -76.0,
+        -20.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-west-vertex",
+      "feature": "triangle; boundary vertex; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -72.0,
+          -20.0
+        ],
+        [
+          -77.0,
+          -14.0
+        ]
+      ],
+      "point": [
+        -80.0,
+        -20.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-west-near-in",
+      "feature": "triangle; near-boundary interior; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -72.0,
+          -20.0
+        ],
+        [
+          -77.0,
+          -14.0
+        ]
+      ],
+      "point": [
+        -76.0,
+        -19.9999999999
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-west-near-out",
+      "feature": "triangle; near-boundary exterior; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -72.0,
+          -20.0
+        ],
+        [
+          -77.0,
+          -14.0
+        ]
+      ],
+      "point": [
+        -76.0,
+        -20.0000000001
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-east-large-interior",
+      "feature": "triangle; interior; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          36.0,
+          10.0
+        ],
+        [
+          26.0,
+          22.0
+        ]
+      ],
+      "point": [
+        26.0,
+        14.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-east-large-exterior",
+      "feature": "triangle; exterior; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          36.0,
+          10.0
+        ],
+        [
+          26.0,
+          22.0
+        ]
+      ],
+      "point": [
+        34.0,
+        20.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-east-large-edge",
+      "feature": "triangle; boundary edge; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          36.0,
+          10.0
+        ],
+        [
+          26.0,
+          22.0
+        ]
+      ],
+      "point": [
+        28.0,
+        10.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-east-large-vertex",
+      "feature": "triangle; boundary vertex; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          36.0,
+          10.0
+        ],
+        [
+          26.0,
+          22.0
+        ]
+      ],
+      "point": [
+        20.0,
+        10.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-east-large-near-in",
+      "feature": "triangle; near-boundary interior; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          36.0,
+          10.0
+        ],
+        [
+          26.0,
+          22.0
+        ]
+      ],
+      "point": [
+        28.0,
+        10.0000000002
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-east-large-near-out",
+      "feature": "triangle; near-boundary exterior; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          36.0,
+          10.0
+        ],
+        [
+          26.0,
+          22.0
+        ]
+      ],
+      "point": [
+        28.0,
+        9.9999999998
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-east-tiny-interior",
+      "feature": "triangle; interior; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          122.0,
+          40.0
+        ],
+        [
+          120.75,
+          41.5
+        ]
+      ],
+      "point": [
+        120.75,
+        40.5
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-east-tiny-exterior",
+      "feature": "triangle; exterior; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          122.0,
+          40.0
+        ],
+        [
+          120.75,
+          41.5
+        ]
+      ],
+      "point": [
+        121.75,
+        41.25
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-east-tiny-edge",
+      "feature": "triangle; boundary edge; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          122.0,
+          40.0
+        ],
+        [
+          120.75,
+          41.5
+        ]
+      ],
+      "point": [
+        121.0,
+        40.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-east-tiny-vertex",
+      "feature": "triangle; boundary vertex; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          122.0,
+          40.0
+        ],
+        [
+          120.75,
+          41.5
+        ]
+      ],
+      "point": [
+        120.0,
+        40.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-east-tiny-near-in",
+      "feature": "triangle; near-boundary interior; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          122.0,
+          40.0
+        ],
+        [
+          120.75,
+          41.5
+        ]
+      ],
+      "point": [
+        121.0,
+        40.000000000025
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-triangle-east-tiny-near-out",
+      "feature": "triangle; near-boundary exterior; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          122.0,
+          40.0
+        ],
+        [
+          120.75,
+          41.5
+        ]
+      ],
+      "point": [
+        121.0,
+        39.999999999975
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-west-small-interior",
+      "feature": "concave; concave interior; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -157.0,
+          -60.0
+        ],
+        [
+          -157.0,
+          -57.0
+        ],
+        [
+          -158.0,
+          -57.0
+        ],
+        [
+          -158.0,
+          -59.0
+        ],
+        [
+          -159.0,
+          -59.0
+        ],
+        [
+          -159.0,
+          -57.0
+        ],
+        [
+          -160.0,
+          -57.0
+        ]
+      ],
+      "point": [
+        -159.5,
+        -58.5
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-west-small-notch",
+      "feature": "concave; concave exterior; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -157.0,
+          -60.0
+        ],
+        [
+          -157.0,
+          -57.0
+        ],
+        [
+          -158.0,
+          -57.0
+        ],
+        [
+          -158.0,
+          -59.0
+        ],
+        [
+          -159.0,
+          -59.0
+        ],
+        [
+          -159.0,
+          -57.0
+        ],
+        [
+          -160.0,
+          -57.0
+        ]
+      ],
+      "point": [
+        -158.5,
+        -58.5
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-west-small-edge",
+      "feature": "concave; concave boundary edge; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -157.0,
+          -60.0
+        ],
+        [
+          -157.0,
+          -57.0
+        ],
+        [
+          -158.0,
+          -57.0
+        ],
+        [
+          -158.0,
+          -59.0
+        ],
+        [
+          -159.0,
+          -59.0
+        ],
+        [
+          -159.0,
+          -57.0
+        ],
+        [
+          -160.0,
+          -57.0
+        ]
+      ],
+      "point": [
+        -158.5,
+        -59.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-west-small-reflex",
+      "feature": "concave; concave boundary vertex; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -157.0,
+          -60.0
+        ],
+        [
+          -157.0,
+          -57.0
+        ],
+        [
+          -158.0,
+          -57.0
+        ],
+        [
+          -158.0,
+          -59.0
+        ],
+        [
+          -159.0,
+          -59.0
+        ],
+        [
+          -159.0,
+          -57.0
+        ],
+        [
+          -160.0,
+          -57.0
+        ]
+      ],
+      "point": [
+        -159.0,
+        -59.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-west-small-outer-edge",
+      "feature": "concave; outer boundary edge; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -157.0,
+          -60.0
+        ],
+        [
+          -157.0,
+          -57.0
+        ],
+        [
+          -158.0,
+          -57.0
+        ],
+        [
+          -158.0,
+          -59.0
+        ],
+        [
+          -159.0,
+          -59.0
+        ],
+        [
+          -159.0,
+          -57.0
+        ],
+        [
+          -160.0,
+          -57.0
+        ]
+      ],
+      "point": [
+        -160.0,
+        -58.5
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-west-small-outer-vertex",
+      "feature": "concave; outer boundary vertex; scale 0.5",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -160.0,
+          -60.0
+        ],
+        [
+          -157.0,
+          -60.0
+        ],
+        [
+          -157.0,
+          -57.0
+        ],
+        [
+          -158.0,
+          -57.0
+        ],
+        [
+          -158.0,
+          -59.0
+        ],
+        [
+          -159.0,
+          -59.0
+        ],
+        [
+          -159.0,
+          -57.0
+        ],
+        [
+          -160.0,
+          -57.0
+        ]
+      ],
+      "point": [
+        -157.0,
+        -57.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-west-interior",
+      "feature": "concave; concave interior; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -74.0,
+          -20.0
+        ],
+        [
+          -74.0,
+          -14.0
+        ],
+        [
+          -76.0,
+          -14.0
+        ],
+        [
+          -76.0,
+          -18.0
+        ],
+        [
+          -78.0,
+          -18.0
+        ],
+        [
+          -78.0,
+          -14.0
+        ],
+        [
+          -80.0,
+          -14.0
+        ]
+      ],
+      "point": [
+        -79.0,
+        -17.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-west-notch",
+      "feature": "concave; concave exterior; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -74.0,
+          -20.0
+        ],
+        [
+          -74.0,
+          -14.0
+        ],
+        [
+          -76.0,
+          -14.0
+        ],
+        [
+          -76.0,
+          -18.0
+        ],
+        [
+          -78.0,
+          -18.0
+        ],
+        [
+          -78.0,
+          -14.0
+        ],
+        [
+          -80.0,
+          -14.0
+        ]
+      ],
+      "point": [
+        -77.0,
+        -17.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-west-edge",
+      "feature": "concave; concave boundary edge; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -74.0,
+          -20.0
+        ],
+        [
+          -74.0,
+          -14.0
+        ],
+        [
+          -76.0,
+          -14.0
+        ],
+        [
+          -76.0,
+          -18.0
+        ],
+        [
+          -78.0,
+          -18.0
+        ],
+        [
+          -78.0,
+          -14.0
+        ],
+        [
+          -80.0,
+          -14.0
+        ]
+      ],
+      "point": [
+        -77.0,
+        -18.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-west-reflex",
+      "feature": "concave; concave boundary vertex; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -74.0,
+          -20.0
+        ],
+        [
+          -74.0,
+          -14.0
+        ],
+        [
+          -76.0,
+          -14.0
+        ],
+        [
+          -76.0,
+          -18.0
+        ],
+        [
+          -78.0,
+          -18.0
+        ],
+        [
+          -78.0,
+          -14.0
+        ],
+        [
+          -80.0,
+          -14.0
+        ]
+      ],
+      "point": [
+        -78.0,
+        -18.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-west-outer-edge",
+      "feature": "concave; outer boundary edge; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -74.0,
+          -20.0
+        ],
+        [
+          -74.0,
+          -14.0
+        ],
+        [
+          -76.0,
+          -14.0
+        ],
+        [
+          -76.0,
+          -18.0
+        ],
+        [
+          -78.0,
+          -18.0
+        ],
+        [
+          -78.0,
+          -14.0
+        ],
+        [
+          -80.0,
+          -14.0
+        ]
+      ],
+      "point": [
+        -80.0,
+        -17.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-west-outer-vertex",
+      "feature": "concave; outer boundary vertex; scale 1",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          -80.0,
+          -20.0
+        ],
+        [
+          -74.0,
+          -20.0
+        ],
+        [
+          -74.0,
+          -14.0
+        ],
+        [
+          -76.0,
+          -14.0
+        ],
+        [
+          -76.0,
+          -18.0
+        ],
+        [
+          -78.0,
+          -18.0
+        ],
+        [
+          -78.0,
+          -14.0
+        ],
+        [
+          -80.0,
+          -14.0
+        ]
+      ],
+      "point": [
+        -74.0,
+        -14.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-east-large-interior",
+      "feature": "concave; concave interior; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          32.0,
+          10.0
+        ],
+        [
+          32.0,
+          22.0
+        ],
+        [
+          28.0,
+          22.0
+        ],
+        [
+          28.0,
+          14.0
+        ],
+        [
+          24.0,
+          14.0
+        ],
+        [
+          24.0,
+          22.0
+        ],
+        [
+          20.0,
+          22.0
+        ]
+      ],
+      "point": [
+        22.0,
+        16.0
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-east-large-notch",
+      "feature": "concave; concave exterior; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          32.0,
+          10.0
+        ],
+        [
+          32.0,
+          22.0
+        ],
+        [
+          28.0,
+          22.0
+        ],
+        [
+          28.0,
+          14.0
+        ],
+        [
+          24.0,
+          14.0
+        ],
+        [
+          24.0,
+          22.0
+        ],
+        [
+          20.0,
+          22.0
+        ]
+      ],
+      "point": [
+        26.0,
+        16.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-east-large-edge",
+      "feature": "concave; concave boundary edge; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          32.0,
+          10.0
+        ],
+        [
+          32.0,
+          22.0
+        ],
+        [
+          28.0,
+          22.0
+        ],
+        [
+          28.0,
+          14.0
+        ],
+        [
+          24.0,
+          14.0
+        ],
+        [
+          24.0,
+          22.0
+        ],
+        [
+          20.0,
+          22.0
+        ]
+      ],
+      "point": [
+        26.0,
+        14.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-east-large-reflex",
+      "feature": "concave; concave boundary vertex; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          32.0,
+          10.0
+        ],
+        [
+          32.0,
+          22.0
+        ],
+        [
+          28.0,
+          22.0
+        ],
+        [
+          28.0,
+          14.0
+        ],
+        [
+          24.0,
+          14.0
+        ],
+        [
+          24.0,
+          22.0
+        ],
+        [
+          20.0,
+          22.0
+        ]
+      ],
+      "point": [
+        24.0,
+        14.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-east-large-outer-edge",
+      "feature": "concave; outer boundary edge; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          32.0,
+          10.0
+        ],
+        [
+          32.0,
+          22.0
+        ],
+        [
+          28.0,
+          22.0
+        ],
+        [
+          28.0,
+          14.0
+        ],
+        [
+          24.0,
+          14.0
+        ],
+        [
+          24.0,
+          22.0
+        ],
+        [
+          20.0,
+          22.0
+        ]
+      ],
+      "point": [
+        20.0,
+        16.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-east-large-outer-vertex",
+      "feature": "concave; outer boundary vertex; scale 2",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          20.0,
+          10.0
+        ],
+        [
+          32.0,
+          10.0
+        ],
+        [
+          32.0,
+          22.0
+        ],
+        [
+          28.0,
+          22.0
+        ],
+        [
+          28.0,
+          14.0
+        ],
+        [
+          24.0,
+          14.0
+        ],
+        [
+          24.0,
+          22.0
+        ],
+        [
+          20.0,
+          22.0
+        ]
+      ],
+      "point": [
+        32.0,
+        22.0
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-east-tiny-interior",
+      "feature": "concave; concave interior; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          121.5,
+          40.0
+        ],
+        [
+          121.5,
+          41.5
+        ],
+        [
+          121.0,
+          41.5
+        ],
+        [
+          121.0,
+          40.5
+        ],
+        [
+          120.5,
+          40.5
+        ],
+        [
+          120.5,
+          41.5
+        ],
+        [
+          120.0,
+          41.5
+        ]
+      ],
+      "point": [
+        120.25,
+        40.75
+      ],
+      "internal": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": true,
+        "onBoundary": false,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-east-tiny-notch",
+      "feature": "concave; concave exterior; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          121.5,
+          40.0
+        ],
+        [
+          121.5,
+          41.5
+        ],
+        [
+          121.0,
+          41.5
+        ],
+        [
+          121.0,
+          40.5
+        ],
+        [
+          120.5,
+          40.5
+        ],
+        [
+          120.5,
+          41.5
+        ],
+        [
+          120.0,
+          41.5
+        ]
+      ],
+      "point": [
+        120.75,
+        40.75
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": false,
+        "coveredBy": false
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-east-tiny-edge",
+      "feature": "concave; concave boundary edge; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          121.5,
+          40.0
+        ],
+        [
+          121.5,
+          41.5
+        ],
+        [
+          121.0,
+          41.5
+        ],
+        [
+          121.0,
+          40.5
+        ],
+        [
+          120.5,
+          40.5
+        ],
+        [
+          120.5,
+          41.5
+        ],
+        [
+          120.0,
+          41.5
+        ]
+      ],
+      "point": [
+        120.75,
+        40.5
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-east-tiny-reflex",
+      "feature": "concave; concave boundary vertex; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          121.5,
+          40.0
+        ],
+        [
+          121.5,
+          41.5
+        ],
+        [
+          121.0,
+          41.5
+        ],
+        [
+          121.0,
+          40.5
+        ],
+        [
+          120.5,
+          40.5
+        ],
+        [
+          120.5,
+          41.5
+        ],
+        [
+          120.0,
+          41.5
+        ]
+      ],
+      "point": [
+        120.5,
+        40.5
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-east-tiny-outer-edge",
+      "feature": "concave; outer boundary edge; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          121.5,
+          40.0
+        ],
+        [
+          121.5,
+          41.5
+        ],
+        [
+          121.0,
+          41.5
+        ],
+        [
+          121.0,
+          40.5
+        ],
+        [
+          120.5,
+          40.5
+        ],
+        [
+          120.5,
+          41.5
+        ],
+        [
+          120.0,
+          41.5
+        ]
+      ],
+      "point": [
+        120.0,
+        40.75
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    },
+    {
+      "name": "profile-concave-east-tiny-outer-vertex",
+      "feature": "concave; outer boundary vertex; scale 0.25",
+      "crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "shell": [
+        [
+          120.0,
+          40.0
+        ],
+        [
+          121.5,
+          40.0
+        ],
+        [
+          121.5,
+          41.5
+        ],
+        [
+          121.0,
+          41.5
+        ],
+        [
+          121.0,
+          40.5
+        ],
+        [
+          120.5,
+          40.5
+        ],
+        [
+          120.5,
+          41.5
+        ],
+        [
+          120.0,
+          41.5
+        ]
+      ],
+      "point": [
+        121.5,
+        41.5
+      ],
+      "internal": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "reference": {
+        "within": false,
+        "onBoundary": true,
+        "coveredBy": true
+      },
+      "matches": true
+    }
+  ],
+  "rejectionCases": [
+    {
+      "name": "too-few-coordinates",
+      "expectedMessageFragment": "at least four coordinates",
+      "actualError": "Polygon shell requires at least four coordinates",
+      "rejectedAsExpected": true
+    },
+    {
+      "name": "open-shell",
+      "expectedMessageFragment": "must be closed",
+      "actualError": "Polygon shell must be closed",
+      "rejectedAsExpected": true
+    },
+    {
+      "name": "mixed-shell-crs",
+      "expectedMessageFragment": "share one CRS",
+      "actualError": "Polygon coordinates must share one CRS",
+      "rejectedAsExpected": true
+    },
+    {
+      "name": "non-finite-coordinate",
+      "expectedMessageFragment": "must be finite",
+      "actualError": "Point coordinates must be finite",
+      "rejectedAsExpected": true
+    },
+    {
+      "name": "missing-crs",
+      "expectedMessageFragment": "must be explicit",
+      "actualError": "Point CRS must be explicit",
+      "rejectedAsExpected": true
+    },
+    {
+      "name": "collinear-shell",
+      "expectedMessageFragment": "cannot be collinear",
+      "actualError": "Polygon shell cannot be collinear",
+      "rejectedAsExpected": true
+    },
+    {
+      "name": "self-intersecting-shell",
+      "expectedMessageFragment": "must be simple",
+      "actualError": "Polygon shell must be simple",
+      "rejectedAsExpected": true
+    },
+    {
+      "name": "zero-length-edge",
+      "expectedMessageFragment": "zero-length edges",
+      "actualError": "Polygon shell cannot contain zero-length edges",
+      "rejectedAsExpected": true
+    },
+    {
+      "name": "query-crs-mismatch",
+      "expectedMessageFragment": "CRS mismatch",
+      "actualError": "CRS mismatch: 'urn:pulse:test:grid' != 'http://www.opengis.net/def/crs/OGC/1.3/CRS84'",
+      "rejectedAsExpected": true
+    }
+  ],
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "shapely": "2.1.2",
+    "geos": "3.13.1"
+  }
+}

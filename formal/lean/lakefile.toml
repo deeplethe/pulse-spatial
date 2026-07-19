@@ -1,0 +1,6 @@
+name = "pulse_formal"
+version = "0.1.0"
+defaultTargets = ["PulseFormal"]
+
+[[lean_lib]]
+name = "PulseFormal"

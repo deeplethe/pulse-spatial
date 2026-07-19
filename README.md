@@ -69,6 +69,9 @@ No runtime dependency is required for the core topological kernel. The
 `validation` extra adds pySHACL and Shapely/GEOS for independent projection
 checks. A pinned Apache Jena GeoSPARQL 6.1.0 container provides a genuinely
 external query-engine comparison without adding Java to the core runtime.
+A Lean 4.30.0 project mechanically checks the transition-safety kernel, and a
+pinned PostgreSQL 18/PostGIS 3.6 container supplies an on-disk GiST-indexed
+database baseline.
 
 ## Executed real-trajectory experiment
 
@@ -109,7 +112,7 @@ duration-qualified event, and final state. The checked-in artifact metrics are
 descriptive rather than a usability claim; see the
 [`composition comparison`](experiments/composition/README.md).
 
-A fourth experiment probes the Point/simple-Polygon kernel with 17 boundary,
+A fourth experiment probes the Point/simple-Polygon kernel with 89 boundary,
 concavity, ring-orientation, and numeric-scale cases plus 9 explicit rejection
 cases. The checked-in run has zero differences from Shapely/GEOS and rejects all
 invalid inputs as declared. This is a differential regression corpus, not an
@@ -129,9 +132,9 @@ All six alternatives change a modal state or event trace; see the
 [`semantic sensitivity protocol`](experiments/semantic-sensitivity/README.md).
 
 A seventh experiment evaluates the generated graph with unmodified Apache Jena
-GeoSPARQL 6.1.0. The full 14 x 14 topology cross product produces 196 query
-pairs, including eight intended boundary cases, with zero differences for
-`sfWithin` and boundary-inclusive `sfIntersects`; see the
+GeoSPARQL 6.1.0. The expanded 86 x 86 topology cross product produces 7,396
+query rows, including 56 intended boundary pairs, with zero differences for
+`sfWithin`, `sfIntersects`, `sfDisjoint`, and `sfTouches`; see the
 [`external GeoSPARQL protocol`](experiments/geosparql-external/README.md).
 
 An eighth experiment supports the general proofs with bounded exhaustive
@@ -139,6 +142,21 @@ checking. Every sequence through a four-position abstraction up to depth four
 is executed twice. The recorded run performs 3,534 determinism, preservation,
 finite-advance, atomic-failure, observation, and scenario checks with no
 failure; see the [`formal property protocol`](experiments/formal-properties/README.md).
+
+A ninth evidence path mechanizes the transition-safety kernel in Lean 4.30.0.
+Lean checks preservation, deterministic evaluation, observation
+non-interference, scenario isolation, finite time advance, and atomic failure.
+The proof model abstracts computational geometry behind a total membership
+function, so it verifies execution discipline rather than floating-point
+topology; see [`formal/lean`](formal/lean/README.md).
+
+A tenth experiment loads the complete since-1980 workload into a persistent
+PostgreSQL 18/PostGIS 3.6 database. A GiST-indexed `ST_Covers` query returns
+371,340 positive membership rows over 300,033 stored points. Replacing the
+container while retaining its volume preserves every point and the index; the
+derived membership, 4,832 instantaneous-event, and 12,870 sustained-event
+layers have zero differences from PULSE across 1,476,290 transition-zone
+pairs. See the [`PostGIS baseline`](experiments/postgis/README.md).
 
 ## Repository map
 
@@ -156,7 +174,9 @@ failure; see the [`formal property protocol`](experiments/formal-properties/READ
 - `experiments/topology/` — Point/Polygon boundary differential corpus
 - `experiments/end-to-end/` — real-track four-mode integration case
 - `experiments/semantic-sensitivity/` — semantic policy mutation checks
+- `experiments/postgis/` — persistent PostGIS/GiST baseline and reports
 - `external/jena-geosparql/` — pinned Java/Docker comparison harness
+- `formal/lean/` — Lean 4 mechanized transition-safety kernel
 - `grammar/pulse-s.ebnf` — proposed PULSE-S surface syntax
 - `src/pulse_spatial/` — language, compiler, geometry, runtime, and projections
 - `examples/` — executable language examples
@@ -164,14 +184,14 @@ failure; see the [`formal property protocol`](experiments/formal-properties/READ
 
 ## Near-term roadmap
 
-1. Extend the external Jena comparison from topology cases to projected
-   real-trajectory batches and repeat steady-state queries.
+1. Extend the Lean model from the safety kernel to rule application and
+   duration-monitor cancellation, then prove a refinement relation to Python.
 2. Add explicit accuracy regions and coordinate transformations.
 3. Add polygon holes, multipolygons, and explicit antimeridian handling.
 4. Project temporal events and intervals through an OWL-Time profile.
-5. Add synthetic observation/entity scaling with peak-memory measurement.
-6. Mechanize the core calculus in a proof assistant after the paper-level
-   proofs and executable abstraction have stabilized.
+5. Add concurrent read/write and recovery workloads to the persistent baseline.
+6. Expand beyond the supported Point/simple-Polygon standards profile without
+   weakening the explicit non-conformance boundary.
 
 ## License
 

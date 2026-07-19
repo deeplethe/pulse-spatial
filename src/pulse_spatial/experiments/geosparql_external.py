@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urlsplit
 
-from ..geometry import Point, Polygon, covered_by, within
+from ..geometry import Point, Polygon, covered_by, on_boundary, within
 from ..model import SpatialWorld
 from ..projection import project_geosparql
 from .topology_corpus import CASES
@@ -55,12 +55,19 @@ def parse_results(payload: dict[str, Any]) -> dict[tuple[str, str], dict[str, bo
             region = _local_name(binding["region"]["value"])
             inside = binding["inside"]["value"].lower() == "true"
             covered = binding["coveredBy"]["value"].lower() == "true"
+            disjoint = binding["disjoint"]["value"].lower() == "true"
+            boundary = binding["onBoundary"]["value"].lower() == "true"
         except (KeyError, AttributeError, TypeError) as error:
             raise ValueError(f"Malformed Jena result binding: {binding!r}") from error
         key = (subject, region)
         if key in parsed:
             raise ValueError(f"Duplicate Jena result pair: {key!r}")
-        parsed[key] = {"inside": inside, "coveredBy": covered}
+        parsed[key] = {
+            "inside": inside,
+            "coveredBy": covered,
+            "disjoint": disjoint,
+            "onBoundary": boundary,
+        }
     return parsed
 
 
@@ -69,6 +76,8 @@ def expected_results(world: SpatialWorld) -> dict[tuple[str, str], dict[str, boo
         (subject, region): {
             "inside": within(point, polygon),
             "coveredBy": covered_by(point, polygon),
+            "disjoint": not covered_by(point, polygon),
+            "onBoundary": on_boundary(point, polygon),
         }
         for subject, point in sorted(world.positions.items())
         for region, polygon in sorted(world.regions.items())
@@ -199,8 +208,9 @@ def run_experiment(
         "generatedAt": datetime.now(UTC).isoformat(),
         "claimBoundary": (
             "Agreement with unmodified Apache Jena GeoSPARQL 6.1.0 for the "
-            "checked-in CRS84 Point/Polygon graph using sfWithin and "
-            "sfIntersects. This is not a complete GeoSPARQL conformance test, "
+            "checked-in CRS84 Point/Polygon graph using sfWithin, "
+            "sfIntersects, sfDisjoint, and sfTouches. This is not a complete "
+            "GeoSPARQL conformance test, "
             "continuous-trajectory comparison, or like-for-like performance "
             "contest between a native event runtime and a triplestore."
         ),
