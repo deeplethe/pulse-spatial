@@ -6,7 +6,10 @@ import java.nio.file.Path;
 import java.util.Locale;
 
 import org.apache.jena.geosparql.configuration.GeoSPARQLConfig;
+import org.apache.jena.geosparql.configuration.GeoSPARQLOperations;
+import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFactory;
 import org.apache.jena.query.ResultSetFormatter;
@@ -44,8 +47,15 @@ public final class GeoSparqlHarness {
     private GeoSparqlHarness() {}
 
     public static void main(String[] args) throws Exception {
+        if (args.length == 3 && args[0].equals("--query")) {
+            runQuery(Path.of(args[1]), Path.of(args[2]));
+            return;
+        }
         if (args.length != 1) {
-            System.err.println("usage: harness <projected-data.ttl>");
+            System.err.println(
+                "usage: harness <projected-data.ttl> | "
+                    + "--query <data.ttl> <probe.rq>"
+            );
             System.exit(2);
         }
         Path data = Path.of(args[0]).toAbsolutePath().normalize();
@@ -75,6 +85,39 @@ public final class GeoSparqlHarness {
                 (queryEnd - queryStart) / 1_000_000_000.0,
                 materialized.size()
             );
+        } finally {
+            model.close();
+            GeoSPARQLConfig.reset();
+        }
+    }
+
+    private static void runQuery(Path dataPath, Path queryPath) throws Exception {
+        Path data = dataPath.toAbsolutePath().normalize();
+        Path queryFile = queryPath.toAbsolutePath().normalize();
+        if (!Files.isRegularFile(data) || !Files.isRegularFile(queryFile)) {
+            System.err.println("query input does not exist");
+            System.exit(2);
+        }
+        GeoSPARQLConfig.setupMemoryIndex();
+        Model model = RDFDataMgr.loadModel(data.toUri().toString());
+        GeoSPARQLOperations.applyInferencing(model);
+        Query query = QueryFactory.read(queryFile.toUri().toString());
+        try (QueryExecution execution = QueryExecution.create(query, model)) {
+            if (query.isAskType()) {
+                System.out.printf(
+                    Locale.ROOT,
+                    "{\"boolean\":%s}%n",
+                    execution.execAsk() ? "true" : "false"
+                );
+            } else if (query.isSelectType()) {
+                ResultSetRewindable results = ResultSetFactory.copyResults(
+                    execution.execSelect()
+                );
+                ResultSetFormatter.outputAsJSON(System.out, results);
+            } else {
+                System.err.println("only ASK and SELECT probes are supported");
+                System.exit(2);
+            }
         } finally {
             model.close();
             GeoSPARQLConfig.reset();

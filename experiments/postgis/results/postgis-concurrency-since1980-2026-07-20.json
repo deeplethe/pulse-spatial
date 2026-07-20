@@ -1,0 +1,867 @@
+{
+  "experiment": "postgis-production-concurrency-v1",
+  "generatedAt": "2026-07-20T00:31:16.973193+00:00",
+  "claimBoundary": "Durable single-node PostgreSQL/PostGIS mixed spatial workload using pgbench prepared statements, weighted reads/writes, per-transaction latency logs, GiST plan checks, and SIGKILL recovery. This is production-oriented evidence, not a claim of multi-node high availability, cloud SLA, or universal capacity independent of the reported host.",
+  "dataset": {
+    "name": "NOAA IBTrACS v04r01 since1980 list CSV",
+    "doi": "10.25921/82ty-9e16",
+    "sourceUrl": "https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/csv/ibtracs.since1980.list.v04r01.csv",
+    "path": ".data/ibtracs.since1980.list.v04r01.csv",
+    "bytes": 142982689,
+    "sha256": "9f3db13f92bdc47d49edcdec677e64bafe9f20c67529552a65a10882205bb7fe",
+    "tracks": 4775,
+    "points": 300033
+  },
+  "database": {
+    "image": "postgis/postgis:18-3.6",
+    "imageId": "sha256:4f755ac224323a73961dfb21bdddffcb97f40bb916fda3e8a627b116489c9e12",
+    "postgresVersion": "PostgreSQL 18.4 (Debian 18.4-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+    "postgisVersion": "POSTGIS=\"3.6.4 94d984b\" [EXTENSION] PGSQL=\"180\" GEOS=\"3.13.1-CAPI-1.19.2\" PROJ=\"9.6.0 NETWORK_ENABLED=OFF URL_ENDPOINT=https://cdn.proj.org USER_WRITABLE_DIRECTORY=/var/lib/postgresql/.local/share/proj DATABASE_PATH=/usr/share/proj/proj.db\" (compiled against PROJ 9.6.0) LIBXML=\"2.9.14\" LIBJSON=\"0.18\" LIBPROTOBUF=\"1.5.1\" WAGYU=\"0.5.0 (Internal)\" TOPOLOGY",
+    "durability": {
+      "fsync": "on",
+      "synchronous_commit": "on",
+      "full_page_writes": "on",
+      "wal_level": "replica",
+      "max_connections": "100"
+    },
+    "liveWorkload": {
+      "devices": 50000,
+      "windowPlanUsesGist": true,
+      "windowPlan": [
+        {
+          "Plan": {
+            "Node Type": "Aggregate",
+            "Strategy": "Plain",
+            "Partial Mode": "Simple",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 8.3,
+            "Total Cost": 8.31,
+            "Plan Rows": 1,
+            "Plan Width": 8,
+            "Disabled": false,
+            "Plans": [
+              {
+                "Node Type": "Index Scan",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Scan Direction": "Forward",
+                "Index Name": "live_positions_geom_gix",
+                "Relation Name": "live_positions",
+                "Alias": "live_positions",
+                "Startup Cost": 0.28,
+                "Total Cost": 8.29,
+                "Plan Rows": 1,
+                "Plan Width": 0,
+                "Disabled": false,
+                "Index Cond": "(geom && '0103000020E6100000010000000500000000000000000024C000000000000024C000000000000024C0000000000000244000000000000024400000000000002440000000000000244000000000000024C000000000000024C000000000000024C0'::geometry)"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "finalLiveRows": 50000,
+    "finalEventRows": 2120719
+  },
+  "protocol": {
+    "clients": [
+      1,
+      4,
+      8,
+      16,
+      32
+    ],
+    "warmupSecondsPerLevel": 15,
+    "measurementSecondsPerLevel": 60,
+    "repetitions": 3,
+    "deviceCount": 50000,
+    "scriptWeights": {
+      "point-membership": 6,
+      "window-scan": 2,
+      "position-update": 2
+    },
+    "preparedStatements": true,
+    "latencyLimitMs": 1000
+  },
+  "levels": [
+    {
+      "transactions": 114129,
+      "meanMs": 0.5204964820510125,
+      "p50Ms": 0.335,
+      "p95Ms": 1.377,
+      "p99Ms": 1.733,
+      "maxMs": 59.461,
+      "failures": {},
+      "retries": 0,
+      "scripts": {
+        "point-membership": {
+          "transactions": 68322,
+          "meanMs": 0.36868092268961683,
+          "p50Ms": 0.334,
+          "p95Ms": 0.556,
+          "p99Ms": 0.716,
+          "maxMs": 14.295
+        },
+        "window-scan": {
+          "transactions": 22973,
+          "meanMs": 0.1811271057328168,
+          "p50Ms": 0.162,
+          "p95Ms": 0.301,
+          "p99Ms": 0.449,
+          "maxMs": 1.196
+        },
+        "position-update": {
+          "transactions": 22834,
+          "meanMs": 1.3161816589296662,
+          "p50Ms": 1.226,
+          "p95Ms": 1.733,
+          "p99Ms": 2.0596699999999983,
+          "maxMs": 59.461
+        }
+      },
+      "clients": 1,
+      "threads": 1,
+      "repetition": 1,
+      "warmupSeconds": 15,
+      "measurementSeconds": 60,
+      "wallSeconds": 60.17451349995099,
+      "tps": 1902.197745,
+      "lateTransactions": 0,
+      "stdout": "pgbench (18.4 (Debian 18.4-1.pgdg13+1))\ntransaction type: multiple scripts\nscaling factor: 1\nquery mode: prepared\nnumber of clients: 1\nnumber of threads: 1\nmaximum number of tries: 3\nduration: 60 s\nnumber of transactions actually processed: 114129\nnumber of failed transactions: 0 (0.000%)\nnumber of serialization failures: 0 (0.000%)\nnumber of deadlock failures: 0 (0.000%)\nnumber of transactions retried: 0 (0.000%)\ntotal number of retries: 0\nnumber of transactions above the 1000.0 ms latency limit: 0/114129 (0.000%)\nlatency average = 0.520 ms\nlatency stddev = 0.519 ms\ninitial connection time = 2.024 ms\ntps = 1902.197745 (without initial connection time)\nSQL script 1: /benchmark/point-membership.sql\n - weight: 6 (targets 60.0% of total)\n - 68322 transactions (59.9% of total)\n - number of transactions actually processed: 68322 (tps = 1138.728582)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.369 ms\n - latency stddev = 0.103 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.103           0          0 BEGIN;\n         0.151           0          0 SELECT count(r.name)\n         0.115           0          0 COMMIT;\nSQL script 2: /benchmark/window-scan.sql\n - weight: 2 (targets 20.0% of total)\n - 22973 transactions (20.1% of total)\n - number of transactions actually processed: 22973 (tps = 382.892944)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.181 ms\n - latency stddev = 0.061 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set x random(-179000, 179000)\n         0.000           0          0 \\set y random(-89000, 89000)\n         0.180           0          0 SELECT count(*)\nSQL script 3: /benchmark/position-update.sql\n - weight: 2 (targets 20.0% of total)\n - 22834 transactions (20.0% of total)\n - number of transactions actually processed: 22834 (tps = 380.576219)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 1.316 ms\n - latency stddev = 0.703 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.000           0          0 \\set x random(-180000, 180000)\n         0.000           0          0 \\set y random(-90000, 90000)\n         0.103           0          0 BEGIN;\n         0.172           0          0 UPDATE live_positions\n         0.169           0          0 INSERT INTO live_events(device_id, recorded_at, region, geom)\n         0.870           0          0 COMMIT;\n"
+    },
+    {
+      "transactions": 72807,
+      "meanMs": 0.8185339733816803,
+      "p50Ms": 0.34,
+      "p95Ms": 2.828,
+      "p99Ms": 3.267,
+      "maxMs": 61.028,
+      "failures": {},
+      "retries": 0,
+      "scripts": {
+        "point-membership": {
+          "transactions": 43749,
+          "meanMs": 0.38199535989394046,
+          "p50Ms": 0.338,
+          "p95Ms": 0.592,
+          "p99Ms": 0.749,
+          "maxMs": 4.223
+        },
+        "window-scan": {
+          "transactions": 14460,
+          "meanMs": 0.19287828492392808,
+          "p50Ms": 0.169,
+          "p95Ms": 0.346,
+          "p99Ms": 0.49940999999999985,
+          "maxMs": 1.06
+        },
+        "position-update": {
+          "transactions": 14598,
+          "meanMs": 2.7465452801753663,
+          "p50Ms": 2.649,
+          "p95Ms": 3.2661499999999997,
+          "p99Ms": 3.976,
+          "maxMs": 61.028
+        }
+      },
+      "clients": 1,
+      "threads": 1,
+      "repetition": 2,
+      "warmupSeconds": 15,
+      "measurementSeconds": 60,
+      "wallSeconds": 60.17791100003524,
+      "tps": 1213.428866,
+      "lateTransactions": 0,
+      "stdout": "pgbench (18.4 (Debian 18.4-1.pgdg13+1))\ntransaction type: multiple scripts\nscaling factor: 1\nquery mode: prepared\nnumber of clients: 1\nnumber of threads: 1\nmaximum number of tries: 3\nduration: 60 s\nnumber of transactions actually processed: 72807\nnumber of failed transactions: 0 (0.000%)\nnumber of serialization failures: 0 (0.000%)\nnumber of deadlock failures: 0 (0.000%)\nnumber of transactions retried: 0 (0.000%)\ntotal number of retries: 0\nnumber of transactions above the 1000.0 ms latency limit: 0/72807 (0.000%)\nlatency average = 0.819 ms\nlatency stddev = 1.051 ms\ninitial connection time = 1.975 ms\ntps = 1213.428866 (without initial connection time)\nSQL script 1: /benchmark/point-membership.sql\n - weight: 6 (targets 60.0% of total)\n - 43749 transactions (60.1% of total)\n - number of transactions actually processed: 43749 (tps = 729.137301)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.382 ms\n - latency stddev = 0.101 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.106           0          0 BEGIN;\n         0.156           0          0 SELECT count(r.name)\n         0.119           0          0 COMMIT;\nSQL script 2: /benchmark/window-scan.sql\n - weight: 2 (targets 20.0% of total)\n - 14460 transactions (19.9% of total)\n - number of transactions actually processed: 14460 (tps = 240.995803)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.193 ms\n - latency stddev = 0.071 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set x random(-179000, 179000)\n         0.000           0          0 \\set y random(-89000, 89000)\n         0.192           0          0 SELECT count(*)\nSQL script 3: /benchmark/position-update.sql\n - weight: 2 (targets 20.0% of total)\n - 14598 transactions (20.1% of total)\n - number of transactions actually processed: 14598 (tps = 243.295763)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 2.747 ms\n - latency stddev = 0.891 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.001           0          0 \\set x random(-180000, 180000)\n         0.000           0          0 \\set y random(-90000, 90000)\n         0.107           0          0 BEGIN;\n         0.183           0          0 UPDATE live_positions\n         0.177           0          0 INSERT INTO live_events(device_id, recorded_at, region, geom)\n         2.278           0          0 COMMIT;\n"
+    },
+    {
+      "transactions": 89666,
+      "meanMs": 0.6638128164521669,
+      "p50Ms": 0.335,
+      "p95Ms": 2.651,
+      "p99Ms": 3.08,
+      "maxMs": 90.64,
+      "failures": {},
+      "retries": 0,
+      "scripts": {
+        "point-membership": {
+          "transactions": 53815,
+          "meanMs": 0.371856526990616,
+          "p50Ms": 0.334,
+          "p95Ms": 0.567,
+          "p99Ms": 0.726,
+          "maxMs": 10.626
+        },
+        "window-scan": {
+          "transactions": 17875,
+          "meanMs": 0.18783406993006993,
+          "p50Ms": 0.167,
+          "p95Ms": 0.32,
+          "p99Ms": 0.47925999999999835,
+          "maxMs": 1.12
+        },
+        "position-update": {
+          "transactions": 17976,
+          "meanMs": 2.0111508121940367,
+          "p50Ms": 1.864,
+          "p95Ms": 3.07825,
+          "p99Ms": 3.61125,
+          "maxMs": 90.64
+        }
+      },
+      "clients": 1,
+      "threads": 1,
+      "repetition": 3,
+      "warmupSeconds": 15,
+      "measurementSeconds": 60,
+      "wallSeconds": 60.17339210002683,
+      "tps": 1494.417318,
+      "lateTransactions": 0,
+      "stdout": "pgbench (18.4 (Debian 18.4-1.pgdg13+1))\ntransaction type: multiple scripts\nscaling factor: 1\nquery mode: prepared\nnumber of clients: 1\nnumber of threads: 1\nmaximum number of tries: 3\nduration: 60 s\nnumber of transactions actually processed: 89666\nnumber of failed transactions: 0 (0.000%)\nnumber of serialization failures: 0 (0.000%)\nnumber of deadlock failures: 0 (0.000%)\nnumber of transactions retried: 0 (0.000%)\ntotal number of retries: 0\nnumber of transactions above the 1000.0 ms latency limit: 0/89666 (0.000%)\nlatency average = 0.664 ms\nlatency stddev = 0.847 ms\ninitial connection time = 1.852 ms\ntps = 1494.417318 (without initial connection time)\nSQL script 1: /benchmark/point-membership.sql\n - weight: 6 (targets 60.0% of total)\n - 53815 transactions (60.0% of total)\n - number of transactions actually processed: 53815 (tps = 896.907055)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.372 ms\n - latency stddev = 0.102 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.104           0          0 BEGIN;\n         0.151           0          0 SELECT count(r.name)\n         0.116           0          0 COMMIT;\nSQL script 2: /benchmark/window-scan.sql\n - weight: 2 (targets 20.0% of total)\n - 17875 transactions (19.9% of total)\n - number of transactions actually processed: 17875 (tps = 297.913474)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.188 ms\n - latency stddev = 0.066 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set x random(-179000, 179000)\n         0.000           0          0 \\set y random(-89000, 89000)\n         0.187           0          0 SELECT count(*)\nSQL script 3: /benchmark/position-update.sql\n - weight: 2 (targets 20.0% of total)\n - 17976 transactions (20.0% of total)\n - number of transactions actually processed: 17976 (tps = 299.596789)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 2.011 ms\n - latency stddev = 1.117 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.001           0          0 \\set x random(-180000, 180000)\n         0.000           0          0 \\set y random(-90000, 90000)\n         0.104           0          0 BEGIN;\n         0.178           0          0 UPDATE live_positions\n         0.173           0          0 INSERT INTO live_events(device_id, recorded_at, region, geom)\n         1.554           0          0 COMMIT;\n"
+    },
+    {
+      "transactions": 272935,
+      "meanMs": 0.8733575869712569,
+      "p50Ms": 0.412,
+      "p95Ms": 3.9689999999999994,
+      "p99Ms": 4.935,
+      "maxMs": 63.013,
+      "failures": {},
+      "retries": 0,
+      "scripts": {
+        "point-membership": {
+          "transactions": 164130,
+          "meanMs": 0.42082559556449156,
+          "p50Ms": 0.41,
+          "p95Ms": 0.57,
+          "p99Ms": 0.693,
+          "maxMs": 10.475
+        },
+        "window-scan": {
+          "transactions": 54523,
+          "meanMs": 0.23777435210828457,
+          "p50Ms": 0.217,
+          "p95Ms": 0.403,
+          "p99Ms": 0.518,
+          "maxMs": 1.466
+        },
+        "position-update": {
+          "transactions": 54282,
+          "meanMs": 2.880062949043882,
+          "p50Ms": 2.484,
+          "p95Ms": 4.937,
+          "p99Ms": 5.665190000000003,
+          "maxMs": 63.013
+        }
+      },
+      "clients": 4,
+      "threads": 4,
+      "repetition": 1,
+      "warmupSeconds": 15,
+      "measurementSeconds": 60,
+      "wallSeconds": 60.18632560002152,
+      "tps": 4548.886796,
+      "lateTransactions": 0,
+      "stdout": "pgbench (18.4 (Debian 18.4-1.pgdg13+1))\ntransaction type: multiple scripts\nscaling factor: 1\nquery mode: prepared\nnumber of clients: 4\nnumber of threads: 4\nmaximum number of tries: 3\nduration: 60 s\nnumber of transactions actually processed: 272935\nnumber of failed transactions: 0 (0.000%)\nnumber of serialization failures: 0 (0.000%)\nnumber of deadlock failures: 0 (0.000%)\nnumber of transactions retried: 0 (0.000%)\ntotal number of retries: 0\nnumber of transactions above the 1000.0 ms latency limit: 0/272935 (0.000%)\nlatency average = 0.873 ms\nlatency stddev = 1.207 ms\ninitial connection time = 3.435 ms\ntps = 4548.886796 (without initial connection time)\nSQL script 1: /benchmark/point-membership.sql\n - weight: 6 (targets 60.0% of total)\n - 164041 transactions (60.1% of total)\n - number of transactions actually processed: 164041 (tps = 2733.998713)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.421 ms\n - latency stddev = 0.091 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.118           0          0 BEGIN;\n         0.172           0          0 SELECT count(r.name)\n         0.131           0          0 COMMIT;\nSQL script 2: /benchmark/window-scan.sql\n - weight: 2 (targets 20.0% of total)\n - 54518 transactions (20.0% of total)\n - number of transactions actually processed: 54518 (tps = 908.627367)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.238 ms\n - latency stddev = 0.082 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set x random(-179000, 179000)\n         0.000           0          0 \\set y random(-89000, 89000)\n         0.236           0          0 SELECT count(*)\nSQL script 3: /benchmark/position-update.sql\n - weight: 2 (targets 20.0% of total)\n - 54229 transactions (19.9% of total)\n - number of transactions actually processed: 54229 (tps = 903.810732)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 2.897 ms\n - latency stddev = 1.488 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.001           0          0 \\set x random(-180000, 180000)\n         0.000           0          0 \\set y random(-90000, 90000)\n         0.118           0          0 BEGIN;\n         0.201           0          0 UPDATE live_positions\n         0.197           0          0 INSERT INTO live_events(device_id, recorded_at, region, geom)\n         2.374           0          0 COMMIT;\n"
+    },
+    {
+      "transactions": 293002,
+      "meanMs": 0.8131907939194954,
+      "p50Ms": 0.414,
+      "p95Ms": 3.395,
+      "p99Ms": 4.846,
+      "maxMs": 61.665,
+      "failures": {},
+      "retries": 0,
+      "scripts": {
+        "point-membership": {
+          "transactions": 176055,
+          "meanMs": 0.41948765442617364,
+          "p50Ms": 0.409,
+          "p95Ms": 0.562,
+          "p99Ms": 0.686,
+          "maxMs": 2.217
+        },
+        "window-scan": {
+          "transactions": 58398,
+          "meanMs": 0.2592408644131648,
+          "p50Ms": 0.238,
+          "p95Ms": 0.437,
+          "p99Ms": 0.568,
+          "maxMs": 10.232
+        },
+        "position-update": {
+          "transactions": 58549,
+          "meanMs": 2.549565013919964,
+          "p50Ms": 2.0,
+          "p95Ms": 4.846,
+          "p99Ms": 5.646519999999997,
+          "maxMs": 61.665
+        }
+      },
+      "clients": 4,
+      "threads": 4,
+      "repetition": 2,
+      "warmupSeconds": 15,
+      "measurementSeconds": 60,
+      "wallSeconds": 60.170733999984805,
+      "tps": 4883.346726,
+      "lateTransactions": 0,
+      "stdout": "pgbench (18.4 (Debian 18.4-1.pgdg13+1))\ntransaction type: multiple scripts\nscaling factor: 1\nquery mode: prepared\nnumber of clients: 4\nnumber of threads: 4\nmaximum number of tries: 3\nduration: 60 s\nnumber of transactions actually processed: 293002\nnumber of failed transactions: 0 (0.000%)\nnumber of serialization failures: 0 (0.000%)\nnumber of deadlock failures: 0 (0.000%)\nnumber of transactions retried: 0 (0.000%)\ntotal number of retries: 0\nnumber of transactions above the 1000.0 ms latency limit: 0/293002 (0.000%)\nlatency average = 0.813 ms\nlatency stddev = 1.085 ms\ninitial connection time = 2.615 ms\ntps = 4883.346726 (without initial connection time)\nSQL script 1: /benchmark/point-membership.sql\n - weight: 6 (targets 60.0% of total)\n - 175945 transactions (60.0% of total)\n - number of transactions actually processed: 175945 (tps = 2932.404693)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.420 ms\n - latency stddev = 0.082 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.117           0          0 BEGIN;\n         0.171           0          0 SELECT count(r.name)\n         0.131           0          0 COMMIT;\nSQL script 2: /benchmark/window-scan.sql\n - weight: 2 (targets 20.0% of total)\n - 58390 transactions (19.9% of total)\n - number of transactions actually processed: 58390 (tps = 973.162693)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.259 ms\n - latency stddev = 0.100 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set x random(-179000, 179000)\n         0.000           0          0 \\set y random(-89000, 89000)\n         0.258           0          0 SELECT count(*)\nSQL script 3: /benchmark/position-update.sql\n - weight: 2 (targets 20.0% of total)\n - 58499 transactions (20.0% of total)\n - number of transactions actually processed: 58499 (tps = 974.979352)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 2.560 ms\n - latency stddev = 1.435 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.001           0          0 \\set x random(-180000, 180000)\n         0.000           0          0 \\set y random(-90000, 90000)\n         0.118           0          0 BEGIN;\n         0.202           0          0 UPDATE live_positions\n         0.196           0          0 INSERT INTO live_events(device_id, recorded_at, region, geom)\n         2.037           0          0 COMMIT;\n"
+    },
+    {
+      "transactions": 265738,
+      "meanMs": 0.8971363184791035,
+      "p50Ms": 0.419,
+      "p95Ms": 4.041,
+      "p99Ms": 5.018,
+      "maxMs": 63.583,
+      "failures": {},
+      "retries": 0,
+      "scripts": {
+        "point-membership": {
+          "transactions": 159415,
+          "meanMs": 0.42294297901703104,
+          "p50Ms": 0.412,
+          "p95Ms": 0.571,
+          "p99Ms": 0.696,
+          "maxMs": 10.786
+        },
+        "window-scan": {
+          "transactions": 53023,
+          "meanMs": 0.29495520811723214,
+          "p50Ms": 0.26,
+          "p95Ms": 0.477,
+          "p99Ms": 0.621,
+          "maxMs": 9.552
+        },
+        "position-update": {
+          "transactions": 53300,
+          "meanMs": 2.9144530206378985,
+          "p50Ms": 2.448,
+          "p95Ms": 5.015,
+          "p99Ms": 5.815,
+          "maxMs": 63.583
+        }
+      },
+      "clients": 4,
+      "threads": 4,
+      "repetition": 3,
+      "warmupSeconds": 15,
+      "measurementSeconds": 60,
+      "wallSeconds": 60.164048700011335,
+      "tps": 4428.977739,
+      "lateTransactions": 0,
+      "stdout": "pgbench (18.4 (Debian 18.4-1.pgdg13+1))\ntransaction type: multiple scripts\nscaling factor: 1\nquery mode: prepared\nnumber of clients: 4\nnumber of threads: 4\nmaximum number of tries: 3\nduration: 60 s\nnumber of transactions actually processed: 265738\nnumber of failed transactions: 0 (0.000%)\nnumber of serialization failures: 0 (0.000%)\nnumber of deadlock failures: 0 (0.000%)\nnumber of transactions retried: 0 (0.000%)\ntotal number of retries: 0\nnumber of transactions above the 1000.0 ms latency limit: 0/265738 (0.000%)\nlatency average = 0.897 ms\nlatency stddev = 1.237 ms\ninitial connection time = 3.506 ms\ntps = 4428.977739 (without initial connection time)\nSQL script 1: /benchmark/point-membership.sql\n - weight: 6 (targets 60.0% of total)\n - 159355 transactions (60.0% of total)\n - number of transactions actually processed: 159355 (tps = 2655.923306)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.424 ms\n - latency stddev = 0.092 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.118           0          0 BEGIN;\n         0.172           0          0 SELECT count(r.name)\n         0.132           0          0 COMMIT;\nSQL script 2: /benchmark/window-scan.sql\n - weight: 2 (targets 20.0% of total)\n - 53013 transactions (19.9% of total)\n - number of transactions actually processed: 53013 (tps = 883.552209)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.295 ms\n - latency stddev = 0.102 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set x random(-179000, 179000)\n         0.000           0          0 \\set y random(-89000, 89000)\n         0.294           0          0 SELECT count(*)\nSQL script 3: /benchmark/position-update.sql\n - weight: 2 (targets 20.0% of total)\n - 53249 transactions (20.0% of total)\n - number of transactions actually processed: 53249 (tps = 887.485552)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 2.931 ms\n - latency stddev = 1.568 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.001           0          0 \\set x random(-180000, 180000)\n         0.000           0          0 \\set y random(-90000, 90000)\n         0.119           0          0 BEGIN;\n         0.203           0          0 UPDATE live_positions\n         0.198           0          0 INSERT INTO live_events(device_id, recorded_at, region, geom)\n         2.404           0          0 COMMIT;\n"
+    },
+    {
+      "transactions": 498538,
+      "meanMs": 0.9565718280251455,
+      "p50Ms": 0.471,
+      "p95Ms": 3.856,
+      "p99Ms": 5.052,
+      "maxMs": 63.264,
+      "failures": {},
+      "retries": 0,
+      "scripts": {
+        "point-membership": {
+          "transactions": 299055,
+          "meanMs": 0.4727711992777249,
+          "p50Ms": 0.468,
+          "p95Ms": 0.597,
+          "p99Ms": 0.723,
+          "maxMs": 13.528
+        },
+        "window-scan": {
+          "transactions": 99781,
+          "meanMs": 0.314343622533348,
+          "p50Ms": 0.295,
+          "p95Ms": 0.478,
+          "p99Ms": 0.589,
+          "maxMs": 2.446
+        },
+        "position-update": {
+          "transactions": 99702,
+          "meanMs": 3.050463320695673,
+          "p50Ms": 2.625,
+          "p95Ms": 5.051,
+          "p99Ms": 5.845,
+          "maxMs": 63.264
+        }
+      },
+      "clients": 8,
+      "threads": 8,
+      "repetition": 1,
+      "warmupSeconds": 15,
+      "measurementSeconds": 60,
+      "wallSeconds": 60.16411589999916,
+      "tps": 8308.859205,
+      "lateTransactions": 0,
+      "stdout": "pgbench (18.4 (Debian 18.4-1.pgdg13+1))\ntransaction type: multiple scripts\nscaling factor: 1\nquery mode: prepared\nnumber of clients: 8\nnumber of threads: 8\nmaximum number of tries: 3\nduration: 60 s\nnumber of transactions actually processed: 498538\nnumber of failed transactions: 0 (0.000%)\nnumber of serialization failures: 0 (0.000%)\nnumber of deadlock failures: 0 (0.000%)\nnumber of transactions retried: 0 (0.000%)\ntotal number of retries: 0\nnumber of transactions above the 1000.0 ms latency limit: 0/498538 (0.000%)\nlatency average = 0.957 ms\nlatency stddev = 1.279 ms\ninitial connection time = 3.785 ms\ntps = 8308.859205 (without initial connection time)\nSQL script 1: /benchmark/point-membership.sql\n - weight: 6 (targets 60.0% of total)\n - 298764 transactions (59.9% of total)\n - number of transactions actually processed: 298764 (tps = 4979.335601)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.474 ms\n - latency stddev = 0.087 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.132           0          0 BEGIN;\n         0.193           0          0 SELECT count(r.name)\n         0.148           0          0 COMMIT;\nSQL script 2: /benchmark/window-scan.sql\n - weight: 2 (targets 20.0% of total)\n - 99743 transactions (20.0% of total)\n - number of transactions actually processed: 99743 (tps = 1662.361833)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.315 ms\n - latency stddev = 0.093 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set x random(-179000, 179000)\n         0.001           0          0 \\set y random(-89000, 89000)\n         0.313           0          0 SELECT count(*)\nSQL script 3: /benchmark/position-update.sql\n - weight: 2 (targets 20.0% of total)\n - 99572 transactions (20.0% of total)\n - number of transactions actually processed: 99572 (tps = 1659.511870)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 3.080 ms\n - latency stddev = 1.609 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.001           0          0 \\set x random(-180000, 180000)\n         0.000           0          0 \\set y random(-90000, 90000)\n         0.132           0          0 BEGIN;\n         0.226           0          0 UPDATE live_positions\n         0.229           0          0 INSERT INTO live_events(device_id, recorded_at, region, geom)\n         2.478           0          0 COMMIT;\n"
+    },
+    {
+      "transactions": 400425,
+      "meanMs": 1.1927206118499094,
+      "p50Ms": 0.446,
+      "p95Ms": 4.763,
+      "p99Ms": 5.474,
+      "maxMs": 63.727,
+      "failures": {},
+      "retries": 0,
+      "scripts": {
+        "point-membership": {
+          "transactions": 240572,
+          "meanMs": 0.4471562692250137,
+          "p50Ms": 0.441,
+          "p95Ms": 0.585,
+          "p99Ms": 0.711,
+          "maxMs": 14.321
+        },
+        "window-scan": {
+          "transactions": 79768,
+          "meanMs": 0.31753305836927087,
+          "p50Ms": 0.294,
+          "p95Ms": 0.478,
+          "p99Ms": 0.604,
+          "maxMs": 11.028
+        },
+        "position-update": {
+          "transactions": 80085,
+          "meanMs": 4.304088106386964,
+          "p50Ms": 4.291,
+          "p95Ms": 5.474,
+          "p99Ms": 6.209,
+          "maxMs": 63.727
+        }
+      },
+      "clients": 8,
+      "threads": 8,
+      "repetition": 2,
+      "warmupSeconds": 15,
+      "measurementSeconds": 60,
+      "wallSeconds": 60.17374659999041,
+      "tps": 6674.021633,
+      "lateTransactions": 0,
+      "stdout": "pgbench (18.4 (Debian 18.4-1.pgdg13+1))\ntransaction type: multiple scripts\nscaling factor: 1\nquery mode: prepared\nnumber of clients: 8\nnumber of threads: 8\nmaximum number of tries: 3\nduration: 60 s\nnumber of transactions actually processed: 400425\nnumber of failed transactions: 0 (0.000%)\nnumber of serialization failures: 0 (0.000%)\nnumber of deadlock failures: 0 (0.000%)\nnumber of transactions retried: 0 (0.000%)\ntotal number of retries: 0\nnumber of transactions above the 1000.0 ms latency limit: 0/400425 (0.000%)\nlatency average = 1.193 ms\nlatency stddev = 1.643 ms\ninitial connection time = 4.729 ms\ntps = 6674.021633 (without initial connection time)\nSQL script 1: /benchmark/point-membership.sql\n - weight: 6 (targets 60.0% of total)\n - 240430 transactions (60.0% of total)\n - number of transactions actually processed: 240430 (tps = 4007.329765)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.448 ms\n - latency stddev = 0.098 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.125           0          0 BEGIN;\n         0.183           0          0 SELECT count(r.name)\n         0.139           0          0 COMMIT;\nSQL script 2: /benchmark/window-scan.sql\n - weight: 2 (targets 20.0% of total)\n - 79753 transactions (19.9% of total)\n - number of transactions actually processed: 79753 (tps = 1329.270768)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.318 ms\n - latency stddev = 0.097 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set x random(-179000, 179000)\n         0.000           0          0 \\set y random(-89000, 89000)\n         0.316           0          0 SELECT count(*)\nSQL script 3: /benchmark/position-update.sql\n - weight: 2 (targets 20.0% of total)\n - 79966 transactions (20.0% of total)\n - number of transactions actually processed: 79966 (tps = 1332.820912)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 4.351 ms\n - latency stddev = 1.078 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.001           0          0 \\set x random(-180000, 180000)\n         0.000           0          0 \\set y random(-90000, 90000)\n         0.125           0          0 BEGIN;\n         0.215           0          0 UPDATE live_positions\n         0.215           0          0 INSERT INTO live_events(device_id, recorded_at, region, geom)\n         3.774           0          0 COMMIT;\n"
+    },
+    {
+      "transactions": 454137,
+      "meanMs": 1.0508370029308336,
+      "p50Ms": 0.467,
+      "p95Ms": 4.445,
+      "p99Ms": 5.277,
+      "maxMs": 63.366,
+      "failures": {},
+      "retries": 0,
+      "scripts": {
+        "point-membership": {
+          "transactions": 272606,
+          "meanMs": 0.4671888292994285,
+          "p50Ms": 0.463,
+          "p95Ms": 0.601,
+          "p99Ms": 0.73,
+          "maxMs": 14.195
+        },
+        "window-scan": {
+          "transactions": 91079,
+          "meanMs": 0.3297635459326519,
+          "p50Ms": 0.308,
+          "p95Ms": 0.491,
+          "p99Ms": 0.612,
+          "maxMs": 11.868
+        },
+        "position-update": {
+          "transactions": 90452,
+          "meanMs": 3.5359190730995445,
+          "p50Ms": 3.581,
+          "p95Ms": 5.278,
+          "p99Ms": 6.009980000000011,
+          "maxMs": 63.366
+        }
+      },
+      "clients": 8,
+      "threads": 8,
+      "repetition": 3,
+      "warmupSeconds": 15,
+      "measurementSeconds": 60,
+      "wallSeconds": 60.1644272999838,
+      "tps": 7568.948108,
+      "lateTransactions": 0,
+      "stdout": "pgbench (18.4 (Debian 18.4-1.pgdg13+1))\ntransaction type: multiple scripts\nscaling factor: 1\nquery mode: prepared\nnumber of clients: 8\nnumber of threads: 8\nmaximum number of tries: 3\nduration: 60 s\nnumber of transactions actually processed: 454137\nnumber of failed transactions: 0 (0.000%)\nnumber of serialization failures: 0 (0.000%)\nnumber of deadlock failures: 0 (0.000%)\nnumber of transactions retried: 0 (0.000%)\ntotal number of retries: 0\nnumber of transactions above the 1000.0 ms latency limit: 0/454137 (0.000%)\nlatency average = 1.051 ms\nlatency stddev = 1.392 ms\ninitial connection time = 4.480 ms\ntps = 7568.948108 (without initial connection time)\nSQL script 1: /benchmark/point-membership.sql\n - weight: 6 (targets 60.0% of total)\n - 272357 transactions (60.0% of total)\n - number of transactions actually processed: 272357 (tps = 4539.282199)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.469 ms\n - latency stddev = 0.099 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.130           0          0 BEGIN;\n         0.191           0          0 SELECT count(r.name)\n         0.146           0          0 COMMIT;\nSQL script 2: /benchmark/window-scan.sql\n - weight: 2 (targets 20.0% of total)\n - 91041 transactions (20.0% of total)\n - number of transactions actually processed: 91041 (tps = 1517.349621)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.330 ms\n - latency stddev = 0.106 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set x random(-179000, 179000)\n         0.001           0          0 \\set y random(-89000, 89000)\n         0.328           0          0 SELECT count(*)\nSQL script 3: /benchmark/position-update.sql\n - weight: 2 (targets 20.0% of total)\n - 90350 transactions (19.9% of total)\n - number of transactions actually processed: 90350 (tps = 1505.832957)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 3.568 ms\n - latency stddev = 1.368 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.001           0          0 \\set x random(-180000, 180000)\n         0.000           0          0 \\set y random(-90000, 90000)\n         0.131           0          0 BEGIN;\n         0.223           0          0 UPDATE live_positions\n         0.226           0          0 INSERT INTO live_events(device_id, recorded_at, region, geom)\n         2.973           0          0 COMMIT;\n"
+    },
+    {
+      "transactions": 707404,
+      "meanMs": 1.3460514472635154,
+      "p50Ms": 0.497,
+      "p95Ms": 5.333,
+      "p99Ms": 6.102,
+      "maxMs": 64.285,
+      "failures": {},
+      "retries": 0,
+      "scripts": {
+        "point-membership": {
+          "transactions": 424456,
+          "meanMs": 0.5017622132800573,
+          "p50Ms": 0.493,
+          "p95Ms": 0.642,
+          "p99Ms": 0.786,
+          "maxMs": 19.016
+        },
+        "window-scan": {
+          "transactions": 141904,
+          "meanMs": 0.3473440072161461,
+          "p50Ms": 0.332,
+          "p95Ms": 0.513,
+          "p99Ms": 0.632,
+          "maxMs": 15.711
+        },
+        "position-update": {
+          "transactions": 141044,
+          "meanMs": 4.8916415586625455,
+          "p50Ms": 4.824,
+          "p95Ms": 6.103,
+          "p99Ms": 6.814,
+          "maxMs": 64.285
+        }
+      },
+      "clients": 16,
+      "threads": 8,
+      "repetition": 1,
+      "warmupSeconds": 15,
+      "measurementSeconds": 60,
+      "wallSeconds": 60.175433700031135,
+      "tps": 11790.400728,
+      "lateTransactions": 0,
+      "stdout": "pgbench (18.4 (Debian 18.4-1.pgdg13+1))\ntransaction type: multiple scripts\nscaling factor: 1\nquery mode: prepared\nnumber of clients: 16\nnumber of threads: 8\nmaximum number of tries: 3\nduration: 60 s\nnumber of transactions actually processed: 707404\nnumber of failed transactions: 0 (0.000%)\nnumber of serialization failures: 0 (0.000%)\nnumber of deadlock failures: 0 (0.000%)\nnumber of transactions retried: 0 (0.000%)\ntotal number of retries: 0\nnumber of transactions above the 1000.0 ms latency limit: 0/707404 (0.000%)\nlatency average = 1.346 ms\nlatency stddev = 1.902 ms\ninitial connection time = 6.259 ms\ntps = 11790.400728 (without initial connection time)\nSQL script 1: /benchmark/point-membership.sql\n - weight: 6 (targets 60.0% of total)\n - 424074 transactions (59.9% of total)\n - number of transactions actually processed: 424074 (tps = 7068.100263)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.504 ms\n - latency stddev = 0.119 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.137           0          0 BEGIN;\n         0.208           0          0 SELECT count(r.name)\n         0.157           0          0 COMMIT;\nSQL script 2: /benchmark/window-scan.sql\n - weight: 2 (targets 20.0% of total)\n - 141851 transactions (20.1% of total)\n - number of transactions actually processed: 141851 (tps = 2364.250320)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.348 ms\n - latency stddev = 0.117 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set x random(-179000, 179000)\n         0.001           0          0 \\set y random(-89000, 89000)\n         0.346           0          0 SELECT count(*)\nSQL script 3: /benchmark/position-update.sql\n - weight: 2 (targets 20.0% of total)\n - 140900 transactions (19.9% of total)\n - number of transactions actually processed: 140900 (tps = 2348.399871)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 4.924 ms\n - latency stddev = 1.490 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.001           0          0 \\set x random(-180000, 180000)\n         0.000           0          0 \\set y random(-90000, 90000)\n         0.137           0          0 BEGIN;\n         0.242           0          0 UPDATE live_positions\n         0.252           0          0 INSERT INTO live_events(device_id, recorded_at, region, geom)\n         4.276           0          0 COMMIT;\n"
+    },
+    {
+      "transactions": 857233,
+      "meanMs": 1.106847468541225,
+      "p50Ms": 0.534,
+      "p95Ms": 4.208,
+      "p99Ms": 5.502,
+      "maxMs": 64.055,
+      "failures": {},
+      "retries": 0,
+      "scripts": {
+        "point-membership": {
+          "transactions": 514920,
+          "meanMs": 0.5427818709702478,
+          "p50Ms": 0.528,
+          "p95Ms": 0.726,
+          "p99Ms": 0.927,
+          "maxMs": 19.671
+        },
+        "window-scan": {
+          "transactions": 171204,
+          "meanMs": 0.3749345225578842,
+          "p50Ms": 0.352,
+          "p95Ms": 0.5778500000000057,
+          "p99Ms": 0.739,
+          "maxMs": 15.73
+        },
+        "position-update": {
+          "transactions": 171109,
+          "meanMs": 3.5366149355089447,
+          "p50Ms": 3.196,
+          "p95Ms": 5.503,
+          "p99Ms": 6.169,
+          "maxMs": 64.055
+        }
+      },
+      "clients": 16,
+      "threads": 8,
+      "repetition": 2,
+      "warmupSeconds": 15,
+      "measurementSeconds": 60,
+      "wallSeconds": 60.158507200016174,
+      "tps": 14287.781748,
+      "lateTransactions": 0,
+      "stdout": "pgbench (18.4 (Debian 18.4-1.pgdg13+1))\ntransaction type: multiple scripts\nscaling factor: 1\nquery mode: prepared\nnumber of clients: 16\nnumber of threads: 8\nmaximum number of tries: 3\nduration: 60 s\nnumber of transactions actually processed: 857233\nnumber of failed transactions: 0 (0.000%)\nnumber of serialization failures: 0 (0.000%)\nnumber of deadlock failures: 0 (0.000%)\nnumber of transactions retried: 0 (0.000%)\ntotal number of retries: 0\nnumber of transactions above the 1000.0 ms latency limit: 0/857233 (0.000%)\nlatency average = 1.107 ms\nlatency stddev = 1.397 ms\ninitial connection time = 6.802 ms\ntps = 14287.781748 (without initial connection time)\nSQL script 1: /benchmark/point-membership.sql\n - weight: 6 (targets 60.0% of total)\n - 514379 transactions (60.0% of total)\n - number of transactions actually processed: 514379 (tps = 8573.322408)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.545 ms\n - latency stddev = 0.128 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.147           0          0 BEGIN;\n         0.226           0          0 SELECT count(r.name)\n         0.170           0          0 COMMIT;\nSQL script 2: /benchmark/window-scan.sql\n - weight: 2 (targets 20.0% of total)\n - 171126 transactions (20.0% of total)\n - number of transactions actually processed: 171126 (tps = 2852.212805)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.375 ms\n - latency stddev = 0.127 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set x random(-179000, 179000)\n         0.001           0          0 \\set y random(-89000, 89000)\n         0.373           0          0 SELECT count(*)\nSQL script 3: /benchmark/position-update.sql\n - weight: 2 (targets 20.0% of total)\n - 170956 transactions (19.9% of total)\n - number of transactions actually processed: 170956 (tps = 2849.379360)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 3.558 ms\n - latency stddev = 1.500 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.001           0          0 \\set x random(-180000, 180000)\n         0.000           0          0 \\set y random(-90000, 90000)\n         0.147           0          0 BEGIN;\n         0.261           0          0 UPDATE live_positions\n         0.269           0          0 INSERT INTO live_events(device_id, recorded_at, region, geom)\n         2.868           0          0 COMMIT;\n"
+    },
+    {
+      "transactions": 729622,
+      "meanMs": 1.3051903423964737,
+      "p50Ms": 0.483,
+      "p95Ms": 5.172,
+      "p99Ms": 5.907,
+      "maxMs": 62.711,
+      "failures": {},
+      "retries": 0,
+      "scripts": {
+        "point-membership": {
+          "transactions": 437733,
+          "meanMs": 0.4871843955105053,
+          "p50Ms": 0.479,
+          "p95Ms": 0.622,
+          "p99Ms": 0.754,
+          "maxMs": 15.993
+        },
+        "window-scan": {
+          "transactions": 145938,
+          "meanMs": 0.34517939810056325,
+          "p50Ms": 0.331,
+          "p95Ms": 0.498,
+          "p99Ms": 0.615,
+          "maxMs": 13.394
+        },
+        "position-update": {
+          "transactions": 145951,
+          "meanMs": 4.718461058848518,
+          "p50Ms": 4.684,
+          "p95Ms": 5.907,
+          "p99Ms": 6.585,
+          "maxMs": 62.711
+        }
+      },
+      "clients": 16,
+      "threads": 8,
+      "repetition": 3,
+      "warmupSeconds": 15,
+      "measurementSeconds": 60,
+      "wallSeconds": 60.17002570000477,
+      "tps": 12160.734326,
+      "lateTransactions": 0,
+      "stdout": "pgbench (18.4 (Debian 18.4-1.pgdg13+1))\ntransaction type: multiple scripts\nscaling factor: 1\nquery mode: prepared\nnumber of clients: 16\nnumber of threads: 8\nmaximum number of tries: 3\nduration: 60 s\nnumber of transactions actually processed: 729622\nnumber of failed transactions: 0 (0.000%)\nnumber of serialization failures: 0 (0.000%)\nnumber of deadlock failures: 0 (0.000%)\nnumber of transactions retried: 0 (0.000%)\ntotal number of retries: 0\nnumber of transactions above the 1000.0 ms latency limit: 0/729622 (0.000%)\nlatency average = 1.305 ms\nlatency stddev = 1.777 ms\ninitial connection time = 6.448 ms\ntps = 12160.734326 (without initial connection time)\nSQL script 1: /benchmark/point-membership.sql\n - weight: 6 (targets 60.0% of total)\n - 437333 transactions (59.9% of total)\n - number of transactions actually processed: 437333 (tps = 7289.103707)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.489 ms\n - latency stddev = 0.104 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.133           0          0 BEGIN;\n         0.201           0          0 SELECT count(r.name)\n         0.153           0          0 COMMIT;\nSQL script 2: /benchmark/window-scan.sql\n - weight: 2 (targets 20.0% of total)\n - 145879 transactions (20.0% of total)\n - number of transactions actually processed: 145879 (tps = 2431.390176)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.345 ms\n - latency stddev = 0.100 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set x random(-179000, 179000)\n         0.001           0          0 \\set y random(-89000, 89000)\n         0.344           0          0 SELECT count(*)\nSQL script 3: /benchmark/position-update.sql\n - weight: 2 (targets 20.0% of total)\n - 145783 transactions (20.0% of total)\n - number of transactions actually processed: 145783 (tps = 2429.790127)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 4.750 ms\n - latency stddev = 1.002 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.001           0          0 \\set x random(-180000, 180000)\n         0.000           0          0 \\set y random(-90000, 90000)\n         0.134           0          0 BEGIN;\n         0.232           0          0 UPDATE live_positions\n         0.241           0          0 INSERT INTO live_events(device_id, recorded_at, region, geom)\n         4.130           0          0 COMMIT;\n"
+    },
+    {
+      "transactions": 1390170,
+      "meanMs": 1.355378375306617,
+      "p50Ms": 0.671,
+      "p95Ms": 4.567,
+      "p99Ms": 6.1963100000000555,
+      "maxMs": 62.367,
+      "failures": {},
+      "retries": 0,
+      "scripts": {
+        "point-membership": {
+          "transactions": 834091,
+          "meanMs": 0.7152834942470306,
+          "p50Ms": 0.649,
+          "p95Ms": 1.205,
+          "p99Ms": 1.7080999999999766,
+          "maxMs": 35.06
+        },
+        "window-scan": {
+          "transactions": 277877,
+          "meanMs": 0.5072176970386179,
+          "p50Ms": 0.46,
+          "p95Ms": 0.887,
+          "p99Ms": 1.313,
+          "maxMs": 31.096
+        },
+        "position-update": {
+          "transactions": 278202,
+          "meanMs": 4.121647935672641,
+          "p50Ms": 3.854,
+          "p95Ms": 6.194,
+          "p99Ms": 7.18,
+          "maxMs": 62.367
+        }
+      },
+      "clients": 32,
+      "threads": 8,
+      "repetition": 1,
+      "warmupSeconds": 15,
+      "measurementSeconds": 60,
+      "wallSeconds": 60.1738883999642,
+      "tps": 23167.649677,
+      "lateTransactions": 0,
+      "stdout": "pgbench (18.4 (Debian 18.4-1.pgdg13+1))\ntransaction type: multiple scripts\nscaling factor: 1\nquery mode: prepared\nnumber of clients: 32\nnumber of threads: 8\nmaximum number of tries: 3\nduration: 60 s\nnumber of transactions actually processed: 1390170\nnumber of failed transactions: 0 (0.000%)\nnumber of serialization failures: 0 (0.000%)\nnumber of deadlock failures: 0 (0.000%)\nnumber of transactions retried: 0 (0.000%)\ntotal number of retries: 0\nnumber of transactions above the 1000.0 ms latency limit: 0/1390170 (0.000%)\nlatency average = 1.355 ms\nlatency stddev = 1.597 ms\ninitial connection time = 9.538 ms\ntps = 23167.649677 (without initial connection time)\nSQL script 1: /benchmark/point-membership.sql\n - weight: 6 (targets 60.0% of total)\n - 833325 transactions (59.9% of total)\n - number of transactions actually processed: 833325 (tps = 13887.640840)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.719 ms\n - latency stddev = 0.279 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.194           0          0 BEGIN;\n         0.300           0          0 SELECT count(r.name)\n         0.221           0          0 COMMIT;\nSQL script 2: /benchmark/window-scan.sql\n - weight: 2 (targets 20.0% of total)\n - 277728 transactions (20.0% of total)\n - number of transactions actually processed: 277728 (tps = 4628.430343)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.508 ms\n - latency stddev = 0.243 ms\n - statement latencies in milliseconds, failures and retries:\n         0.002           0          0 \\set x random(-179000, 179000)\n         0.001           0          0 \\set y random(-89000, 89000)\n         0.505           0          0 SELECT count(*)\nSQL script 3: /benchmark/position-update.sql\n - weight: 2 (targets 20.0% of total)\n - 278008 transactions (20.0% of total)\n - number of transactions actually processed: 278008 (tps = 4633.096637)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 4.140 ms\n - latency stddev = 1.667 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.001           0          0 \\set x random(-180000, 180000)\n         0.000           0          0 \\set y random(-90000, 90000)\n         0.195           0          0 BEGIN;\n         0.347           0          0 UPDATE live_positions\n         0.358           0          0 INSERT INTO live_events(device_id, recorded_at, region, geom)\n         3.227           0          0 COMMIT;\n"
+    },
+    {
+      "transactions": 1188810,
+      "meanMs": 1.5944719871131636,
+      "p50Ms": 0.586,
+      "p95Ms": 6.204,
+      "p99Ms": 7.071,
+      "maxMs": 65.281,
+      "failures": {},
+      "retries": 0,
+      "scripts": {
+        "point-membership": {
+          "transactions": 712888,
+          "meanMs": 0.6134183027347915,
+          "p50Ms": 0.575,
+          "p95Ms": 0.923,
+          "p99Ms": 1.29,
+          "maxMs": 37.435
+        },
+        "window-scan": {
+          "transactions": 238041,
+          "meanMs": 0.4333398280128213,
+          "p50Ms": 0.4,
+          "p95Ms": 0.697,
+          "p99Ms": 1.0146000000000057,
+          "maxMs": 37.843
+        },
+        "position-update": {
+          "transactions": 237881,
+          "meanMs": 5.6964324599274425,
+          "p50Ms": 5.564,
+          "p95Ms": 7.07,
+          "p99Ms": 7.945,
+          "maxMs": 65.281
+        }
+      },
+      "clients": 32,
+      "threads": 8,
+      "repetition": 2,
+      "warmupSeconds": 15,
+      "measurementSeconds": 60,
+      "wallSeconds": 60.18600729998434,
+      "tps": 19813.651905,
+      "lateTransactions": 0,
+      "stdout": "pgbench (18.4 (Debian 18.4-1.pgdg13+1))\ntransaction type: multiple scripts\nscaling factor: 1\nquery mode: prepared\nnumber of clients: 32\nnumber of threads: 8\nmaximum number of tries: 3\nduration: 60 s\nnumber of transactions actually processed: 1188810\nnumber of failed transactions: 0 (0.000%)\nnumber of serialization failures: 0 (0.000%)\nnumber of deadlock failures: 0 (0.000%)\nnumber of transactions retried: 0 (0.000%)\ntotal number of retries: 0\nnumber of transactions above the 1000.0 ms latency limit: 0/1188810 (0.000%)\nlatency average = 1.594 ms\nlatency stddev = 2.201 ms\ninitial connection time = 11.369 ms\ntps = 19813.651905 (without initial connection time)\nSQL script 1: /benchmark/point-membership.sql\n - weight: 6 (targets 60.0% of total)\n - 712160 transactions (59.9% of total)\n - number of transactions actually processed: 712160 (tps = 11869.424332)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.616 ms\n - latency stddev = 0.222 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.167           0          0 BEGIN;\n         0.258           0          0 SELECT count(r.name)\n         0.189           0          0 COMMIT;\nSQL script 2: /benchmark/window-scan.sql\n - weight: 2 (targets 20.0% of total)\n - 237919 transactions (20.0% of total)\n - number of transactions actually processed: 237919 (tps = 3965.347068)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.434 ms\n - latency stddev = 0.214 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set x random(-179000, 179000)\n         0.001           0          0 \\set y random(-89000, 89000)\n         0.432           0          0 SELECT count(*)\nSQL script 3: /benchmark/position-update.sql\n - weight: 2 (targets 20.0% of total)\n - 237663 transactions (20.0% of total)\n - number of transactions actually processed: 237663 (tps = 3961.080368)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 5.726 ms\n - latency stddev = 1.667 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.001           0          0 \\set x random(-180000, 180000)\n         0.000           0          0 \\set y random(-90000, 90000)\n         0.167           0          0 BEGIN;\n         0.299           0          0 UPDATE live_positions\n         0.306           0          0 INSERT INTO live_events(device_id, recorded_at, region, geom)\n         4.937           0          0 COMMIT;\n"
+    },
+    {
+      "transactions": 1192773,
+      "meanMs": 1.5888665010022864,
+      "p50Ms": 0.593,
+      "p95Ms": 6.17,
+      "p99Ms": 7.085,
+      "maxMs": 99.076,
+      "failures": {},
+      "retries": 0,
+      "scripts": {
+        "point-membership": {
+          "transactions": 715461,
+          "meanMs": 0.6212835877846592,
+          "p50Ms": 0.581,
+          "p95Ms": 0.943,
+          "p99Ms": 1.325,
+          "maxMs": 38.051
+        },
+        "window-scan": {
+          "transactions": 239001,
+          "meanMs": 0.44365785498805443,
+          "p50Ms": 0.409,
+          "p95Ms": 0.715,
+          "p99Ms": 1.043,
+          "maxMs": 28.131
+        },
+        "position-update": {
+          "transactions": 238311,
+          "meanMs": 5.642283465723362,
+          "p50Ms": 5.526,
+          "p95Ms": 7.085,
+          "p99Ms": 8.009899999999995,
+          "maxMs": 99.076
+        }
+      },
+      "clients": 32,
+      "threads": 8,
+      "repetition": 3,
+      "warmupSeconds": 15,
+      "measurementSeconds": 60,
+      "wallSeconds": 60.181098599976394,
+      "tps": 19877.661622,
+      "lateTransactions": 0,
+      "stdout": "pgbench (18.4 (Debian 18.4-1.pgdg13+1))\ntransaction type: multiple scripts\nscaling factor: 1\nquery mode: prepared\nnumber of clients: 32\nnumber of threads: 8\nmaximum number of tries: 3\nduration: 60 s\nnumber of transactions actually processed: 1192773\nnumber of failed transactions: 0 (0.000%)\nnumber of serialization failures: 0 (0.000%)\nnumber of deadlock failures: 0 (0.000%)\nnumber of transactions retried: 0 (0.000%)\ntotal number of retries: 0\nnumber of transactions above the 1000.0 ms latency limit: 0/1192773 (0.000%)\nlatency average = 1.589 ms\nlatency stddev = 2.166 ms\ninitial connection time = 9.923 ms\ntps = 19877.661622 (without initial connection time)\nSQL script 1: /benchmark/point-membership.sql\n - weight: 6 (targets 60.0% of total)\n - 714750 transactions (59.9% of total)\n - number of transactions actually processed: 714750 (tps = 11911.368420)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.624 ms\n - latency stddev = 0.227 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.168           0          0 BEGIN;\n         0.262           0          0 SELECT count(r.name)\n         0.191           0          0 COMMIT;\nSQL script 2: /benchmark/window-scan.sql\n - weight: 2 (targets 20.0% of total)\n - 238886 transactions (20.0% of total)\n - number of transactions actually processed: 238886 (tps = 3981.055133)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 0.444 ms\n - latency stddev = 0.189 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set x random(-179000, 179000)\n         0.001           0          0 \\set y random(-89000, 89000)\n         0.442           0          0 SELECT count(*)\nSQL script 3: /benchmark/position-update.sql\n - weight: 2 (targets 20.0% of total)\n - 238094 transactions (20.0% of total)\n - number of transactions actually processed: 238094 (tps = 3967.856387)\n - number of failed transactions: 0 (0.000%)\n - number of serialization failures: 0 (0.000%)\n - number of deadlock failures: 0 (0.000%)\n - number of transactions retried: 0 (0.000%)\n - total number of retries: 0\n - latency average = 5.671 ms\n - latency stddev = 1.599 ms\n - statement latencies in milliseconds, failures and retries:\n         0.001           0          0 \\set device_id random(1, 50000)\n         0.001           0          0 \\set x random(-180000, 180000)\n         0.000           0          0 \\set y random(-90000, 90000)\n         0.168           0          0 BEGIN;\n         0.304           0          0 UPDATE live_positions\n         0.311           0          0 INSERT INTO live_events(device_id, recorded_at, region, geom)\n         4.872           0          0 COMMIT;\n"
+    }
+  ],
+  "crashRecovery": {
+    "signal": "SIGKILL",
+    "clientsDuringCrash": 16,
+    "crashAfterSeconds": 5,
+    "recoverySeconds": 8.447631100018043,
+    "rowsBefore": 50000,
+    "rowsAfter": 50000,
+    "versionSumBefore": 2158226,
+    "versionSumAfter": 2170217,
+    "eventRowsAfter": 2120217,
+    "indexesValidAndReady": true,
+    "windowPlanUsesGistAfter": true,
+    "postRecoveryMixedProbe": true,
+    "verified": true
+  },
+  "acceptance": {
+    "zeroTransactionFailures": true,
+    "allLevelsReportTps": true,
+    "windowPlanUsesGist": true,
+    "crashRecoveryVerified": true,
+    "passes": true
+  },
+  "timingSeconds": {
+    "imagePull": null
+  },
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "AMD64 Family 26 Model 36 Stepping 0, AuthenticAMD"
+  },
+  "summaryByClients": [
+    {
+      "clients": 1,
+      "repetitions": 3,
+      "tpsMean": 1536.6813096666667,
+      "tpsMin": 1213.428866,
+      "tpsMax": 1902.197745,
+      "tpsPopulationStddev": 282.77237714391316,
+      "tpsCoefficientOfVariation": 0.1840149778389974,
+      "p99MeanMs": 2.6933333333333334,
+      "p99MinMs": 1.733,
+      "p99MaxMs": 3.267,
+      "transactionFailures": 0,
+      "lateTransactions": 0
+    },
+    {
+      "clients": 4,
+      "repetitions": 3,
+      "tpsMean": 4620.4037536666665,
+      "tpsMin": 4428.977739,
+      "tpsMax": 4883.346726,
+      "tpsPopulationStddev": 192.26509565748597,
+      "tpsCoefficientOfVariation": 0.041612184975156764,
+      "p99MeanMs": 4.933,
+      "p99MinMs": 4.846,
+      "p99MaxMs": 5.018,
+      "transactionFailures": 0,
+      "lateTransactions": 0
+    },
+    {
+      "clients": 8,
+      "repetitions": 3,
+      "tpsMean": 7517.2763153333335,
+      "tpsMin": 6674.021633,
+      "tpsMax": 8308.859205,
+      "tpsPopulationStddev": 668.4190064741099,
+      "tpsCoefficientOfVariation": 0.08891771147359649,
+      "p99MeanMs": 5.267666666666667,
+      "p99MinMs": 5.052,
+      "p99MaxMs": 5.474,
+      "transactionFailures": 0,
+      "lateTransactions": 0
+    },
+    {
+      "clients": 16,
+      "repetitions": 3,
+      "tpsMean": 12746.305600666667,
+      "tpsMin": 11790.400728,
+      "tpsMax": 14287.781748,
+      "tpsPopulationStddev": 1100.4236390439569,
+      "tpsCoefficientOfVariation": 0.08633275189843258,
+      "p99MeanMs": 5.837,
+      "p99MinMs": 5.502,
+      "p99MaxMs": 6.102,
+      "transactionFailures": 0,
+      "lateTransactions": 0
+    },
+    {
+      "clients": 32,
+      "repetitions": 3,
+      "tpsMean": 20952.987734666665,
+      "tpsMin": 19813.651905,
+      "tpsMax": 23167.649677,
+      "tpsPopulationStddev": 1566.220493221894,
+      "tpsCoefficientOfVariation": 0.07474926788749016,
+      "p99MeanMs": 6.784103333333352,
+      "p99MinMs": 6.1963100000000555,
+      "p99MaxMs": 7.085,
+      "transactionFailures": 0,
+      "lateTransactions": 0
+    }
+  ]
+}

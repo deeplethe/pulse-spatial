@@ -25,7 +25,7 @@ must not be reported as evidence for another.
 
 | ID | Evidence | Baseline | Status | Permitted claim |
 |---|---|---|---|---|
-| E0 | 52 semantic and integration tests | Explicit expected contracts | Executed | Core invariants hold for tested cases |
+| E0 | 59 semantic and integration tests | Explicit expected contracts | Executed | Core invariants hold for tested cases |
 | E1 | RDF/SHACL cross-view validation | pySHACL + GEOS functions | Executed | Tested projection outcomes agree |
 | E2 | 223 IBTrACS tracks, one polygon | Shapely/GEOS `covers` | Executed | Single-zone event-label parity |
 | E3 | Five zones; 6/12/24-hour events | GEOS + independent event sweep | Executed | Discrete multizone spatiotemporal parity |
@@ -36,6 +36,8 @@ must not be reported as evidence for another.
 | E8 | 7,396 external query rows; four Simple Features relations | Apache Jena GeoSPARQL 6.1.0 | Executed | External-engine agreement for the supported profile |
 | E9 | Pure transition-safety kernel | Lean 4.30.0 | Executed | Six safety properties are proof-checked for the mechanized abstraction |
 | E10 | 300,033 persisted points; 1,476,290 transition-zone pairs | PostgreSQL 18/PostGIS 3.6 with GiST | Executed | Indexed membership and derived-event parity with restart persistence |
+| E11 | 55/55 GeoSPARQL 1.1 ATS identifiers; 124 probes; 7 classes | Normative OGC 22-047r1 inventory + Jena 6.1.0 | Executed | Complete ATS coverage; 4/7 backend classes claimable, not 7/7 certification |
+| E12 | Closed-loop concurrency, SIGKILL recovery, open-loop SLO | PostgreSQL 18/PostGIS 3.6 + pgbench | Executed | Single-node durable mixed-workload scaling, recovery, and host-scoped SLO lower bound |
 
 ## Current E3 protocol
 
@@ -90,6 +92,10 @@ are excluded because the current language slice cannot represent them.
 - Do not call E4 an OGC or GeoSPARQL conformance suite.
 - Do not describe E9 as a proof of floating-point geometry or the complete
   parser/compiler; geometry is abstracted by a total membership function.
-- Do not describe E10 as a concurrent database or service-level benchmark.
+- Keep E10's parity claim separate from E12's concurrency and SLO evidence.
+- Report E12's 5,000 TPS value only with its 20 ms p99, 0.1% skip-budget,
+  three-repeat, single-host protocol; do not substitute saturation throughput.
+- Describe E11 as complete ATS coverage and 4/7 class claims, not an OGC-issued
+  certificate or complete GeoSPARQL 1.1 implementation.
 - Do not infer usability from syntax length or artifact count.
 - Do not extrapolate sample-and-hold results to continuous trajectories.

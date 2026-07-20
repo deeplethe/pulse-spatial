@@ -1,0 +1,343 @@
+{
+  "experiment": "postgis-open-loop-slo-evidence-v1",
+  "generatedAt": "2026-07-20T01:35:52.752921+00:00",
+  "decisionRule": "The conservative repeated-window lower bound is the highest target in the contiguous ascending prefix for which every 60-second repeat passes. A higher isolated pass after the first failed target is reported but cannot raise the lower bound.",
+  "protocol": {
+    "arrivalModel": "Poisson open-loop (--rate)",
+    "ratesTps": [
+      5000,
+      7500,
+      10000,
+      15000,
+      20000
+    ],
+    "clients": 32,
+    "warmupSecondsPerRate": 15,
+    "measurementSecondsPerRate": 60,
+    "repetitions": 3,
+    "latencyLimitMs": 20,
+    "maximumSkipRate": 0.001,
+    "deviceCount": 50000,
+    "scriptWeights": {
+      "point-membership": 6,
+      "window-scan": 2,
+      "position-update": 2
+    }
+  },
+  "repeatedWindowSummary": [
+    {
+      "targetTps": 5000,
+      "repetitions": 3,
+      "allSloPass": true,
+      "reportedTpsMean": 4986.152384666667,
+      "p99MeanMs": 5.714993333333327,
+      "p99MaxMs": 5.777979999999981,
+      "scheduleLagP99MaxMs": 0.248,
+      "transactionFailures": 0,
+      "skippedTransactions": 453,
+      "skipRateMax": 0.0006782356518078488,
+      "completedAboveLatencyLimit": 437
+    },
+    {
+      "targetTps": 5500,
+      "repetitions": 3,
+      "allSloPass": false,
+      "reportedTpsMean": 5490.0580353333335,
+      "p99MeanMs": 5.889869999999995,
+      "p99MaxMs": 6.177,
+      "scheduleLagP99MaxMs": 0.41999999999999993,
+      "transactionFailures": 0,
+      "skippedTransactions": 1256,
+      "skipRateMax": 0.0019286841045546618,
+      "completedAboveLatencyLimit": 764
+    },
+    {
+      "targetTps": 6000,
+      "repetitions": 3,
+      "allSloPass": false,
+      "reportedTpsMean": 6003.990025,
+      "p99MeanMs": 5.641,
+      "p99MaxMs": 5.857,
+      "scheduleLagP99MaxMs": 0.415,
+      "transactionFailures": 0,
+      "skippedTransactions": 980,
+      "skipRateMax": 0.001213928583306542,
+      "completedAboveLatencyLimit": 549
+    },
+    {
+      "targetTps": 6500,
+      "repetitions": 3,
+      "allSloPass": true,
+      "reportedTpsMean": 6497.413219666667,
+      "p99MeanMs": 5.617433333333329,
+      "p99MaxMs": 5.714,
+      "scheduleLagP99MaxMs": 0.478,
+      "transactionFailures": 0,
+      "skippedTransactions": 895,
+      "skipRateMax": 0.0009629631531779068,
+      "completedAboveLatencyLimit": 633
+    },
+    {
+      "targetTps": 7000,
+      "repetitions": 3,
+      "allSloPass": false,
+      "reportedTpsMean": 6996.424292333333,
+      "p99MeanMs": 5.625333333333333,
+      "p99MaxMs": 5.991,
+      "scheduleLagP99MaxMs": 0.775,
+      "transactionFailures": 0,
+      "skippedTransactions": 1246,
+      "skipRateMax": 0.001150191698616436,
+      "completedAboveLatencyLimit": 608
+    },
+    {
+      "targetTps": 7500,
+      "repetitions": 3,
+      "allSloPass": false,
+      "reportedTpsMean": 7489.508842333334,
+      "p99MeanMs": 5.724,
+      "p99MaxMs": 5.993,
+      "scheduleLagP99MaxMs": 1.1989000000000232,
+      "transactionFailures": 0,
+      "skippedTransactions": 1722,
+      "skipRateMax": 0.0019592755350757024,
+      "completedAboveLatencyLimit": 796
+    },
+    {
+      "targetTps": 10000,
+      "repetitions": 3,
+      "allSloPass": false,
+      "reportedTpsMean": 9994.508169333334,
+      "p99MeanMs": 6.042666666666666,
+      "p99MaxMs": 6.321,
+      "scheduleLagP99MaxMs": 2.409,
+      "transactionFailures": 0,
+      "skippedTransactions": 2472,
+      "skipRateMax": 0.0014579275435003924,
+      "completedAboveLatencyLimit": 918
+    },
+    {
+      "targetTps": 15000,
+      "repetitions": 3,
+      "allSloPass": false,
+      "reportedTpsMean": 14958.694578,
+      "p99MeanMs": 9.077779999999951,
+      "p99MaxMs": 9.60261999999988,
+      "scheduleLagP99MaxMs": 6.567,
+      "transactionFailures": 0,
+      "skippedTransactions": 5803,
+      "skipRateMax": 0.0029125532604230104,
+      "completedAboveLatencyLimit": 2425
+    },
+    {
+      "targetTps": 20000,
+      "repetitions": 3,
+      "allSloPass": false,
+      "reportedTpsMean": 19817.764651666665,
+      "p99MeanMs": 21.17192666666668,
+      "p99MaxMs": 22.957,
+      "scheduleLagP99MaxMs": 19.473,
+      "transactionFailures": 0,
+      "skippedTransactions": 30881,
+      "skipRateMax": 0.013387068162113947,
+      "completedAboveLatencyLimit": 63513
+    }
+  ],
+  "repeatedWindowTransactions": 14801450,
+  "capacity": {
+    "conservativeRepeatedWindowLowerBoundTps": 5000,
+    "firstFailedTargetTps": 5500,
+    "isolatedPassingTargetsAfterFailureTps": [
+      6500
+    ]
+  },
+  "sustainedFiveMinuteSummary": [
+    {
+      "targetTps": 6500,
+      "repetitions": 1,
+      "allSloPass": false,
+      "reportedTpsMean": 6494.670122,
+      "p99MeanMs": 5.858,
+      "p99MaxMs": 5.858,
+      "scheduleLagP99MaxMs": 0.527,
+      "transactionFailures": 0,
+      "skippedTransactions": 2178,
+      "skipRateMax": 0.0011166047014287209,
+      "completedAboveLatencyLimit": 1064
+    },
+    {
+      "targetTps": 7000,
+      "repetitions": 1,
+      "allSloPass": false,
+      "reportedTpsMean": 6987.235484,
+      "p99MeanMs": 6.77,
+      "p99MaxMs": 6.77,
+      "scheduleLagP99MaxMs": 1.3824099999999162,
+      "transactionFailures": 0,
+      "skippedTransactions": 2987,
+      "skipRateMax": 0.0014229501324339259,
+      "completedAboveLatencyLimit": 1664
+    }
+  ],
+  "sustainedTransactions": 4044551,
+  "exploratorySummary": [
+    {
+      "targetTps": 1000,
+      "repetitions": 1,
+      "allSloPass": true,
+      "reportedTpsMean": 995.885611,
+      "p99MeanMs": 2.715349999999998,
+      "p99MaxMs": 2.715349999999998,
+      "scheduleLagP99MaxMs": 0.2,
+      "transactionFailures": 0,
+      "skippedTransactions": 0,
+      "skipRateMax": 0.0,
+      "completedAboveLatencyLimit": 13
+    },
+    {
+      "targetTps": 5000,
+      "repetitions": 1,
+      "allSloPass": true,
+      "reportedTpsMean": 4991.197378,
+      "p99MeanMs": 5.623000000000001,
+      "p99MaxMs": 5.623000000000001,
+      "scheduleLagP99MaxMs": 0.241,
+      "transactionFailures": 0,
+      "skippedTransactions": 112,
+      "skipRateMax": 0.0007475338058814892,
+      "completedAboveLatencyLimit": 75
+    },
+    {
+      "targetTps": 10000,
+      "repetitions": 1,
+      "allSloPass": false,
+      "reportedTpsMean": 9989.064834,
+      "p99MeanMs": 6.371,
+      "p99MaxMs": 6.371,
+      "scheduleLagP99MaxMs": 2.3481300000000043,
+      "transactionFailures": 0,
+      "skippedTransactions": 348,
+      "skipRateMax": 0.0011600464018560743,
+      "completedAboveLatencyLimit": 179
+    },
+    {
+      "targetTps": 15000,
+      "repetitions": 1,
+      "allSloPass": false,
+      "reportedTpsMean": 14938.546162,
+      "p99MeanMs": 10.001409999999975,
+      "p99MaxMs": 10.001409999999975,
+      "scheduleLagP99MaxMs": 6.959399999999965,
+      "transactionFailures": 0,
+      "skippedTransactions": 1061,
+      "skipRateMax": 0.0023618664309994412,
+      "completedAboveLatencyLimit": 617
+    },
+    {
+      "targetTps": 20000,
+      "repetitions": 1,
+      "allSloPass": false,
+      "reportedTpsMean": 19169.727937,
+      "p99MeanMs": 25.073,
+      "p99MaxMs": 25.073,
+      "scheduleLagP99MaxMs": 19.859,
+      "transactionFailures": 0,
+      "skippedTransactions": 25652,
+      "skipRateMax": 0.04270401020155054,
+      "completedAboveLatencyLimit": 54567
+    },
+    {
+      "targetTps": 25000,
+      "repetitions": 1,
+      "allSloPass": false,
+      "reportedTpsMean": 21757.424602,
+      "p99MeanMs": 25.708,
+      "p99MaxMs": 25.708,
+      "scheduleLagP99MaxMs": 19.961,
+      "transactionFailures": 0,
+      "skippedTransactions": 96790,
+      "skipRateMax": 0.1291370141184821,
+      "completedAboveLatencyLimit": 154441
+    },
+    {
+      "targetTps": 30000,
+      "repetitions": 1,
+      "allSloPass": false,
+      "reportedTpsMean": 25166.217631,
+      "p99MeanMs": 25.452,
+      "p99MaxMs": 25.452,
+      "scheduleLagP99MaxMs": 19.976,
+      "transactionFailures": 0,
+      "skippedTransactions": 144314,
+      "skipRateMax": 0.16046763493874355,
+      "completedAboveLatencyLimit": 250559
+    }
+  ],
+  "maximumObservedCompletionTps": 25166.217631,
+  "environment": {
+    "python": "3.12.13",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "AMD64 Family 26 Model 36 Stepping 0, AuthenticAMD",
+    "logicalCpuCount": 24,
+    "docker": {
+      "serverVersion": "28.0.1",
+      "operatingSystem": "Docker Desktop",
+      "kernelVersion": "5.15.167.4-microsoft-standard-WSL2",
+      "logicalCpus": 24,
+      "memoryBytes": 16302743552
+    },
+    "postgresql": {
+      "serverVersion": "18.4 (Debian 18.4-1.pgdg13+1)",
+      "postgisVersion": "3.6.4",
+      "settings": {
+        "checkpoint_timeout": "300s",
+        "effective_cache_size": "5242888kB",
+        "maintenance_work_mem": "65536kB",
+        "max_connections": "100",
+        "max_parallel_workers": "8",
+        "max_wal_size": "1024MB",
+        "max_worker_processes": "8",
+        "shared_buffers": "163848kB",
+        "work_mem": "4096kB"
+      },
+      "databaseSizeBytes": 533780159
+    }
+  },
+  "dataset": {
+    "name": "NOAA IBTrACS v04r01 since1980 list CSV",
+    "doi": "10.25921/82ty-9e16",
+    "sourceUrl": "https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/csv/ibtracs.since1980.list.v04r01.csv",
+    "path": ".data/ibtracs.since1980.list.v04r01.csv",
+    "bytes": 142982689,
+    "sha256": "9f3db13f92bdc47d49edcdec677e64bafe9f20c67529552a65a10882205bb7fe",
+    "tracks": 4775,
+    "points": 300033
+  },
+  "sources": [
+    {
+      "path": "experiments/postgis/results/postgis-slo-since1980-2026-07-20.json",
+      "sha256": "d64456937cc5e5e6c92e7dc8b40e03f2b6c7700cee33cd1ae2669457fc605976",
+      "bytes": 81109
+    },
+    {
+      "path": "experiments/postgis/results/postgis-slo-boundary-since1980-2026-07-20.json",
+      "sha256": "77981b1aa6f98b9aed2dc18f706ce2b6fb8bfc79032b6eaf3e1065754d3dc016",
+      "bytes": 50201
+    },
+    {
+      "path": "experiments/postgis/results/postgis-slo-lower-bound-since1980-2026-07-20.json",
+      "sha256": "d792012750ac13214bfcdcede511409e1124b507273fee21af08bc7a55c0188a",
+      "bytes": 19585
+    },
+    {
+      "path": "experiments/postgis/results/postgis-slo-sustained-since1980-2026-07-20.json",
+      "sha256": "c65d9cd49beccb4b19a78764a47b16dd1211705bd67079d46001004213399502",
+      "bytes": 15013
+    },
+    {
+      "path": "experiments/postgis/results/postgis-slo-exploratory-since1980-2026-07-20.json",
+      "sha256": "df6570a737b6f3b34ede60e35644e26ca739d98f2fb0d3aab93e0271cbb025bf",
+      "bytes": 41210
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "standard": "OGC GeoSPARQL 1.1",
+  "document": "OGC 22-047r1",
+  "normativeSource": "https://docs.ogc.org/is/22-047r1/22-047r1.html#_abstract_test_suite",
+  "sourceRepository": "https://github.com/opengeospatial/ogc-geosparql",
+  "publishedTag": "1.1.0-ghpages",
+  "publishedTagCommit": "cd53678be2e9775066d63791c84c3fa010fc29ff",
+  "classes": {
+    "/conf/core": [
+      "/conf/core/sparql-protocol",
+      "/conf/core/spatial-object-class",
+      "/conf/core/feature-class",
+      "/conf/core/spatial-object-collection-class",
+      "/conf/core/feature-collection-class",
+      "/conf/core/spatial-object-properties"
+    ],
+    "/conf/topology-vocab-extension": [
+      "/conf/topology-vocab-extension/sf-spatial-relations",
+      "/conf/topology-vocab-extension/eh-spatial-relations",
+      "/conf/topology-vocab-extension/rcc8-spatial-relations"
+    ],
+    "/conf/geometry-extension": [
+      "/conf/geometry-extension/geometry-class",
+      "/conf/geometry-extension/geometry-collection-class",
+      "/conf/geometry-extension/feature-properties",
+      "/conf/geometry-extension/geometry-properties",
+      "/conf/geometry-extension/query-functions",
+      "/conf/geometry-extension/srid-function",
+      "/conf/geometry-extension/sa-functions",
+      "/conf/geometry-extension/wkt-literal",
+      "/conf/geometry-extension/wkt-literal-default-srs",
+      "/conf/geometry-extension/wkt-axis-order",
+      "/conf/geometry-extension/wkt-literal-empty",
+      "/conf/geometry-extension/geometry-as-wkt-literal",
+      "/conf/geometry-extension/asWKT-function",
+      "/conf/geometry-extension/gml-literal",
+      "/conf/geometry-extension/gml-literal-empty",
+      "/conf/geometry-extension/gml-profile",
+      "/conf/geometry-extension/geometry-as-gml-literal",
+      "/conf/geometry-extension/asGML-function",
+      "/conf/geometry-extension/geojson-literal",
+      "/conf/geometry-extension/geojson-literal-srs",
+      "/conf/geometry-extension/geojson-literal-empty",
+      "/conf/geometry-extension/geometry-as-geojson-literal",
+      "/conf/geometry-extension/asGeoJSON-function",
+      "/conf/geometry-extension/kml-literal",
+      "/conf/geometry-extension/kml-literal-srs",
+      "/conf/geometry-extension/kml-literal-empty",
+      "/conf/geometry-extension/geometry-as-kml-literal",
+      "/conf/geometry-extension/asKML-function"
+    ],
+    "/conf/geometry-extension-dggs": [
+      "/conf/geometry-extension-dggs/query-functions",
+      "/conf/geometry-extension-dggs/query-functions-non-sf",
+      "/conf/geometry-extension-dggs/srid-function",
+      "/conf/geometry-extension-dggs/sa-functions",
+      "/conf/geometry-extension-dggs/dggs-literal",
+      "/conf/geometry-extension-dggs/dggs-literal-empty",
+      "/conf/geometry-extension-dggs/geometry-as-dggs-literal",
+      "/conf/geometry-extension-dggs/asDGGS-function"
+    ],
+    "/conf/geometry-topology-extension": [
+      "/conf/geometry-topology-extension/relate-query-function",
+      "/conf/geometry-topology-extension/sf-query-functions",
+      "/conf/geometry-topology-extension/eh-query-functions",
+      "/conf/geometry-topology-extension/rcc8-query-functions"
+    ],
+    "/conf/rdfs-entailment-extension": [
+      "/conf/rdfs-entailment-extension/bgp-rdfs-ent",
+      "/conf/rdfs-entailment-extension/wkt-geometry-types",
+      "/conf/rdfs-entailment-extension/gml-geometry-types"
+    ],
+    "/conf/query-rewrite-extension": [
+      "/conf/query-rewrite-extension/sf-query-rewrite",
+      "/conf/query-rewrite-extension/eh-query-rewrite",
+      "/conf/query-rewrite-extension/rcc8-query-rewrite"
+    ]
+  }
+}

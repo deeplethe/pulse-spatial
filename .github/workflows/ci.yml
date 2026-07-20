@@ -71,6 +71,10 @@ jobs:
           --tag pulse-jena-geosparql:6.1.0
           external/jena-geosparql
       - run: pulse-spatial-geosparql-external --require-parity
+      - run: >-
+          pulse-spatial-ogc-conformance
+          --require-complete-coverage
+          > /dev/null
 
   lean-formal:
     runs-on: ubuntu-latest
@@ -95,3 +99,25 @@ jobs:
           pulse-spatial-postgis
           --data experiments/ibtracs/snapshots/ibtracs-last3years-main-2026-07-16.csv
           --require-parity
+      - run: >-
+          pulse-spatial-postgis-concurrency
+          --data experiments/ibtracs/snapshots/ibtracs-last3years-main-2026-07-16.csv
+          --clients 1,4
+          --warmup-seconds 1
+          --duration-seconds 3
+          --repetitions 1
+          --device-count 10000
+          --crash-after-seconds 1
+          --require-acceptance
+          > /dev/null
+      - run: >-
+          pulse-spatial-postgis-slo
+          --data experiments/ibtracs/snapshots/ibtracs-last3years-main-2026-07-16.csv
+          --rates 1000,5000
+          --clients 16
+          --warmup-seconds 1
+          --duration-seconds 3
+          --repetitions 1
+          --device-count 10000
+          --require-valid
+          > /dev/null

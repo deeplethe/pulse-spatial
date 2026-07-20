@@ -1,0 +1,1038 @@
+{
+  "experiment": "ogc-geosparql-1.1-complete-ats-coverage-v1",
+  "generatedAt": "2026-07-20T01:43:28.828506+00:00",
+  "claimBoundary": "Complete coverage of all 55 normative GeoSPARQL 1.1 abstract-test identifiers with researcher-authored executable refinements. A class is claimable only when all its abstract tests pass. This is not an OGC-issued certificate, and manual requirements remain manual rather than being silently counted as passes.",
+  "normativeInventory": {
+    "document": "OGC 22-047r1",
+    "source": "https://docs.ogc.org/is/22-047r1/22-047r1.html#_abstract_test_suite",
+    "publishedTag": "1.1.0-ghpages",
+    "publishedTagCommit": "cd53678be2e9775066d63791c84c3fa010fc29ff",
+    "conformanceClasses": 7,
+    "abstractTests": 55,
+    "coverageComplete": true
+  },
+  "summary": {
+    "componentProbes": 124,
+    "componentStatus": {
+      "pass": 91,
+      "fail": 32,
+      "error": 0,
+      "manual": 1
+    },
+    "claimableClasses": [
+      "/conf/core",
+      "/conf/topology-vocab-extension",
+      "/conf/geometry-topology-extension",
+      "/conf/rdfs-entailment-extension"
+    ]
+  },
+  "classes": [
+    {
+      "identifier": "/conf/core",
+      "status": "pass",
+      "claimable": true,
+      "tests": [
+        {
+          "identifier": "/conf/core/sparql-protocol",
+          "status": "pass",
+          "components": [
+            {
+              "name": "sparql-protocol",
+              "status": "pass",
+              "seconds": 1.4348356000264175
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/core/spatial-object-class",
+          "status": "pass",
+          "components": [
+            {
+              "name": "spatial-object-class",
+              "status": "pass",
+              "seconds": 1.2495312999817543
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/core/feature-class",
+          "status": "pass",
+          "components": [
+            {
+              "name": "feature-class",
+              "status": "pass",
+              "seconds": 1.2201949000009336
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/core/spatial-object-collection-class",
+          "status": "pass",
+          "components": [
+            {
+              "name": "spatial-object-collection-class",
+              "status": "pass",
+              "seconds": 1.2777729000081308
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/core/feature-collection-class",
+          "status": "pass",
+          "components": [
+            {
+              "name": "feature-collection-class",
+              "status": "pass",
+              "seconds": 1.235356600023806
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/core/spatial-object-properties",
+          "status": "pass",
+          "components": [
+            {
+              "name": "spatial-object-properties",
+              "status": "pass",
+              "seconds": 1.2164089999860153
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "identifier": "/conf/topology-vocab-extension",
+      "status": "pass",
+      "claimable": true,
+      "tests": [
+        {
+          "identifier": "/conf/topology-vocab-extension/sf-spatial-relations",
+          "status": "pass",
+          "components": [
+            {
+              "name": "sfEquals",
+              "status": "pass",
+              "seconds": 1.3221030000131577
+            },
+            {
+              "name": "sfDisjoint",
+              "status": "pass",
+              "seconds": 1.3099327000090852
+            },
+            {
+              "name": "sfIntersects",
+              "status": "pass",
+              "seconds": 1.3429689000477083
+            },
+            {
+              "name": "sfTouches",
+              "status": "pass",
+              "seconds": 1.2985749000217766
+            },
+            {
+              "name": "sfCrosses",
+              "status": "pass",
+              "seconds": 1.356091000023298
+            },
+            {
+              "name": "sfWithin",
+              "status": "pass",
+              "seconds": 1.2367876000353135
+            },
+            {
+              "name": "sfContains",
+              "status": "pass",
+              "seconds": 1.2914769000490196
+            },
+            {
+              "name": "sfOverlaps",
+              "status": "pass",
+              "seconds": 1.2305013000150211
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/topology-vocab-extension/eh-spatial-relations",
+          "status": "pass",
+          "components": [
+            {
+              "name": "ehEquals",
+              "status": "pass",
+              "seconds": 1.3443427999736741
+            },
+            {
+              "name": "ehDisjoint",
+              "status": "pass",
+              "seconds": 1.2924579000100493
+            },
+            {
+              "name": "ehMeet",
+              "status": "pass",
+              "seconds": 1.2181448999908753
+            },
+            {
+              "name": "ehOverlap",
+              "status": "pass",
+              "seconds": 1.2648683000006713
+            },
+            {
+              "name": "ehCovers",
+              "status": "pass",
+              "seconds": 1.2649155000108294
+            },
+            {
+              "name": "ehCoveredBy",
+              "status": "pass",
+              "seconds": 1.2181722999666817
+            },
+            {
+              "name": "ehInside",
+              "status": "pass",
+              "seconds": 1.3053236999548972
+            },
+            {
+              "name": "ehContains",
+              "status": "pass",
+              "seconds": 1.3632347999955527
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/topology-vocab-extension/rcc8-spatial-relations",
+          "status": "pass",
+          "components": [
+            {
+              "name": "rcc8eq",
+              "status": "pass",
+              "seconds": 1.3507349999854341
+            },
+            {
+              "name": "rcc8dc",
+              "status": "pass",
+              "seconds": 1.263975199952256
+            },
+            {
+              "name": "rcc8ec",
+              "status": "pass",
+              "seconds": 1.2592471999814734
+            },
+            {
+              "name": "rcc8po",
+              "status": "pass",
+              "seconds": 1.2515479000285268
+            },
+            {
+              "name": "rcc8tppi",
+              "status": "pass",
+              "seconds": 1.26179509999929
+            },
+            {
+              "name": "rcc8tpp",
+              "status": "pass",
+              "seconds": 1.2043345000129193
+            },
+            {
+              "name": "rcc8ntpp",
+              "status": "pass",
+              "seconds": 1.3579539000056684
+            },
+            {
+              "name": "rcc8ntppi",
+              "status": "pass",
+              "seconds": 1.3463494000025094
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "identifier": "/conf/geometry-extension",
+      "status": "fail",
+      "claimable": false,
+      "tests": [
+        {
+          "identifier": "/conf/geometry-extension/geometry-class",
+          "status": "pass",
+          "components": [
+            {
+              "name": "geometry-class",
+              "status": "pass",
+              "seconds": 1.2968845999566838
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/geometry-collection-class",
+          "status": "pass",
+          "components": [
+            {
+              "name": "geometry-collection-class",
+              "status": "pass",
+              "seconds": 1.297234199999366
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/feature-properties",
+          "status": "pass",
+          "components": [
+            {
+              "name": "feature-properties",
+              "status": "pass",
+              "seconds": 1.3937281999969855
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/geometry-properties",
+          "status": "pass",
+          "components": [
+            {
+              "name": "geometry-properties",
+              "status": "pass",
+              "seconds": 1.2290517999790609
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/query-functions",
+          "status": "fail",
+          "components": [
+            {
+              "name": "boundary",
+              "status": "pass",
+              "seconds": 1.2938089999952354
+            },
+            {
+              "name": "boundingCircle",
+              "status": "fail",
+              "seconds": 1.277638899977319
+            },
+            {
+              "name": "metricBuffer",
+              "status": "fail",
+              "seconds": 1.2649920000112616
+            },
+            {
+              "name": "buffer",
+              "status": "fail",
+              "seconds": 1.3125404000165872
+            },
+            {
+              "name": "centroid",
+              "status": "fail",
+              "seconds": 1.308392199978698
+            },
+            {
+              "name": "convexHull",
+              "status": "pass",
+              "seconds": 1.2630595000227913
+            },
+            {
+              "name": "concaveHull",
+              "status": "fail",
+              "seconds": 1.3130712999845855
+            },
+            {
+              "name": "coordinateDimension",
+              "status": "pass",
+              "seconds": 1.3633341999957338
+            },
+            {
+              "name": "difference",
+              "status": "pass",
+              "seconds": 1.4597465000115335
+            },
+            {
+              "name": "dimension",
+              "status": "pass",
+              "seconds": 1.3154675000114366
+            },
+            {
+              "name": "metricDistance",
+              "status": "fail",
+              "seconds": 1.2916437999811023
+            },
+            {
+              "name": "distance",
+              "status": "fail",
+              "seconds": 1.3667345000430942
+            },
+            {
+              "name": "envelope",
+              "status": "pass",
+              "seconds": 1.3226313999621198
+            },
+            {
+              "name": "geometryType",
+              "status": "fail",
+              "seconds": 1.2201637999969535
+            },
+            {
+              "name": "intersection",
+              "status": "pass",
+              "seconds": 1.2961118000093848
+            },
+            {
+              "name": "is3D",
+              "status": "fail",
+              "seconds": 1.2752973000169732
+            },
+            {
+              "name": "isEmpty",
+              "status": "pass",
+              "seconds": 1.294622699962929
+            },
+            {
+              "name": "isMeasured",
+              "status": "fail",
+              "seconds": 1.2741050000186078
+            },
+            {
+              "name": "isSimple",
+              "status": "pass",
+              "seconds": 1.289637700014282
+            },
+            {
+              "name": "spatialDimension",
+              "status": "pass",
+              "seconds": 1.2878744000336155
+            },
+            {
+              "name": "symDifference",
+              "status": "pass",
+              "seconds": 1.251899200025946
+            },
+            {
+              "name": "transform",
+              "status": "fail",
+              "seconds": 1.3110815999680199
+            },
+            {
+              "name": "union",
+              "status": "pass",
+              "seconds": 1.3330043000169098
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/srid-function",
+          "status": "pass",
+          "components": [
+            {
+              "name": "getSRID",
+              "status": "pass",
+              "seconds": 1.3348111999803223
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/sa-functions",
+          "status": "fail",
+          "components": [
+            {
+              "name": "aggBoundingBox",
+              "status": "fail",
+              "seconds": 1.3281954000121914
+            },
+            {
+              "name": "aggBoundingCircle",
+              "status": "fail",
+              "seconds": 1.3925868999795057
+            },
+            {
+              "name": "aggCentroid",
+              "status": "fail",
+              "seconds": 1.3583472999744117
+            },
+            {
+              "name": "aggConcaveHull",
+              "status": "fail",
+              "seconds": 1.4431911000283435
+            },
+            {
+              "name": "aggConvexHull",
+              "status": "fail",
+              "seconds": 1.276485699985642
+            },
+            {
+              "name": "aggUnion",
+              "status": "fail",
+              "seconds": 1.3775465000071563
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/wkt-literal",
+          "status": "pass",
+          "components": [
+            {
+              "name": "wkt-literal",
+              "status": "pass",
+              "seconds": 1.3537716999999247
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/wkt-literal-default-srs",
+          "status": "fail",
+          "components": [
+            {
+              "name": "wkt-literal-default-srs",
+              "status": "fail",
+              "seconds": 1.3172451999853365
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/wkt-axis-order",
+          "status": "fail",
+          "components": [
+            {
+              "name": "wkt-axis-order",
+              "status": "fail",
+              "seconds": 1.3450657000066712
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/wkt-literal-empty",
+          "status": "pass",
+          "components": [
+            {
+              "name": "wkt-literal-empty",
+              "status": "pass",
+              "seconds": 1.3142806000541896
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/geometry-as-wkt-literal",
+          "status": "pass",
+          "components": [
+            {
+              "name": "geometry-as-wkt-literal",
+              "status": "pass",
+              "seconds": 1.2978549000108615
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/asWKT-function",
+          "status": "fail",
+          "components": [
+            {
+              "name": "asWKT",
+              "status": "fail",
+              "seconds": 1.3718954999931157
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/gml-literal",
+          "status": "pass",
+          "components": [
+            {
+              "name": "gml-literal",
+              "status": "pass",
+              "seconds": 1.487804500036873
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/gml-literal-empty",
+          "status": "pass",
+          "components": [
+            {
+              "name": "gml-literal-empty",
+              "status": "pass",
+              "seconds": 1.3570702000288293
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/gml-profile",
+          "status": "manual",
+          "components": [
+            {
+              "name": "documented-gml-profile",
+              "status": "manual",
+              "reason": "Implementation documentation must state its supported GML profile."
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/geometry-as-gml-literal",
+          "status": "pass",
+          "components": [
+            {
+              "name": "geometry-as-gml-literal",
+              "status": "pass",
+              "seconds": 1.341136600007303
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/asGML-function",
+          "status": "fail",
+          "components": [
+            {
+              "name": "asGML",
+              "status": "fail",
+              "seconds": 1.2977336999610998
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/geojson-literal",
+          "status": "pass",
+          "components": [
+            {
+              "name": "geojson-literal",
+              "status": "pass",
+              "seconds": 1.3300146999536082
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/geojson-literal-srs",
+          "status": "pass",
+          "components": [
+            {
+              "name": "geojson-literal-srs",
+              "status": "pass",
+              "seconds": 1.2740489999996498
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/geojson-literal-empty",
+          "status": "fail",
+          "components": [
+            {
+              "name": "geojson-literal-empty",
+              "status": "fail",
+              "seconds": 1.2790236999862827
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/geometry-as-geojson-literal",
+          "status": "pass",
+          "components": [
+            {
+              "name": "geometry-as-geojson-literal",
+              "status": "pass",
+              "seconds": 1.3025596999796107
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/asGeoJSON-function",
+          "status": "pass",
+          "components": [
+            {
+              "name": "asGeoJSON",
+              "status": "pass",
+              "seconds": 1.2985284000169486
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/kml-literal",
+          "status": "pass",
+          "components": [
+            {
+              "name": "kml-literal",
+              "status": "pass",
+              "seconds": 1.2829186000162736
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/kml-literal-srs",
+          "status": "pass",
+          "components": [
+            {
+              "name": "kml-literal-srs",
+              "status": "pass",
+              "seconds": 1.293101800023578
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/kml-literal-empty",
+          "status": "fail",
+          "components": [
+            {
+              "name": "kml-literal-empty",
+              "status": "fail",
+              "seconds": 1.3035669000237249
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/geometry-as-kml-literal",
+          "status": "pass",
+          "components": [
+            {
+              "name": "geometry-as-kml-literal",
+              "status": "pass",
+              "seconds": 1.2937371999723837
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension/asKML-function",
+          "status": "fail",
+          "components": [
+            {
+              "name": "asKML",
+              "status": "fail",
+              "seconds": 1.3270335999550298
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "identifier": "/conf/geometry-extension-dggs",
+      "status": "fail",
+      "claimable": false,
+      "tests": [
+        {
+          "identifier": "/conf/geometry-extension-dggs/query-functions",
+          "status": "fail",
+          "components": [
+            {
+              "name": "query-functions",
+              "status": "fail",
+              "seconds": 1.3182549999910407
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension-dggs/query-functions-non-sf",
+          "status": "fail",
+          "components": [
+            {
+              "name": "query-functions-non-sf",
+              "status": "fail",
+              "seconds": 1.3052850000094622
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension-dggs/srid-function",
+          "status": "fail",
+          "components": [
+            {
+              "name": "srid-function",
+              "status": "fail",
+              "seconds": 1.3120120999519713
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension-dggs/sa-functions",
+          "status": "fail",
+          "components": [
+            {
+              "name": "sa-functions",
+              "status": "fail",
+              "seconds": 1.3230308000347577
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension-dggs/dggs-literal",
+          "status": "pass",
+          "components": [
+            {
+              "name": "dggs-literal",
+              "status": "pass",
+              "seconds": 1.2982095999759622
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension-dggs/dggs-literal-empty",
+          "status": "pass",
+          "components": [
+            {
+              "name": "dggs-literal-empty",
+              "status": "pass",
+              "seconds": 1.2890469999983907
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension-dggs/geometry-as-dggs-literal",
+          "status": "pass",
+          "components": [
+            {
+              "name": "geometry-as-dggs-literal",
+              "status": "pass",
+              "seconds": 1.2806094999541529
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-extension-dggs/asDGGS-function",
+          "status": "fail",
+          "components": [
+            {
+              "name": "asDGGS",
+              "status": "fail",
+              "seconds": 1.2274141000234522
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "identifier": "/conf/geometry-topology-extension",
+      "status": "pass",
+      "claimable": true,
+      "tests": [
+        {
+          "identifier": "/conf/geometry-topology-extension/relate-query-function",
+          "status": "pass",
+          "components": [
+            {
+              "name": "relate",
+              "status": "pass",
+              "seconds": 1.3667811999912374
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-topology-extension/sf-query-functions",
+          "status": "pass",
+          "components": [
+            {
+              "name": "sfEquals",
+              "status": "pass",
+              "seconds": 1.2529079000232741
+            },
+            {
+              "name": "sfDisjoint",
+              "status": "pass",
+              "seconds": 1.3614461999968626
+            },
+            {
+              "name": "sfIntersects",
+              "status": "pass",
+              "seconds": 1.2791361000272445
+            },
+            {
+              "name": "sfTouches",
+              "status": "pass",
+              "seconds": 1.2786663000006229
+            },
+            {
+              "name": "sfCrosses",
+              "status": "pass",
+              "seconds": 1.3171498000156134
+            },
+            {
+              "name": "sfWithin",
+              "status": "pass",
+              "seconds": 1.291487500013318
+            },
+            {
+              "name": "sfContains",
+              "status": "pass",
+              "seconds": 1.317593300016597
+            },
+            {
+              "name": "sfOverlaps",
+              "status": "pass",
+              "seconds": 1.3033289999584667
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-topology-extension/eh-query-functions",
+          "status": "pass",
+          "components": [
+            {
+              "name": "ehEquals",
+              "status": "pass",
+              "seconds": 1.4062674000160769
+            },
+            {
+              "name": "ehDisjoint",
+              "status": "pass",
+              "seconds": 1.461607500037644
+            },
+            {
+              "name": "ehMeet",
+              "status": "pass",
+              "seconds": 1.352569799986668
+            },
+            {
+              "name": "ehOverlap",
+              "status": "pass",
+              "seconds": 1.325037100003101
+            },
+            {
+              "name": "ehCovers",
+              "status": "pass",
+              "seconds": 1.4086694999714382
+            },
+            {
+              "name": "ehCoveredBy",
+              "status": "pass",
+              "seconds": 1.3679070999496616
+            },
+            {
+              "name": "ehInside",
+              "status": "pass",
+              "seconds": 1.2900679999729618
+            },
+            {
+              "name": "ehContains",
+              "status": "pass",
+              "seconds": 1.3561640999978408
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/geometry-topology-extension/rcc8-query-functions",
+          "status": "pass",
+          "components": [
+            {
+              "name": "rcc8eq",
+              "status": "pass",
+              "seconds": 1.2703588000149466
+            },
+            {
+              "name": "rcc8dc",
+              "status": "pass",
+              "seconds": 1.2566279000020586
+            },
+            {
+              "name": "rcc8ec",
+              "status": "pass",
+              "seconds": 1.337243199988734
+            },
+            {
+              "name": "rcc8po",
+              "status": "pass",
+              "seconds": 1.3355846999911591
+            },
+            {
+              "name": "rcc8tppi",
+              "status": "pass",
+              "seconds": 1.29196389997378
+            },
+            {
+              "name": "rcc8tpp",
+              "status": "pass",
+              "seconds": 1.3582652000477538
+            },
+            {
+              "name": "rcc8ntpp",
+              "status": "pass",
+              "seconds": 1.2846125999931246
+            },
+            {
+              "name": "rcc8ntppi",
+              "status": "pass",
+              "seconds": 1.4856946000363678
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "identifier": "/conf/rdfs-entailment-extension",
+      "status": "pass",
+      "claimable": true,
+      "tests": [
+        {
+          "identifier": "/conf/rdfs-entailment-extension/bgp-rdfs-ent",
+          "status": "pass",
+          "components": [
+            {
+              "name": "bgp-rdfs-ent",
+              "status": "pass",
+              "seconds": 1.3494841000065207
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/rdfs-entailment-extension/wkt-geometry-types",
+          "status": "pass",
+          "components": [
+            {
+              "name": "wkt-geometry-types",
+              "status": "pass",
+              "seconds": 1.2936233999789692
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/rdfs-entailment-extension/gml-geometry-types",
+          "status": "pass",
+          "components": [
+            {
+              "name": "gml-geometry-types",
+              "status": "pass",
+              "seconds": 1.4109358999994583
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "identifier": "/conf/query-rewrite-extension",
+      "status": "fail",
+      "claimable": false,
+      "tests": [
+        {
+          "identifier": "/conf/query-rewrite-extension/sf-query-rewrite",
+          "status": "fail",
+          "components": [
+            {
+              "name": "sfWithin",
+              "status": "fail",
+              "seconds": 1.3551264999550767
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/query-rewrite-extension/eh-query-rewrite",
+          "status": "fail",
+          "components": [
+            {
+              "name": "ehInside",
+              "status": "fail",
+              "seconds": 1.3433074000058696
+            }
+          ]
+        },
+        {
+          "identifier": "/conf/query-rewrite-extension/rcc8-query-rewrite",
+          "status": "fail",
+          "components": [
+            {
+              "name": "rcc8ntpp",
+              "status": "fail",
+              "seconds": 1.3434838999528438
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "externalSystem": "Apache Jena GeoSPARQL 6.1.0",
+    "containerImage": "pulse-jena-geosparql:6.1.0",
+    "containerImageId": "sha256:fe87efec22391828bcebc8c46bfba5fd1a79d4d7f2784a4a6a8a8c9dc520f816",
+    "imageBuildSeconds": null
+  }
+}

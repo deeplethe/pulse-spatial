@@ -6,5 +6,6 @@ __pycache__/
 .ruff_cache/
 .venv/
 .data/
+experiments/postgis/results/*-run.log
 build/
 dist/

@@ -158,6 +158,28 @@ derived membership, 4,832 instantaneous-event, and 12,870 sustained-event
 layers have zero differences from PULSE across 1,476,290 transition-zone
 pairs. See the [`PostGIS baseline`](experiments/postgis/README.md).
 
+An eleventh evidence path refines every identifier in the normative
+GeoSPARQL 1.1 Abstract Test Suite: all 7 conformance classes and all 55
+abstract tests are represented by 124 executable or explicit manual probes.
+Against the pinned unmodified Jena 6.1.0 backend, 4/7 classes are claimable;
+the geometry, DGGS, and query-rewrite classes remain failed rather than being
+silently counted as supported. This is complete ATS *coverage*, not an
+OGC-issued certification or a 7/7 implementation claim; see the
+[`GeoSPARQL 1.1 conformance matrix`](experiments/ogc-geosparql-1.1/README.md).
+
+A twelfth experiment exercises a durable mixed PostGIS workload: 60% point
+membership, 20% GiST window scans, and 20% synchronous position updates plus
+event appends. Closed-loop runs at 1--32 clients completed without failures or
+retries; 32 clients averaged 20,952.99 TPS with 6.784 ms mean p99 across three
+one-minute repeats. A SIGKILL/restart recovered the same volume in 8.448 s and
+passed row, version, index, and post-recovery workload checks. Separate
+open-loop Poisson-arrival tests processed 14,801,450 transactions in the
+three-repeat capacity sweep. Under a declared 20 ms completion-p99 and 0.1%
+skipped-arrival budget, the conservative contiguous lower bound is 5,000 TPS;
+the exploratory saturation run completed up to 25,166.22 TPS but did not meet
+that SLO. See the
+[`production-oriented concurrency protocol`](experiments/postgis/CONCURRENCY.md).
+
 ## Repository map
 
 - `docs/formal-semantics.md` — core calculus, judgments, theorems, and proofs
@@ -169,12 +191,13 @@ pairs. See the [`PostGIS baseline`](experiments/postgis/README.md).
 - `experiments/ibtracs/` — real-data protocol, snapshot, and scale results
 - `experiments/spatiotemporal/` — multizone duration protocol and results
 - `experiments/geosparql-external/` — Apache Jena external-system agreement
+- `experiments/ogc-geosparql-1.1/` — complete ATS inventory and class audit
 - `experiments/formal-properties/` — bounded exhaustive semantic checks
 - `experiments/composition/` — three-path executable composition comparison
 - `experiments/topology/` — Point/Polygon boundary differential corpus
 - `experiments/end-to-end/` — real-track four-mode integration case
 - `experiments/semantic-sensitivity/` — semantic policy mutation checks
-- `experiments/postgis/` — persistent PostGIS/GiST baseline and reports
+- `experiments/postgis/` — persistence, concurrency, recovery, and SLO reports
 - `external/jena-geosparql/` — pinned Java/Docker comparison harness
 - `formal/lean/` — Lean 4 mechanized transition-safety kernel
 - `grammar/pulse-s.ebnf` — proposed PULSE-S surface syntax
@@ -189,8 +212,11 @@ pairs. See the [`PostGIS baseline`](experiments/postgis/README.md).
 2. Add explicit accuracy regions and coordinate transformations.
 3. Add polygon holes, multipolygons, and explicit antimeridian handling.
 4. Project temporal events and intervals through an OWL-Time profile.
-5. Add concurrent read/write and recovery workloads to the persistent baseline.
-6. Expand beyond the supported Point/simple-Polygon standards profile without
+5. Implement and independently test the three currently failed GeoSPARQL 1.1
+   conformance classes instead of treating projection as implementation.
+6. Repeat the open-loop protocol on pinned bare-metal and cloud instances,
+   then study connection pooling, partitioning, replicas, and failover.
+7. Expand beyond the supported Point/simple-Polygon standards profile without
    weakening the explicit non-conformance boundary.
 
 ## License

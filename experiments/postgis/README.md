@@ -22,3 +22,9 @@ pulse-spatial-postgis \
 The default image is pinned to `postgis/postgis:18-3.6`.  The experiment does
 not expose a database port and removes its temporary volume unless
 `--keep-volume` is supplied.
+
+Concurrency, open-loop arrival-rate SLO, and SIGKILL recovery are evaluated by
+the separate but schema-compatible
+[`production-oriented concurrency protocol`](CONCURRENCY.md). Keeping the
+parity and systems protocols distinct prevents a fast indexed query from being
+misreported as concurrent service capacity.
