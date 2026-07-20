@@ -32,9 +32,9 @@ UPSTREAM_REPOSITORY = "https://github.com/opengeospatial/ogc-geosparql"
 UPSTREAM_TAG = "1.1.0-ghpages"
 UPSTREAM_COMMIT = "cd53678be2e9775066d63791c84c3fa010fc29ff"
 EXPECTED_HASHES = {
-    "reqs.ttl": "209fd99a08ea9a1992ab5bbbfe68193e0183c44e59c626e276379d2007298bfd",
+    "reqs.ttl": "4b76c1318db09be0077fa9134203c24078f3d3afee055ccefd1e73daf46036c1",
     "servicedescription_conformanceclasses.ttl": (
-        "58fa4b6e7d1991522c2d9c7728a3d02478f91a1bbfdac7f7cb3eecbc6d7fe6dc"
+        "416d27f614374630df5ae3c3429340fb790f94dc71d1247d332d860c908d4803"
     ),
 }
 
@@ -51,11 +51,9 @@ LOCAL_NAME_ALIASES = {
 
 
 def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as source:
-        for block in iter(lambda: source.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
+    # Git stores and distributes these text assets with LF endings. Normalize
+    # Windows checkouts before hashing so the pinned digest is portable.
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 
 def _version(uri: str) -> str:

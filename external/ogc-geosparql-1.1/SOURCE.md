@@ -10,8 +10,11 @@ Open Geospatial Consortium repository:
 
 Pinned SHA-256 digests:
 
-- `reqs.ttl`: `209fd99a08ea9a1992ab5bbbfe68193e0183c44e59c626e276379d2007298bfd`
-- `servicedescription_conformanceclasses.ttl`: `58fa4b6e7d1991522c2d9c7728a3d02478f91a1bbfdac7f7cb3eecbc6d7fe6dc`
+- `reqs.ttl`: `4b76c1318db09be0077fa9134203c24078f3d3afee055ccefd1e73daf46036c1`
+- `servicedescription_conformanceclasses.ttl`: `416d27f614374630df5ae3c3429340fb790f94dc71d1247d332d860c908d4803`
+
+Digests use the canonical LF bytes stored by Git, independent of checkout
+newline conversion.
 
 The files retain their upstream copyright and licensing metadata, including
 the OGC rights and license statements embedded in `reqs.ttl`. They are vendored
