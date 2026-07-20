@@ -9,7 +9,6 @@ import json
 import os
 import platform
 import statistics
-import sys
 import time
 from dataclasses import dataclass
 from datetime import UTC, datetime

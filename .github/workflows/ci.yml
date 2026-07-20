@@ -74,6 +74,25 @@ jobs:
       - run: >-
           pulse-spatial-ogc-conformance
           --require-complete-coverage
+          --require-class /conf/core
+          --require-class /conf/topology-vocab-extension
+          --require-class /conf/geometry-topology-extension
+          --require-class /conf/rdfs-entailment-extension
+          --require-class /conf/query-rewrite-extension
+          > /dev/null
+      - run: >-
+          pulse-spatial-ogc-conformance
+          --query-rewrite
+          --geometry-profile
+          --dggs-profile
+          --require-complete-coverage
+          --require-class /conf/core
+          --require-class /conf/topology-vocab-extension
+          --require-class /conf/geometry-extension
+          --require-class /conf/geometry-extension-dggs
+          --require-class /conf/geometry-topology-extension
+          --require-class /conf/rdfs-entailment-extension
+          --require-class /conf/query-rewrite-extension
           > /dev/null
 
   lean-formal:

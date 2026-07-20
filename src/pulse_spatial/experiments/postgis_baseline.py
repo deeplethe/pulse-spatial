@@ -140,27 +140,29 @@ def _start_container(
     image: str,
     *,
     initial_creation: bool,
+    network: str | None = None,
 ) -> None:
-    _docker(
-        [
-            "run",
-            "--detach",
-            "--name",
-            container,
-            "--env",
-            f"POSTGRES_PASSWORD={PASSWORD}",
-            "--env",
-            f"POSTGRES_DB={DATABASE}",
-            "--mount",
-            f"type=volume,source={volume},target=/var/lib/postgresql",
-            "--mount",
-            (
-                "type=bind,source="
-                f"{benchmark_directory.resolve()},target=/benchmark,readonly"
-            ),
-            image,
-        ]
-    )
+    command = [
+        "run",
+        "--detach",
+        "--name",
+        container,
+        "--env",
+        f"POSTGRES_PASSWORD={PASSWORD}",
+        "--env",
+        f"POSTGRES_DB={DATABASE}",
+        "--mount",
+        f"type=volume,source={volume},target=/var/lib/postgresql",
+        "--mount",
+        (
+            "type=bind,source="
+            f"{benchmark_directory.resolve()},target=/benchmark,readonly"
+        ),
+    ]
+    if network is not None:
+        command.extend(("--network", network))
+    command.append(image)
+    _docker(command)
     _wait_ready(container, initial_creation=initial_creation)
 
 

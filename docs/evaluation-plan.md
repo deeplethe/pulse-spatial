@@ -36,8 +36,8 @@ must not be reported as evidence for another.
 | E8 | 7,396 external query rows; four Simple Features relations | Apache Jena GeoSPARQL 6.1.0 | Executed | External-engine agreement for the supported profile |
 | E9 | Pure transition-safety kernel | Lean 4.30.0 | Executed | Six safety properties are proof-checked for the mechanized abstraction |
 | E10 | 300,033 persisted points; 1,476,290 transition-zone pairs | PostgreSQL 18/PostGIS 3.6 with GiST | Executed | Indexed membership and derived-event parity with restart persistence |
-| E11 | 55/55 GeoSPARQL 1.1 ATS identifiers; 124 probes; 7 classes | Normative OGC 22-047r1 inventory + Jena 6.1.0 | Executed | Complete ATS coverage; 4/7 backend classes claimable, not 7/7 certification |
-| E12 | Closed-loop concurrency, SIGKILL recovery, open-loop SLO | PostgreSQL 18/PostGIS 3.6 + pgbench | Executed | Single-node durable mixed-workload scaling, recovery, and host-scoped SLO lower bound |
+| E11 | 55/55 GeoSPARQL 1.1 ATS identifiers; 185 probes; 96 query-rewrite rule shapes; 7 classes | Normative OGC 22-047r1 inventory + Jena 6.1.0 + H3 4.4.0 | Executed | Native baseline 5/7; isolated PULSE profiles 7/7 under researcher-authored refinements, not OGC certification |
+| E12 | Separated-container concurrency, PostgreSQL/WAL/resource telemetry, SIGKILL recovery, open-loop SLO | PostgreSQL 18/PostGIS 3.6 + pgbench | Executed | Reset-state single-node scaling; 10k TPS host-scoped repeated-window lower bound; recovery evidence |
 
 ## Current E3 protocol
 
@@ -93,9 +93,13 @@ are excluded because the current language slice cannot represent them.
 - Do not describe E9 as a proof of floating-point geometry or the complete
   parser/compiler; geometry is abstracted by a total membership function.
 - Keep E10's parity claim separate from E12's concurrency and SLO evidence.
-- Report E12's 5,000 TPS value only with its 20 ms p99, 0.1% skip-budget,
-  three-repeat, single-host protocol; do not substitute saturation throughput.
-- Describe E11 as complete ATS coverage and 4/7 class claims, not an OGC-issued
-  certificate or complete GeoSPARQL 1.1 implementation.
+- Report E12's 10,000 TPS value only with its scheduled-start 20 ms p99,
+  100 ms pgbench admission threshold, 0.1% skip budget, three-repeat 60-second
+  reset-state single-host protocol. Keep the 24,683.86 TPS closed-loop result
+  and 43,898.03 TPS exploratory completion peak separate from SLO capacity.
+- Describe E11 as 5/7 for the unmodified Jena baseline and 7/7 for the isolated
+  PULSE profiles under researcher-authored executable refinements, never as an
+  OGC-issued certificate. State the H3 finite-resolution and local metric
+  approximation boundaries.
 - Do not infer usability from syntax length or artifact count.
 - Do not extrapolate sample-and-hold results to continuous trajectories.

@@ -22,15 +22,15 @@ def _load(path: str | Path) -> dict[str, object]:
 
 def consolidate(
     repeated_paths: Iterable[str | Path],
-    sustained_path: str | Path,
-    exploratory_path: str | Path,
+    sustained_path: str | Path | None = None,
+    exploratory_path: str | Path | None = None,
 ) -> dict[str, object]:
     repeated_files = tuple(Path(path) for path in repeated_paths)
     if not repeated_files:
         raise ValueError("At least one repeated result is required")
     repeated_results = tuple(_load(path) for path in repeated_files)
-    sustained = _load(sustained_path)
-    exploratory = _load(exploratory_path)
+    sustained = _load(sustained_path) if sustained_path is not None else None
+    exploratory = _load(exploratory_path) if exploratory_path is not None else None
     reference = repeated_results[0]
     reference_protocol = reference["protocol"]
     assert isinstance(reference_protocol, dict)
@@ -43,9 +43,12 @@ def consolidate(
             protocol["measurementSecondsPerRate"],
             protocol["repetitions"],
             protocol["latencyLimitMs"],
+            protocol.get("admissionLatencyLimitMs"),
             protocol["maximumSkipRate"],
             protocol["deviceCount"],
             protocol["scriptWeights"],
+            protocol.get("stateResetPerMeasuredRun"),
+            protocol.get("loadGeneratorPlacement"),
         )
         expected = (
             reference_protocol["clients"],
@@ -53,9 +56,12 @@ def consolidate(
             reference_protocol["measurementSecondsPerRate"],
             reference_protocol["repetitions"],
             reference_protocol["latencyLimitMs"],
+            reference_protocol.get("admissionLatencyLimitMs"),
             reference_protocol["maximumSkipRate"],
             reference_protocol["deviceCount"],
             reference_protocol["scriptWeights"],
+            reference_protocol.get("stateResetPerMeasuredRun"),
+            reference_protocol.get("loadGeneratorPlacement"),
         )
         if comparable != expected:
             raise ValueError("Repeated phases do not share one protocol")
@@ -87,7 +93,11 @@ def consolidate(
         and int(summary["targetTps"]) > first_failure
     ]
 
-    source_paths = (*repeated_files, Path(sustained_path), Path(exploratory_path))
+    source_paths = [*repeated_files]
+    if sustained_path is not None:
+        source_paths.append(Path(sustained_path))
+    if exploratory_path is not None:
+        source_paths.append(Path(exploratory_path))
     sources = [
         {
             "path": path.as_posix(),
@@ -96,10 +106,10 @@ def consolidate(
         }
         for path in source_paths
     ]
-    sustained_summaries = sustained["summaryByRate"]
-    exploratory_summaries = exploratory["summaryByRate"]
+    sustained_summaries = sustained["summaryByRate"] if sustained else []
+    exploratory_summaries = exploratory["summaryByRate"] if exploratory else []
     return {
-        "experiment": "postgis-open-loop-slo-evidence-v1",
+        "experiment": "postgis-open-loop-slo-evidence-v2",
         "generatedAt": datetime.now(UTC).isoformat(),
         "decisionRule": (
             "The conservative repeated-window lower bound is the highest target "
@@ -116,12 +126,15 @@ def consolidate(
             "isolatedPassingTargetsAfterFailureTps": isolated_passes,
         },
         "sustainedFiveMinuteSummary": sustained_summaries,
-        "sustainedTransactions": sum(
-            int(level["transactions"]) for level in sustained["levels"]
+        "sustainedTransactions": (
+            sum(int(level["transactions"]) for level in sustained["levels"])
+            if sustained
+            else 0
         ),
         "exploratorySummary": exploratory_summaries,
         "maximumObservedCompletionTps": max(
-            float(summary["reportedTpsMean"]) for summary in exploratory_summaries
+            float(summary["reportedTpsMean"])
+            for summary in (exploratory_summaries or ordered)
         ),
         "environment": reference["environment"],
         "dataset": reference["dataset"],
@@ -138,17 +151,32 @@ def render_markdown(result: dict[str, object]) -> str:
     assert isinstance(protocol, dict)
     assert isinstance(repeated, list)
     assert isinstance(sustained, list)
+    lower_bound = capacity["conservativeRepeatedWindowLowerBoundTps"]
+    first_failure = capacity["firstFailedTargetTps"]
+    lower_bound_text = (
+        f"{lower_bound:,} TPS" if lower_bound is not None else "not established"
+    )
+    first_failure_text = (
+        f"{first_failure:,} TPS" if first_failure is not None else "not observed"
+    )
     rows = [
         "# PostGIS open-loop production evidence",
         "",
-        f"- Conservative repeated-window lower bound: **{capacity['conservativeRepeatedWindowLowerBoundTps']:,} TPS**",
-        f"- First failed target: **{capacity['firstFailedTargetTps']:,} TPS**",
+        f"- Conservative repeated-window lower bound: **{lower_bound_text}**",
+        f"- First failed target: **{first_failure_text}**",
         f"- Completed transactions in repeated windows: **{result['repeatedWindowTransactions']:,}**",
         f"- Maximum exploratory completion rate: **{result['maximumObservedCompletionTps']:,.2f} TPS**",
         "",
         "Passing requires zero database transaction failures, completion p99 at or below "
         f"{protocol['latencyLimitMs']} ms, and skipped arrivals at or below "
         f"{100 * protocol['maximumSkipRate']:.3f}% in every repeat.",
+        (
+            "pgbench skips only after "
+            f"{protocol['admissionLatencyLimitMs']} ms; completion latency is "
+            "measured from scheduled start and includes queueing."
+            if protocol.get("admissionLatencyLimitMs") is not None
+            else ""
+        ),
         "",
         "| Target TPS | mean completed TPS | max p99 ms | max skip rate | DB failures | all 3 pass |",
         "|---:|---:|---:|---:|---:|---:|",
@@ -158,20 +186,23 @@ def render_markdown(result: dict[str, object]) -> str:
         "{skipRateMax:.4%} | {transactionFailures} | {allSloPass} |".format(**item)
         for item in repeated
     )
-    rows.extend(
-        (
-            "",
-            "## Five-minute sustained checks",
-            "",
-            "| Target TPS | completed TPS | p99 ms | skip rate | DB failures | pass |",
-            "|---:|---:|---:|---:|---:|---:|",
+    if sustained:
+        rows.extend(
+            (
+                "",
+                "## Five-minute sustained checks",
+                "",
+                "| Target TPS | completed TPS | p99 ms | skip rate | DB failures | pass |",
+                "|---:|---:|---:|---:|---:|---:|",
+            )
         )
-    )
-    rows.extend(
-        "| {targetTps} | {reportedTpsMean:.2f} | {p99MaxMs:.3f} | "
-        "{skipRateMax:.4%} | {transactionFailures} | {allSloPass} |".format(**item)
-        for item in sustained
-    )
+        rows.extend(
+            "| {targetTps} | {reportedTpsMean:.2f} | {p99MaxMs:.3f} | "
+            "{skipRateMax:.4%} | {transactionFailures} | {allSloPass} |".format(
+                **item
+            )
+            for item in sustained
+        )
     rows.extend(("", "## Decision rule", "", str(result["decisionRule"]), ""))
     return "\n".join(rows)
 
@@ -179,8 +210,8 @@ def render_markdown(result: dict[str, object]) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(prog="pulse-spatial-postgis-slo-evidence")
     parser.add_argument("--repeated", nargs="+", required=True)
-    parser.add_argument("--sustained", required=True)
-    parser.add_argument("--exploratory", required=True)
+    parser.add_argument("--sustained")
+    parser.add_argument("--exploratory")
     parser.add_argument("--output-json", required=True)
     parser.add_argument("--output-markdown", required=True)
     arguments = parser.parse_args()

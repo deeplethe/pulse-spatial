@@ -30,17 +30,37 @@ PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
 """.strip()
 
 VALUES = """
-VALUES (?g ?h ?inside ?boundary ?line ?overlap) {
+VALUES (?g ?h ?point ?inside ?boundary ?tangential ?line ?overlap) {
   (
     "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POLYGON((0 0,4 0,4 4,0 4,0 0))"^^geo:wktLiteral
     "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POLYGON((8 8,10 8,10 10,8 10,8 8))"^^geo:wktLiteral
     "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POINT(1 1)"^^geo:wktLiteral
-    "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POINT(0 2)"^^geo:wktLiteral
+    "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POLYGON((1 1,2 1,2 2,1 2,1 1))"^^geo:wktLiteral
+    "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POLYGON((4 1,6 1,6 3,4 3,4 1))"^^geo:wktLiteral
+    "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POLYGON((0 1,2 1,2 3,0 3,0 1))"^^geo:wktLiteral
     "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> LINESTRING(-1 2,5 2)"^^geo:wktLiteral
     "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POLYGON((2 2,6 2,6 6,2 6,2 2))"^^geo:wktLiteral
   )
 }
 """.strip()
+
+H3_PROFILE = "https://h3geo.org/"
+H3_CENTRE = "8928308280fffff"
+H3_EAST = "8928308280bffff"
+H3_NORTH = "89283082873ffff"
+H3_LITERAL = f"<{H3_PROFILE}> CELL ({H3_CENTRE})"
+
+DGGS_VALUES = f'''\
+VALUES (?g ?h ?inside ?boundary ?overlap) {{
+  (
+    "<{H3_PROFILE}> CELLS ({H3_CENTRE} {H3_EAST})"^^geo:dggsLiteral
+    "<{H3_PROFILE}> CELL ({H3_NORTH})"^^geo:dggsLiteral
+    "<{H3_PROFILE}> CELL ({H3_CENTRE})"^^geo:dggsLiteral
+    "<{H3_PROFILE}> CELL ({H3_EAST})"^^geo:dggsLiteral
+    "<{H3_PROFILE}> CELLS ({H3_EAST} {H3_NORTH})"^^geo:dggsLiteral
+  )
+}}
+'''.strip()
 
 DATA_GRAPH = (
     r"""
@@ -72,6 +92,30 @@ ex:outside a geo:Feature ; geo:hasGeometry ex:outsideGeometry ; geo:hasDefaultGe
 ex:overlap a geo:Feature ; geo:hasGeometry ex:overlapGeometry ; geo:hasDefaultGeometry ex:overlapGeometry .
 ex:line a geo:Feature ; geo:hasGeometry ex:lineGeometry ; geo:hasDefaultGeometry ex:lineGeometry .
 
+# Query-rewrite fixtures deliberately have no asserted topological triples.
+ex:rwArea a geo:Feature ; geo:hasDefaultGeometry ex:rwAreaGeometry .
+ex:rwInside a geo:Feature ; geo:hasDefaultGeometry ex:rwInsideGeometry .
+ex:rwBoundary a geo:Feature ; geo:hasDefaultGeometry ex:rwBoundaryGeometry .
+ex:rwOutside a geo:Feature ; geo:hasDefaultGeometry ex:rwOutsideGeometry .
+ex:rwOverlap a geo:Feature ; geo:hasDefaultGeometry ex:rwOverlapGeometry .
+ex:rwTangential a geo:Feature ; geo:hasDefaultGeometry ex:rwTangentialGeometry .
+ex:rwLine a geo:Feature ; geo:hasDefaultGeometry ex:rwLineGeometry .
+
+ex:rwAreaGeometry a geo:Geometry ;
+  geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POLYGON((0 0,4 0,4 4,0 4,0 0))"^^geo:wktLiteral .
+ex:rwInsideGeometry a geo:Geometry ;
+  geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POLYGON((1 1,2 1,2 2,1 2,1 1))"^^geo:wktLiteral .
+ex:rwBoundaryGeometry a geo:Geometry ;
+  geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POLYGON((4 1,6 1,6 3,4 3,4 1))"^^geo:wktLiteral .
+ex:rwOutsideGeometry a geo:Geometry ;
+  geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POLYGON((8 8,10 8,10 10,8 10,8 8))"^^geo:wktLiteral .
+ex:rwOverlapGeometry a geo:Geometry ;
+  geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POLYGON((2 2,6 2,6 6,2 6,2 2))"^^geo:wktLiteral .
+ex:rwTangentialGeometry a geo:Geometry ;
+  geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POLYGON((0 1,2 1,2 3,0 3,0 1))"^^geo:wktLiteral .
+ex:rwLineGeometry a geo:Geometry ;
+  geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> LINESTRING(-1 2,5 2)"^^geo:wktLiteral .
+
 ex:areaGeometry a geo:Geometry ;
   geo:dimension 2 ; geo:coordinateDimension 2 ; geo:spatialDimension 2 ;
   geo:hasSpatialResolution 0.1 ; geo:hasMetricSpatialResolution 1 ;
@@ -82,7 +126,7 @@ ex:areaGeometry a geo:Geometry ;
   geo:asGML "<gml:Polygon xmlns:gml='http://www.opengis.net/gml'><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>0,0 4,0 4,4 0,4 0,0</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon>"^^geo:gmlLiteral ;
   geo:asGeoJSON "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[4,0],[4,4],[0,4],[0,0]]]}"^^geo:geoJSONLiteral ;
   geo:asKML "<Polygon xmlns='http://www.opengis.net/kml/2.2'><outerBoundaryIs><LinearRing><coordinates>0,0 4,0 4,4 0,4 0,0</coordinates></LinearRing></outerBoundaryIs></Polygon>"^^geo:kmlLiteral ;
-  geo:asDGGS ""^^geo:dggsLiteral .
+  geo:asDGGS "<https://h3geo.org/> CELL (8928308280fffff)"^^geo:dggsLiteral .
 ex:insideGeometry a geo:Geometry ;
   geo:asWKT "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POINT(1 1)"^^geo:wktLiteral ;
   geo:hasSerialization "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POINT(1 1)"^^geo:wktLiteral .
@@ -122,6 +166,8 @@ class Probe:
     name: str
     query: str | None = None
     manual_reason: str | None = None
+    evidence_path: Path | None = None
+    evidence_text: str | None = None
 
 
 def load_manifest(path: str | Path = MANIFEST_PATH) -> dict[str, object]:
@@ -145,7 +191,18 @@ def _expression_probe(name: str, expression: str) -> Probe:
         _ask(
             f"  {VALUES}\n"
             f"  BIND(({expression}) AS ?probeValue)\n"
-            "  FILTER(BOUND(?probeValue))"
+            "  FILTER(?probeValue = true)"
+        ),
+    )
+
+
+def _dggs_expression_probe(name: str, expression: str) -> Probe:
+    return Probe(
+        name,
+        _ask(
+            f"  {DGGS_VALUES}\n"
+            f"  BIND(({expression}) AS ?probeValue)\n"
+            "  FILTER(?probeValue = true)"
         ),
     )
 
@@ -173,8 +230,8 @@ EH_FUNCTIONS = {
     "ehDisjoint": "geof:ehDisjoint(?g, ?h) = true",
     "ehMeet": "geof:ehMeet(?g, ?boundary) = true",
     "ehOverlap": "geof:ehOverlap(?g, ?overlap) = true",
-    "ehCovers": "geof:ehCovers(?g, ?inside) = true",
-    "ehCoveredBy": "geof:ehCoveredBy(?inside, ?g) = true",
+    "ehCovers": "geof:ehCovers(?g, ?tangential) = true",
+    "ehCoveredBy": "geof:ehCoveredBy(?tangential, ?g) = true",
     "ehInside": "geof:ehInside(?inside, ?g) = true",
     "ehContains": "geof:ehContains(?g, ?inside) = true",
 }
@@ -184,17 +241,50 @@ RCC8_FUNCTIONS = {
     "rcc8dc": "geof:rcc8dc(?g, ?h) = true",
     "rcc8ec": "geof:rcc8ec(?g, ?boundary) = true",
     "rcc8po": "geof:rcc8po(?g, ?overlap) = true",
-    "rcc8tppi": "geof:rcc8tppi(?g, ?boundary) = true",
-    "rcc8tpp": "geof:rcc8tpp(?boundary, ?g) = true",
+    "rcc8tppi": "geof:rcc8tppi(?g, ?tangential) = true",
+    "rcc8tpp": "geof:rcc8tpp(?tangential, ?g) = true",
     "rcc8ntpp": "geof:rcc8ntpp(?inside, ?g) = true",
     "rcc8ntppi": "geof:rcc8ntppi(?g, ?inside) = true",
+}
+
+QUERY_REWRITE_PAIRS = {
+    "sf": {
+        "sfEquals": ("rwArea", "rwArea"),
+        "sfDisjoint": ("rwArea", "rwOutside"),
+        "sfIntersects": ("rwArea", "rwInside"),
+        "sfTouches": ("rwArea", "rwBoundary"),
+        "sfCrosses": ("rwLine", "rwArea"),
+        "sfWithin": ("rwInside", "rwArea"),
+        "sfContains": ("rwArea", "rwInside"),
+        "sfOverlaps": ("rwArea", "rwOverlap"),
+    },
+    "eh": {
+        "ehEquals": ("rwArea", "rwArea"),
+        "ehDisjoint": ("rwArea", "rwOutside"),
+        "ehMeet": ("rwArea", "rwBoundary"),
+        "ehOverlap": ("rwArea", "rwOverlap"),
+        "ehCovers": ("rwArea", "rwTangential"),
+        "ehCoveredBy": ("rwTangential", "rwArea"),
+        "ehInside": ("rwInside", "rwArea"),
+        "ehContains": ("rwArea", "rwInside"),
+    },
+    "rcc8": {
+        "rcc8eq": ("rwArea", "rwArea"),
+        "rcc8dc": ("rwArea", "rwOutside"),
+        "rcc8ec": ("rwArea", "rwBoundary"),
+        "rcc8po": ("rwArea", "rwOverlap"),
+        "rcc8tppi": ("rwArea", "rwTangential"),
+        "rcc8tpp": ("rwTangential", "rwArea"),
+        "rcc8ntpp": ("rwInside", "rwArea"),
+        "rcc8ntppi": ("rwArea", "rwInside"),
+    },
 }
 
 QUERY_FUNCTIONS = {
     "boundary": "STR(geof:boundary(?g)) != ''",
     "boundingCircle": "STR(geof:boundingCircle(?g)) != ''",
     "metricBuffer": "STR(geof:metricBuffer(?inside, 100.0)) != ''",
-    "buffer": "STR(geof:buffer(?inside, 100.0, <http://www.opengis.net/def/uom/OGC/1.0/metre>)) != ''",
+    "buffer": "STR(geof:buffer(?inside, 100.0, \"http://www.opengis.net/def/uom/OGC/1.0/metre\"^^xsd:anyURI)) != ''",
     "centroid": "STR(geof:centroid(?g)) != ''",
     "convexHull": "STR(geof:convexHull(?overlap)) != ''",
     "concaveHull": "STR(geof:concaveHull(?overlap)) != ''",
@@ -202,7 +292,7 @@ QUERY_FUNCTIONS = {
     "difference": "STR(geof:difference(?g, ?overlap)) != ''",
     "dimension": "geof:dimension(?g) = 2",
     "metricDistance": "geof:metricDistance(?inside, ?boundary) >= 0",
-    "distance": "geof:distance(?inside, ?boundary, <http://www.opengis.net/def/uom/OGC/1.0/metre>) >= 0",
+    "distance": 'geof:distance(?inside, ?boundary, "http://www.opengis.net/def/uom/OGC/1.0/metre"^^xsd:anyURI) >= 0',
     "envelope": "STR(geof:envelope(?g)) != ''",
     "geometryType": "STR(geof:geometryType(?g)) != ''",
     "intersection": "STR(geof:intersection(?g, ?overlap)) != ''",
@@ -212,8 +302,32 @@ QUERY_FUNCTIONS = {
     "isSimple": "geof:isSimple(?g) = true",
     "spatialDimension": "geof:spatialDimension(?g) = 2",
     "symDifference": "STR(geof:symDifference(?g, ?overlap)) != ''",
-    "transform": "STR(geof:transform(?g, <http://www.opengis.net/def/crs/OGC/1.3/CRS84>)) != ''",
+    "transform": "STR(geof:transform(?g, \"http://www.opengis.net/def/crs/OGC/1.3/CRS84\"^^xsd:anyURI)) != ''",
     "union": "STR(geof:union(?g, ?overlap)) != ''",
+}
+
+DGGS_QUERY_FUNCTIONS = {
+    **QUERY_FUNCTIONS,
+    "transform": (
+        f'STR(geof:transform(?g, "{H3_PROFILE}"^^xsd:anyURI)) = STR(?g)'
+    ),
+}
+
+DGGS_NON_SF_FUNCTIONS = {
+    "metricLength": "geof:metricLength(?g) > 0",
+    "length": 'geof:length(?g, "http://www.opengis.net/def/uom/OGC/1.0/metre"^^xsd:anyURI) > 0',
+    "metricPerimeter": "geof:metricPerimeter(?g) > 0",
+    "perimeter": 'geof:perimeter(?g, "http://www.opengis.net/def/uom/OGC/1.0/metre"^^xsd:anyURI) > 0',
+    "metricArea": "geof:metricArea(?g) > 0",
+    "area": 'geof:area(?g, "http://www.opengis.net/def/uom/OGC/1.0/squareMetre"^^xsd:anyURI) > 0',
+    "geometryN": "DATATYPE(geof:geometryN(?g, 1)) = geo:dggsLiteral",
+    "maxX": "geof:maxX(?g) > -123",
+    "maxY": "geof:maxY(?g) > 37",
+    "maxZ": "geof:maxZ(?g) = 0",
+    "minX": "geof:minX(?g) < -122",
+    "minY": "geof:minY(?g) < 38",
+    "minZ": "geof:minZ(?g) = 0",
+    "numGeometries": "geof:numGeometries(?g) >= 1",
 }
 
 AGGREGATES = {
@@ -241,6 +355,27 @@ ASK {{
   FILTER(BOUND(?aggregateValue))
 }}
 """
+    return Probe(name, query)
+
+
+def _dggs_aggregate_probe(name: str, expression: str) -> Probe:
+    query = f'''{PREFIXES}
+ASK {{
+  {{
+    SELECT ({expression} AS ?aggregateValue)
+    WHERE {{
+      VALUES ?item {{
+        "<{H3_PROFILE}> CELL ({H3_CENTRE})"^^geo:dggsLiteral
+        "<{H3_PROFILE}> CELL ({H3_EAST})"^^geo:dggsLiteral
+      }}
+    }}
+  }}
+  FILTER(
+    DATATYPE(?aggregateValue) = geo:dggsLiteral
+    && STRLEN(STR(?aggregateValue)) > 0
+  )
+}}
+'''
     return Probe(name, query)
 
 
@@ -314,10 +449,14 @@ def probes_for(identifier: str) -> tuple[Probe, ...]:
             '  BIND("POINT(1 1)"^^geo:wktLiteral AS ?v) FILTER(DATATYPE(?v) = geo:wktLiteral)'
         ),
         "/conf/geometry-extension/wkt-literal-default-srs": _ask(
-            f'  {VALUES}\n  BIND("POINT(1 1)"^^geo:wktLiteral AS ?default) FILTER(geof:sfEquals(?default, ?inside))'
+            f'  {VALUES}\n  BIND("POINT(1 1)"^^geo:wktLiteral AS ?default) FILTER(geof:sfEquals(?default, ?point))'
         ),
         "/conf/geometry-extension/wkt-axis-order": _ask(
-            f'  {VALUES}\n  BIND("<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POINT(1 1)"^^geo:wktLiteral AS ?explicit) FILTER(geof:sfEquals(?explicit, ?inside))'
+            '  BIND("<http://www.opengis.net/def/crs/OGC/1.3/CRS84> '
+            'POINT(-83.38 33.95)"^^geo:wktLiteral AS ?crs84)\n'
+            '  BIND("<http://www.opengis.net/def/crs/EPSG/0/4326> '
+            'POINT(33.95 -83.38)"^^geo:wktLiteral AS ?epsg4326)\n'
+            "  FILTER(geof:sfEquals(?crs84, ?epsg4326))"
         ),
         "/conf/geometry-extension/wkt-literal-empty": _ask(
             '  BIND(""^^geo:wktLiteral AS ?empty) FILTER(geof:isEmpty(?empty))'
@@ -359,13 +498,16 @@ def probes_for(identifier: str) -> tuple[Probe, ...]:
             "  ex:areaGeometry geo:asKML ?v . FILTER(DATATYPE(?v) = geo:kmlLiteral)"
         ),
         "/conf/geometry-extension-dggs/dggs-literal": _ask(
-            '  BIND("cell"^^geo:dggsLiteral AS ?v) FILTER(DATATYPE(?v) = geo:dggsLiteral)'
+            f'  BIND("{H3_LITERAL}"^^geo:dggsLiteral AS ?v)\n'
+            f'  FILTER(geof:getSRID(?v) = "{H3_PROFILE}"^^xsd:anyURI)'
         ),
         "/conf/geometry-extension-dggs/dggs-literal-empty": _ask(
-            '  BIND(""^^geo:dggsLiteral AS ?v) FILTER(DATATYPE(?v) = geo:dggsLiteral)'
+            '  BIND(""^^geo:dggsLiteral AS ?v) FILTER(geof:isEmpty(?v) = true)'
         ),
         "/conf/geometry-extension-dggs/geometry-as-dggs-literal": _ask(
-            "  ex:areaGeometry geo:asDGGS ?v . FILTER(DATATYPE(?v) = geo:dggsLiteral)"
+            f"  ex:areaGeometry geo:asDGGS ?v .\n"
+            f"  FILTER(DATATYPE(?v) = geo:dggsLiteral)\n"
+            f'  FILTER(geof:getSRID(?v) = "{H3_PROFILE}"^^xsd:anyURI)'
         ),
         "/conf/rdfs-entailment-extension/bgp-rdfs-ent": _ask(
             "  ex:entailed a geo:SpatialObject ."
@@ -384,6 +526,8 @@ def probes_for(identifier: str) -> tuple[Probe, ...]:
             Probe(
                 "documented-gml-profile",
                 manual_reason="Implementation documentation must state its supported GML profile.",
+                evidence_path=REPOSITORY_ROOT / "docs" / "geosparql-profile.md",
+                evidence_text="GML 3.2.1",
             ),
         )
     if identifier == "/conf/geometry-extension/query-functions":
@@ -395,12 +539,34 @@ def probes_for(identifier: str) -> tuple[Probe, ...]:
         return (
             _expression_probe(
                 "getSRID",
-                "geof:getSRID(?g) = <http://www.opengis.net/def/crs/OGC/1.3/CRS84>",
+                'STR(geof:getSRID(?g)) = "http://www.opengis.net/def/crs/OGC/1.3/CRS84"',
             ),
         )
     if identifier == "/conf/geometry-extension/sa-functions":
         return tuple(
             _aggregate_probe(name, expression)
+            for name, expression in AGGREGATES.items()
+        )
+    if identifier == "/conf/geometry-extension-dggs/query-functions":
+        return tuple(
+            _dggs_expression_probe(name, expression)
+            for name, expression in DGGS_QUERY_FUNCTIONS.items()
+        )
+    if identifier == "/conf/geometry-extension-dggs/query-functions-non-sf":
+        return tuple(
+            _dggs_expression_probe(name, expression)
+            for name, expression in DGGS_NON_SF_FUNCTIONS.items()
+        )
+    if identifier == "/conf/geometry-extension-dggs/srid-function":
+        return (
+            _dggs_expression_probe(
+                "getSRID",
+                f'STR(geof:getSRID(?g)) = "{H3_PROFILE}"',
+            ),
+        )
+    if identifier == "/conf/geometry-extension-dggs/sa-functions":
+        return tuple(
+            _dggs_aggregate_probe(name, expression)
             for name, expression in AGGREGATES.items()
         )
     serialization_functions = {
@@ -410,7 +576,7 @@ def probes_for(identifier: str) -> tuple[Probe, ...]:
         ),
         "/conf/geometry-extension/asGML-function": (
             "asGML",
-            "STR(geof:asGML(?g)) != ''",
+            "STR(geof:asGML(?g, \"GML 3.2.1\")) != ''",
         ),
         "/conf/geometry-extension/asGeoJSON-function": (
             "asGeoJSON",
@@ -422,7 +588,7 @@ def probes_for(identifier: str) -> tuple[Probe, ...]:
         ),
         "/conf/geometry-extension-dggs/asDGGS-function": (
             "asDGGS",
-            "STR(geof:asDGGS(?g)) != ''",
+            f'DATATYPE(geof:asDGGS(?point, "{H3_PROFILE}"^^xsd:anyURI)) = geo:dggsLiteral',
         ),
     }
     if identifier in serialization_functions:
@@ -459,16 +625,17 @@ def probes_for(identifier: str) -> tuple[Probe, ...]:
         )
     if identifier.startswith("/conf/query-rewrite-extension/"):
         family = identifier.split("/")[-1].split("-")[0]
-        relation = {"sf": "sfWithin", "eh": "ehInside", "rcc8": "rcc8ntpp"}[family]
-        return (Probe(relation, _ask(f"  ex:inside geo:{relation} ex:area .")),)
-    if identifier.startswith("/conf/geometry-extension-dggs/"):
-        return (
+        return tuple(
             Probe(
-                identifier.rsplit("/", 1)[-1],
+                relation,
                 _ask(
-                    '  BIND("cell"^^geo:dggsLiteral AS ?cell) BIND(geof:getSRID(?cell) AS ?srid) FILTER(BOUND(?srid))'
+                    f"  ex:{left} geo:{relation} ex:{right} .\n"
+                    f"  ex:{left} geo:{relation} ex:{right}Geometry .\n"
+                    f"  ex:{left}Geometry geo:{relation} ex:{right} .\n"
+                    f"  ex:{left}Geometry geo:{relation} ex:{right}Geometry ."
                 ),
-            ),
+            )
+            for relation, (left, right) in QUERY_REWRITE_PAIRS[family].items()
         )
     raise KeyError(f"No probe design for {identifier}")
 
@@ -484,8 +651,27 @@ def build_probe_plan(manifest: dict[str, object]) -> dict[str, tuple[Probe, ...]
 
 
 def _run_probe(
-    image: str, directory: Path, probe: Probe, index: int
+    image: str,
+    directory: Path,
+    probe: Probe,
+    index: int,
+    *,
+    query_rewrite: bool,
+    geometry_profile: bool,
+    dggs_profile: bool,
 ) -> dict[str, object]:
+    if geometry_profile and probe.evidence_path is not None:
+        evidence = (
+            probe.evidence_path.read_text(encoding="utf-8")
+            if probe.evidence_path.is_file()
+            else ""
+        )
+        passed = probe.evidence_text is not None and probe.evidence_text in evidence
+        return {
+            "name": probe.name,
+            "status": "pass" if passed else "fail",
+            "evidence": str(probe.evidence_path.relative_to(REPOSITORY_ROOT)),
+        }
     if probe.manual_reason:
         return {
             "name": probe.name,
@@ -497,6 +683,33 @@ def _run_probe(
     query_path.write_text(probe.query, encoding="utf-8", newline="\n")
     query_path.chmod(0o644)
     started = time.perf_counter()
+    if query_rewrite:
+        harness_arguments = [
+            "--query-rewrite",
+            "--query",
+            "/data/data.ttl",
+            f"/data/{query_path.name}",
+        ]
+    elif geometry_profile:
+        harness_arguments = [
+            "--geometry-profile",
+            "--query",
+            "/data/data.ttl",
+            f"/data/{query_path.name}",
+        ]
+    elif dggs_profile:
+        harness_arguments = [
+            "--dggs-profile",
+            "--query",
+            "/data/data.ttl",
+            f"/data/{query_path.name}",
+        ]
+    else:
+        harness_arguments = [
+            "--query",
+            "/data/data.ttl",
+            f"/data/{query_path.name}",
+        ]
     completed = subprocess.run(
         [
             "docker",
@@ -507,9 +720,7 @@ def _run_probe(
             "--volume",
             f"{directory.resolve()}:/data:ro",
             image,
-            "--query",
-            "/data/data.ttl",
-            f"/data/{query_path.name}",
+            *harness_arguments,
         ],
         capture_output=True,
         text=True,
@@ -552,13 +763,25 @@ def _aggregate_status(results: Iterable[dict[str, object]]) -> str:
 
 
 def run_experiment(
-    *, image: str = DEFAULT_IMAGE, rebuild: bool = False
+    *,
+    image: str = DEFAULT_IMAGE,
+    rebuild: bool = False,
+    query_rewrite: bool = False,
+    geometry_profile: bool = False,
+    dggs_profile: bool = False,
+    only_classes: Iterable[str] = (),
 ) -> dict[str, object]:
     manifest = load_manifest()
     plan = build_probe_plan(manifest)
     build_seconds = build_image(image) if rebuild else None
     classes = manifest["classes"]
     assert isinstance(classes, dict)
+    selected_classes = set(only_classes)
+    unknown_classes = selected_classes - set(classes)
+    if unknown_classes:
+        raise ValueError(
+            "Unknown conformance class: " + ", ".join(sorted(unknown_classes))
+        )
     records: list[dict[str, object]] = []
     probe_index = 0
     with tempfile.TemporaryDirectory(prefix="pulse-ogc-ats-") as temporary:
@@ -568,13 +791,32 @@ def run_experiment(
         data_path.write_text(DATA_GRAPH, encoding="utf-8", newline="\n")
         data_path.chmod(0o644)
         for class_id, identifiers in classes.items():
+            if selected_classes and class_id not in selected_classes:
+                continue
             test_records = []
+            class_query_rewrite = (
+                query_rewrite and class_id == "/conf/query-rewrite-extension"
+            )
+            class_geometry_profile = (
+                geometry_profile and class_id == "/conf/geometry-extension"
+            )
+            class_dggs_profile = (
+                dggs_profile and class_id == "/conf/geometry-extension-dggs"
+            )
             for identifier in identifiers:
                 component_results = []
                 for probe in plan[identifier]:
                     probe_index += 1
                     component_results.append(
-                        _run_probe(image, directory, probe, probe_index)
+                        _run_probe(
+                            image,
+                            directory,
+                            probe,
+                            probe_index,
+                            query_rewrite=class_query_rewrite,
+                            geometry_profile=class_geometry_profile,
+                            dggs_profile=class_dggs_profile,
+                        )
                     )
                 test_records.append(
                     {
@@ -602,12 +844,37 @@ def run_experiment(
     return {
         "experiment": "ogc-geosparql-1.1-complete-ats-coverage-v1",
         "generatedAt": datetime.now(UTC).isoformat(),
-        "claimBoundary": (
-            "Complete coverage of all 55 normative GeoSPARQL 1.1 abstract-test "
-            "identifiers with researcher-authored executable refinements. "
-            "A class is claimable only when all its abstract tests pass. This "
-            "is not an OGC-issued certificate, and manual requirements remain "
-            "manual rather than being silently counted as passes."
+        "claimBoundary": " ".join(
+            (
+                "Complete coverage of all 55 normative GeoSPARQL 1.1 "
+                "abstract-test identifiers with researcher-authored "
+                "executable refinements.",
+                (
+                    "The Query Rewrite Extension is evaluated with a "
+                    "PULSE-authored WKT rule-materialization adapter; all "
+                    "other classes use Apache Jena inferencing. Jena native "
+                    "rule inferencing is bypassed for the adapter probes."
+                    if query_rewrite
+                    else "No PULSE query-rewrite adapter is enabled; Apache "
+                    "Jena native GeoSPARQL inferencing remains active."
+                ),
+                (
+                    "The Geometry Extension is evaluated with the PULSE "
+                    "GeoSPARQL 1.1 geometry profile."
+                    if geometry_profile
+                    else "No PULSE geometry-function profile is enabled."
+                ),
+                (
+                    "The DGGS Geometry Extension is evaluated with the "
+                    "PULSE H3 finite-resolution profile."
+                    if dggs_profile
+                    else "No PULSE DGGS profile is enabled."
+                ),
+                "A class is claimable only when all its abstract tests pass. "
+                "This is not an OGC-issued certificate, and manual "
+                "requirements remain manual rather than being silently "
+                "counted as passes.",
+            )
         ),
         "normativeInventory": {
             "document": manifest["document"],
@@ -620,6 +887,12 @@ def run_experiment(
         },
         "summary": {
             "componentProbes": len(component_results),
+            "queryRewriteRuleShapeAssertions": sum(
+                4
+                for identifier in plan
+                for _probe in plan[identifier]
+                if identifier.startswith("/conf/query-rewrite-extension/")
+            ),
             "componentStatus": counts,
             "claimableClasses": [
                 record["identifier"] for record in records if record["claimable"]
@@ -630,9 +903,25 @@ def run_experiment(
             "python": platform.python_version(),
             "platform": platform.platform(),
             "externalSystem": "Apache Jena GeoSPARQL 6.1.0",
+            "queryRewriteProfile": (
+                "PULSE WKT rule materialization; Jena native rules bypassed"
+                if query_rewrite
+                else "Apache Jena native GeoSPARQL inferencing"
+            ),
+            "geometryProfile": (
+                "PULSE GeoSPARQL 1.1 non-DGGS profile"
+                if geometry_profile
+                else "disabled"
+            ),
+            "dggsProfile": (
+                "PULSE H3 profile (H3 Java 4.4.0)"
+                if dggs_profile
+                else "disabled"
+            ),
             "containerImage": image,
             "containerImageId": _image_identifier(image),
             "imageBuildSeconds": build_seconds,
+            "selectedClasses": sorted(selected_classes) or "all",
         },
     }
 
@@ -650,7 +939,12 @@ def render_markdown(result: dict[str, object]) -> str:
         f"- Conformance classes: {inventory['conformanceClasses']}",
         f"- Normative abstract tests: {inventory['abstractTests']}",
         f"- Executable/manual component probes: {summary['componentProbes']}",
+        "- Query-rewrite rule-shape assertions: "
+        f"{summary['queryRewriteRuleShapeAssertions']}",
         f"- Inventory coverage complete: **{inventory['coverageComplete']}**",
+        f"- Query-rewrite profile: {result['environment']['queryRewriteProfile']}",
+        f"- Geometry profile: {result['environment']['geometryProfile']}",
+        f"- DGGS profile: {result['environment']['dggsProfile']}",
         f"- Claimable classes: {', '.join(summary['claimableClasses']) or 'none'}",
         "",
         "| Conformance class | Status | Claimable |",
@@ -677,12 +971,48 @@ def main() -> None:
     )
     parser.add_argument("--image", default=DEFAULT_IMAGE)
     parser.add_argument("--rebuild", action="store_true")
+    parser.add_argument(
+        "--query-rewrite",
+        action="store_true",
+        help="Enable the PULSE GeoSPARQL 1.1 WKT query-rewrite profile.",
+    )
+    parser.add_argument(
+        "--geometry-profile",
+        action="store_true",
+        help="Enable the PULSE GeoSPARQL 1.1 non-DGGS geometry profile.",
+    )
+    parser.add_argument(
+        "--dggs-profile",
+        action="store_true",
+        help="Enable the PULSE GeoSPARQL 1.1 H3 DGGS profile.",
+    )
     parser.add_argument("--output-json")
     parser.add_argument("--output-markdown")
     parser.add_argument("--require-complete-coverage", action="store_true")
+    parser.add_argument(
+        "--require-class",
+        action="append",
+        default=[],
+        metavar="CLASS_ID",
+        help="Fail unless the named conformance class is claimable; repeatable.",
+    )
+    parser.add_argument(
+        "--only-class",
+        action="append",
+        default=[],
+        metavar="CLASS_ID",
+        help="Execute only the named conformance class; repeatable.",
+    )
     arguments = parser.parse_args()
     try:
-        result = run_experiment(image=arguments.image, rebuild=arguments.rebuild)
+        result = run_experiment(
+            image=arguments.image,
+            rebuild=arguments.rebuild,
+            query_rewrite=arguments.query_rewrite,
+            geometry_profile=arguments.geometry_profile,
+            dggs_profile=arguments.dggs_profile,
+            only_classes=arguments.only_class,
+        )
     except (OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
         parser.error(str(error))
     rendered = json.dumps(result, ensure_ascii=False, indent=2) + "\n"
@@ -695,6 +1025,12 @@ def main() -> None:
         inventory = result["normativeInventory"]
         assert isinstance(inventory, dict)
         if not inventory["coverageComplete"]:
+            raise SystemExit(1)
+    if arguments.require_class:
+        summary = result["summary"]
+        assert isinstance(summary, dict)
+        claimable = set(summary["claimableClasses"])
+        if any(class_id not in claimable for class_id in arguments.require_class):
             raise SystemExit(1)
 
 

@@ -11,6 +11,7 @@ import re
 import statistics
 import subprocess
 import tempfile
+import threading
 import time
 import uuid
 from datetime import UTC, datetime
@@ -35,10 +36,21 @@ from .postgis_baseline import (
 
 SCRIPT_NAMES = ("point-membership", "window-scan", "position-update")
 SCRIPT_WEIGHTS = (6, 2, 2)
+RESOURCE_SAMPLE_INTERVAL_SECONDS = 1.0
 
 
 def _runtime_environment(container: str) -> dict[str, object]:
     docker_info = json.loads(_docker(["info", "--format", "{{json .}}"]).stdout)
+    cpu_model = _docker(
+        [
+            "exec",
+            container,
+            "sh",
+            "-c",
+            "awk -F ': ' '/model name/{print $2; exit}' /proc/cpuinfo",
+        ],
+        check=False,
+    ).stdout.strip()
     settings = dict(
         line.split("=", 1)
         for line in _psql(
@@ -67,6 +79,7 @@ def _runtime_environment(container: str) -> dict[str, object]:
             "kernelVersion": docker_info.get("KernelVersion"),
             "logicalCpus": docker_info.get("NCPU"),
             "memoryBytes": docker_info.get("MemTotal"),
+            "cpuModel": cpu_model or None,
         },
         "postgresql": {
             "serverVersion": _psql(container, "SHOW server_version;"),
@@ -77,6 +90,243 @@ def _runtime_environment(container: str) -> dict[str, object]:
             ),
         },
     }
+
+
+def _postgres_stats_snapshot(container: str) -> dict[str, object]:
+    """Read database, WAL, writer, and checkpointer counters atomically enough.
+
+    PostgreSQL statistics are cumulative. The measured-run record stores only
+    numeric after-minus-before deltas; reset timestamps remain available in the
+    raw snapshot only while this helper executes.
+    """
+
+    value = _psql(
+        container,
+        """
+        SELECT jsonb_build_object(
+          'database', (
+            SELECT to_jsonb(s)
+            FROM pg_stat_database AS s
+            WHERE datname = current_database()
+          ),
+          'wal', (SELECT to_jsonb(s) FROM pg_stat_wal AS s),
+          'bgwriter', (SELECT to_jsonb(s) FROM pg_stat_bgwriter AS s),
+          'checkpointer', (SELECT to_jsonb(s) FROM pg_stat_checkpointer AS s)
+        )::text;
+        """,
+    )
+    parsed = json.loads(value)
+    if not isinstance(parsed, dict):
+        raise ValueError("PostgreSQL statistics snapshot is not an object")
+    return parsed
+
+
+def _statistics_delta(
+    before: dict[str, object], after: dict[str, object]
+) -> dict[str, object]:
+    result: dict[str, object] = {}
+    for group, before_value in before.items():
+        after_value = after.get(group)
+        if not isinstance(before_value, dict) or not isinstance(after_value, dict):
+            continue
+        deltas: dict[str, int | float] = {}
+        for name, first in before_value.items():
+            last = after_value.get(name)
+            if (
+                isinstance(first, (int, float))
+                and not isinstance(first, bool)
+                and isinstance(last, (int, float))
+                and not isinstance(last, bool)
+            ):
+                deltas[name] = last - first
+        result[group] = deltas
+    return result
+
+
+_BYTE_UNITS = {
+    "B": 1,
+    "kB": 1_000,
+    "KB": 1_000,
+    "KiB": 1_024,
+    "MB": 1_000_000,
+    "MiB": 1_048_576,
+    "GB": 1_000_000_000,
+    "GiB": 1_073_741_824,
+    "TB": 1_000_000_000_000,
+    "TiB": 1_099_511_627_776,
+}
+
+
+def _parse_bytes(value: str) -> int:
+    match = re.fullmatch(r"\s*([0-9.]+)\s*([A-Za-z]+)\s*", value)
+    if match is None or match.group(2) not in _BYTE_UNITS:
+        raise ValueError(f"Unsupported Docker size: {value!r}")
+    return round(float(match.group(1)) * _BYTE_UNITS[match.group(2)])
+
+
+def _parse_io_pair(value: str) -> tuple[int, int]:
+    left, right = value.split("/", 1)
+    return _parse_bytes(left), _parse_bytes(right)
+
+
+def _parse_docker_resource_sample(
+    raw: dict[str, object], elapsed: float
+) -> dict[str, object]:
+    memory_used, memory_limit = _parse_io_pair(str(raw["MemUsage"]))
+    network_read, network_write = _parse_io_pair(str(raw["NetIO"]))
+    block_read, block_write = _parse_io_pair(str(raw["BlockIO"]))
+    return {
+        "elapsedSeconds": elapsed,
+        "cpuPercent": float(str(raw["CPUPerc"]).rstrip("%")),
+        "memoryUsedBytes": memory_used,
+        "memoryLimitBytes": memory_limit,
+        "memoryPercent": float(str(raw["MemPerc"]).rstrip("%")),
+        "networkReadBytes": network_read,
+        "networkWriteBytes": network_write,
+        "blockReadBytes": block_read,
+        "blockWriteBytes": block_write,
+        "pids": int(raw["PIDs"]),
+    }
+
+
+def _docker_resource_samples(
+    containers: dict[str, str], elapsed: float
+) -> dict[str, dict[str, object]]:
+    completed = _docker(
+        [
+            "stats",
+            "--no-stream",
+            "--format",
+            "{{json .}}",
+            *containers.values(),
+        ],
+        check=False,
+    )
+    if completed.returncode or not completed.stdout.strip():
+        raise RuntimeError(completed.stderr.strip() or "docker stats returned no data")
+    by_container = {container: role for role, container in containers.items()}
+    parsed: dict[str, dict[str, object]] = {}
+    for line in completed.stdout.splitlines():
+        raw = json.loads(line)
+        role = by_container.get(str(raw.get("Name")))
+        if role is not None:
+            parsed[role] = _parse_docker_resource_sample(raw, elapsed)
+    return parsed
+
+
+def _resource_sampler(
+    containers: dict[str, str],
+    stop: threading.Event,
+    samples: dict[str, list[dict[str, object]]],
+    started: float,
+) -> None:
+    while True:
+        cycle_started = time.perf_counter()
+        try:
+            current = _docker_resource_samples(
+                containers,
+                time.perf_counter() - started,
+            )
+            for role, sample in current.items():
+                samples[role].append(sample)
+        except (KeyError, TypeError, ValueError, RuntimeError, json.JSONDecodeError):
+            # A missed sample is visible in sampleCount; benchmark execution
+            # must not be converted into a transaction failure by telemetry.
+            pass
+        remaining = RESOURCE_SAMPLE_INTERVAL_SECONDS - (
+            time.perf_counter() - cycle_started
+        )
+        if stop.wait(max(0.0, remaining)):
+            return
+
+
+def _resource_summary(samples: list[dict[str, object]]) -> dict[str, object]:
+    if not samples:
+        return {"sampleCount": 0}
+
+    def values(name: str) -> list[float]:
+        return [float(sample[name]) for sample in samples]
+
+    def counter_delta(name: str) -> int:
+        return max(0, int(samples[-1][name]) - int(samples[0][name]))
+
+    cpu = values("cpuPercent")
+    memory = values("memoryUsedBytes")
+    memory_percent = values("memoryPercent")
+    elapsed = values("elapsedSeconds") if "elapsedSeconds" in samples[0] else []
+    observed_intervals = [
+        second - first for first, second in zip(elapsed, elapsed[1:], strict=False)
+    ]
+    return {
+        "sampleCount": len(samples),
+        "targetSampleIntervalSeconds": RESOURCE_SAMPLE_INTERVAL_SECONDS,
+        "observedSampleIntervalSecondsMean": (
+            statistics.mean(observed_intervals) if observed_intervals else None
+        ),
+        "cpuPercentMean": statistics.mean(cpu),
+        "cpuPercentP95": percentile(cpu, 0.95),
+        "cpuPercentMax": max(cpu),
+        "memoryUsedBytesMean": statistics.mean(memory),
+        "memoryUsedBytesMax": int(max(memory)),
+        "memoryPercentMean": statistics.mean(memory_percent),
+        "memoryPercentMax": max(memory_percent),
+        "networkReadBytesDelta": counter_delta("networkReadBytes"),
+        "networkWriteBytesDelta": counter_delta("networkWriteBytes"),
+        "blockReadBytesDelta": counter_delta("blockReadBytes"),
+        "blockWriteBytesDelta": counter_delta("blockWriteBytes"),
+        "pidsMax": max(int(sample["pids"]) for sample in samples),
+    }
+
+
+def _run_with_telemetry(
+    database_container: str,
+    client_container: str,
+    command: list[str],
+) -> tuple[subprocess.CompletedProcess[str], float, dict[str, object]]:
+    before = _postgres_stats_snapshot(database_container)
+    samples: dict[str, list[dict[str, object]]] = {
+        "database": [],
+        "loadGenerator": [],
+    }
+    stop = threading.Event()
+    started = time.perf_counter()
+    sampler = threading.Thread(
+        target=_resource_sampler,
+        args=(
+            {"database": database_container, "loadGenerator": client_container},
+            stop,
+            samples,
+            started,
+        ),
+        daemon=True,
+    )
+    sampler.start()
+    try:
+        measured = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    finally:
+        wall_seconds = time.perf_counter() - started
+        stop.set()
+        sampler.join(timeout=5)
+    after = _postgres_stats_snapshot(database_container)
+    telemetry = {
+        "postgresqlCounterDeltas": _statistics_delta(before, after),
+        "resources": {
+            role: _resource_summary(role_samples)
+            for role, role_samples in samples.items()
+        },
+        "resourceSamples": samples,
+        "samplingNote": (
+            "Database and pgbench run in separate containers on one Docker "
+            "network. docker stats is sampled once per second; PostgreSQL "
+            "counter deltas include the two snapshot queries."
+        ),
+    }
+    return measured, wall_seconds, telemetry
 
 
 def percentile(values: Iterable[float], fraction: float) -> float | None:
@@ -144,6 +394,63 @@ def parse_pgbench_log(value: str) -> dict[str, object]:
     }
 
 
+def _telemetry_summary(records: Iterable[dict[str, object]]) -> dict[str, object]:
+    databases: list[dict[str, object]] = []
+    generators: list[dict[str, object]] = []
+    wal: list[dict[str, object]] = []
+    database_counters: list[dict[str, object]] = []
+    for record in records:
+        telemetry = record.get("telemetry")
+        if not isinstance(telemetry, dict):
+            continue
+        resources = telemetry.get("resources")
+        deltas = telemetry.get("postgresqlCounterDeltas")
+        if isinstance(resources, dict):
+            database = resources.get("database")
+            generator = resources.get("loadGenerator")
+            if isinstance(database, dict) and database.get("sampleCount"):
+                databases.append(database)
+            if isinstance(generator, dict) and generator.get("sampleCount"):
+                generators.append(generator)
+        if isinstance(deltas, dict):
+            wal_value = deltas.get("wal")
+            database_value = deltas.get("database")
+            if isinstance(wal_value, dict):
+                wal.append(wal_value)
+            if isinstance(database_value, dict):
+                database_counters.append(database_value)
+    if not databases or not generators:
+        return {}
+    block_hits = sum(int(value.get("blks_hit", 0)) for value in database_counters)
+    block_reads = sum(int(value.get("blks_read", 0)) for value in database_counters)
+    return {
+        "databaseCpuPercentMean": statistics.mean(
+            float(value["cpuPercentMean"]) for value in databases
+        ),
+        "databaseCpuPercentMax": max(
+            float(value["cpuPercentMax"]) for value in databases
+        ),
+        "loadGeneratorCpuPercentMean": statistics.mean(
+            float(value["cpuPercentMean"]) for value in generators
+        ),
+        "loadGeneratorCpuPercentMax": max(
+            float(value["cpuPercentMax"]) for value in generators
+        ),
+        "databaseMemoryBytesMax": max(
+            int(value["memoryUsedBytesMax"]) for value in databases
+        ),
+        "walBytes": sum(int(value.get("wal_bytes", 0)) for value in wal),
+        "walRecords": sum(int(value.get("wal_records", 0)) for value in wal),
+        "walFullPageImages": sum(int(value.get("wal_fpi", 0)) for value in wal),
+        "sharedBlockHitRatio": (
+            block_hits / (block_hits + block_reads)
+            if block_hits + block_reads
+            else None
+        ),
+        "telemetryRuns": len(databases),
+    }
+
+
 def summarize_levels(levels: Iterable[dict[str, object]]) -> list[dict[str, object]]:
     grouped: dict[int, list[dict[str, object]]] = {}
     for level in levels:
@@ -153,8 +460,7 @@ def summarize_levels(levels: Iterable[dict[str, object]]) -> list[dict[str, obje
         tps_values = [float(record["tps"]) for record in records]
         p99_values = [float(record["p99Ms"]) for record in records]
         mean_tps = statistics.mean(tps_values)
-        summaries.append(
-            {
+        summary = {
                 "clients": clients,
                 "repetitions": len(records),
                 "tpsMean": mean_tps,
@@ -173,8 +479,9 @@ def summarize_levels(levels: Iterable[dict[str, object]]) -> list[dict[str, obje
                 "lateTransactions": sum(
                     int(record["lateTransactions"]) for record in records
                 ),
-            }
-        )
+        }
+        summary.update(_telemetry_summary(records))
+        summaries.append(summary)
     return summaries
 
 
@@ -241,6 +548,33 @@ COMMIT;
     return point, window, update
 
 
+def _start_load_generator(
+    container: str,
+    network: str,
+    benchmark_directory: Path,
+    image: str,
+) -> None:
+    _docker(
+        [
+            "run",
+            "--detach",
+            "--name",
+            container,
+            "--network",
+            network,
+            "--mount",
+            (
+                "type=bind,source="
+                f"{benchmark_directory.resolve()},target=/benchmark,readonly"
+            ),
+            "--entrypoint",
+            "sleep",
+            image,
+            "infinity",
+        ]
+    )
+
+
 def _prepare_live_workload(container: str, device_count: int) -> dict[str, object]:
     _psql(
         container,
@@ -301,7 +635,8 @@ def _prepare_live_workload(container: str, device_count: int) -> dict[str, objec
 
 
 def _pgbench_command(
-    container: str,
+    client_container: str,
+    database_host: str,
     scripts: tuple[Path, ...],
     *,
     clients: int,
@@ -315,13 +650,15 @@ def _pgbench_command(
         "exec",
         "-e",
         f"PGPASSWORD={PASSWORD}",
-        container,
+        client_container,
         "pgbench",
         "--no-vacuum",
         "--username",
         "postgres",
         "--dbname",
         DATABASE,
+        "--host",
+        database_host,
         "--client",
         str(clients),
         "--jobs",
@@ -356,7 +693,8 @@ def _parse_tps(stdout: str) -> float | None:
 
 
 def _run_level(
-    container: str,
+    database_container: str,
+    client_container: str,
     scripts: tuple[Path, ...],
     *,
     clients: int,
@@ -368,7 +706,8 @@ def _run_level(
     if warmup_seconds:
         warmup = subprocess.run(
             _pgbench_command(
-                container,
+                client_container,
+                database_container,
                 scripts,
                 clients=clients,
                 duration_seconds=warmup_seconds,
@@ -382,28 +721,26 @@ def _run_level(
         if warmup.returncode:
             raise RuntimeError(f"pgbench warmup failed: {warmup.stderr.strip()}")
     prefix = f"pulse-{clients}-{repetition}-{uuid.uuid4().hex[:8]}"
-    started = time.perf_counter()
-    measured = subprocess.run(
+    measured, wall_seconds, telemetry = _run_with_telemetry(
+        database_container,
+        client_container,
         _pgbench_command(
-            container,
+            client_container,
+            database_container,
             scripts,
             clients=clients,
             duration_seconds=duration_seconds,
             latency_limit_ms=latency_limit_ms,
             log_prefix=prefix,
         ),
-        capture_output=True,
-        text=True,
-        check=False,
     )
-    wall_seconds = time.perf_counter() - started
     if measured.returncode:
         raise RuntimeError(
             f"pgbench measured run failed with {measured.returncode}: "
             f"{measured.stderr.strip()}"
         )
     logs = _docker(
-        ["exec", container, "sh", "-c", f"cat /tmp/{prefix}.*"],
+        ["exec", client_container, "sh", "-c", f"cat /tmp/{prefix}.*"],
     ).stdout
     parsed = parse_pgbench_log(logs)
     parsed.update(
@@ -422,31 +759,35 @@ def _run_level(
                 for latency in (int(line.split()[2]) / 1000.0,)
             ),
             "stdout": measured.stdout,
+            "telemetry": telemetry,
         }
     )
     return parsed
 
 
 def _run_rate(
-    container: str,
+    database_container: str,
+    client_container: str,
     scripts: tuple[Path, ...],
     *,
     clients: int,
     rate: int,
     warmup_seconds: int,
     duration_seconds: int,
-    latency_limit_ms: int,
+    completion_latency_slo_ms: int,
+    admission_latency_limit_ms: int,
     maximum_skip_rate: float,
     repetition: int,
 ) -> dict[str, object]:
     if warmup_seconds:
         warmup = subprocess.run(
             _pgbench_command(
-                container,
+                client_container,
+                database_container,
                 scripts,
                 clients=clients,
                 duration_seconds=warmup_seconds,
-                latency_limit_ms=latency_limit_ms,
+                latency_limit_ms=admission_latency_limit_ms,
                 log_prefix=None,
                 rate=rate,
             ),
@@ -459,19 +800,19 @@ def _run_rate(
                 f"pgbench open-loop warmup failed: {warmup.stderr.strip()}"
             )
     prefix = f"pulse-rate-{rate}-{repetition}-{uuid.uuid4().hex[:8]}"
-    measured = subprocess.run(
+    measured, wall_seconds, telemetry = _run_with_telemetry(
+        database_container,
+        client_container,
         _pgbench_command(
-            container,
+            client_container,
+            database_container,
             scripts,
             clients=clients,
             duration_seconds=duration_seconds,
-            latency_limit_ms=latency_limit_ms,
+            latency_limit_ms=admission_latency_limit_ms,
             log_prefix=prefix,
             rate=rate,
         ),
-        capture_output=True,
-        text=True,
-        check=False,
     )
     if measured.returncode:
         raise RuntimeError(
@@ -479,7 +820,7 @@ def _run_rate(
             f"{measured.stderr.strip()}"
         )
     logs = _docker(
-        ["exec", container, "sh", "-c", f"cat /tmp/{prefix}.*"],
+        ["exec", client_container, "sh", "-c", f"cat /tmp/{prefix}.*"],
     ).stdout
     parsed = parse_pgbench_log(logs)
     skipped = int(parsed["failures"].get("skipped", 0))
@@ -489,7 +830,7 @@ def _run_rate(
     attempted = int(parsed["transactions"]) + sum(parsed["failures"].values())
     skip_rate = skipped / attempted if attempted else None
     completed_above_limit = sum(
-        latency > latency_limit_ms
+        latency > completion_latency_slo_ms
         for line in logs.splitlines()
         if len(line.split()) >= 3 and line.split()[2].isdigit()
         for latency in (int(line.split()[2]) / 1000.0,)
@@ -502,38 +843,42 @@ def _run_rate(
             "repetition": repetition,
             "warmupSeconds": warmup_seconds,
             "measurementSeconds": duration_seconds,
+            "wallSeconds": wall_seconds,
             "reportedTps": _parse_tps(measured.stdout),
             "attemptedTransactions": attempted,
             "transactionFailures": transaction_failures,
             "skippedTransactions": skipped,
             "skipRate": skip_rate,
-            "completedAboveLatencyLimit": completed_above_limit,
+            "completedAboveCompletionSlo": completed_above_limit,
             "sloPass": (
                 transaction_failures == 0
                 and skip_rate is not None
                 and skip_rate <= maximum_skip_rate
                 and parsed["p99Ms"] is not None
-                and parsed["p99Ms"] <= latency_limit_ms
+                and parsed["p99Ms"] <= completion_latency_slo_ms
             ),
             "stdout": measured.stdout,
+            "telemetry": telemetry,
         }
     )
     return parsed
 
 
 def _crash_recovery(
-    container: str,
+    database_container: str,
+    client_container: str,
     scripts: tuple[Path, ...],
     *,
     clients: int,
     crash_after_seconds: int,
 ) -> dict[str, object]:
     before = _psql(
-        container,
+        database_container,
         "SELECT count(*), coalesce(sum(version), 0) FROM live_positions;",
     ).split("|")
     command = _pgbench_command(
-        container,
+        client_container,
+        database_container,
         scripts,
         clients=clients,
         duration_seconds=max(crash_after_seconds * 4, 20),
@@ -547,14 +892,14 @@ def _crash_recovery(
         text=True,
     )
     time.sleep(crash_after_seconds)
-    _docker(["kill", "--signal", "KILL", container])
+    _docker(["kill", "--signal", "KILL", database_container])
     process.communicate(timeout=30)
     started = time.perf_counter()
-    _docker(["start", container])
-    _wait_ready(container, initial_creation=False)
+    _docker(["start", database_container])
+    _wait_ready(database_container, initial_creation=False)
     recovery_seconds = time.perf_counter() - started
     after = _psql(
-        container,
+        database_container,
         """
         SELECT count(*), coalesce(sum(version), 0),
                (SELECT count(*) FROM live_events),
@@ -569,7 +914,7 @@ def _crash_recovery(
     ).split("|")
     plan = json.loads(
         _psql(
-            container,
+            database_container,
             """
             EXPLAIN (FORMAT JSON)
             SELECT count(*) FROM live_positions
@@ -579,7 +924,8 @@ def _crash_recovery(
     )
     probe = subprocess.run(
         _pgbench_command(
-            container,
+            client_container,
+            database_container,
             scripts,
             clients=1,
             duration_seconds=2,
@@ -642,8 +988,11 @@ def run_experiment(
         )
     token = uuid.uuid4().hex[:12]
     container = f"pulse-postgis-concurrency-{token}"
+    client_container = f"pulse-postgis-client-{token}"
     volume = f"pulse-postgis-concurrency-{token}"
+    network = f"pulse-postgis-network-{token}"
     pull_seconds, image_id = _ensure_image(image)
+    _docker(["network", "create", network])
     _docker(["volume", "create", volume])
     levels: list[dict[str, object]] = []
     try:
@@ -660,7 +1009,9 @@ def run_experiment(
                 directory,
                 image,
                 initial_creation=True,
+                network=network,
             )
+            _start_load_generator(client_container, network, directory, image)
             _load_schema(container)
             live = _prepare_live_workload(container, device_count)
             durability = dict(
@@ -682,9 +1033,11 @@ def run_experiment(
             ).splitlines()
             for client_count in client_levels:
                 for repetition in range(1, repetitions + 1):
+                    live = _prepare_live_workload(container, device_count)
                     levels.append(
                         _run_level(
                             container,
+                            client_container,
                             scripts,
                             clients=client_count,
                             warmup_seconds=warmup_seconds,
@@ -695,6 +1048,7 @@ def run_experiment(
                     )
             recovery = _crash_recovery(
                 container,
+                client_container,
                 scripts,
                 clients=crash_clients,
                 crash_after_seconds=crash_after_seconds,
@@ -712,8 +1066,11 @@ def run_experiment(
             "claimBoundary": (
                 "Durable single-node PostgreSQL/PostGIS mixed spatial workload "
                 "using pgbench prepared statements, weighted reads/writes, "
-                "per-transaction latency logs, GiST plan checks, and SIGKILL "
-                "recovery. This is production-oriented evidence, not a claim "
+                "a separate load-generator container, per-transaction latency "
+                "logs, PostgreSQL/WAL and container-resource telemetry, GiST "
+                "plan checks, identical checkpointed state per measured run, "
+                "and SIGKILL recovery. This is production-oriented "
+                "evidence, not a claim "
                 "of multi-node high availability, cloud SLA, or universal "
                 "capacity independent of the reported host."
             ),
@@ -746,6 +1103,11 @@ def run_experiment(
                 "scriptWeights": dict(zip(SCRIPT_NAMES, SCRIPT_WEIGHTS, strict=True)),
                 "preparedStatements": True,
                 "latencyLimitMs": latency_limit_ms,
+                "loadGeneratorPlacement": (
+                    "separate container on the same Docker network and host"
+                ),
+                "resourceSampleIntervalSeconds": RESOURCE_SAMPLE_INTERVAL_SECONDS,
+                "stateResetPerMeasuredRun": True,
             },
             "levels": levels,
             "summaryByClients": summarize_levels(levels),
@@ -764,8 +1126,10 @@ def run_experiment(
             "environment": _runtime_environment(container),
         }
     finally:
+        _docker(["rm", "--force", client_container], check=False)
         _docker(["rm", "--force", container], check=False)
         _docker(["volume", "rm", "--force", volume], check=False)
+        _docker(["network", "rm", network], check=False)
 
 
 def run_slo_experiment(
@@ -779,6 +1143,7 @@ def run_slo_experiment(
     repetitions: int = 1,
     device_count: int = 50_000,
     latency_limit_ms: int = 20,
+    admission_latency_limit_ms: int = 100,
     maximum_skip_rate: float = 0.001,
 ) -> dict[str, object]:
     rate_levels = tuple(rates)
@@ -788,6 +1153,10 @@ def run_slo_experiment(
         raise ValueError("Invalid SLO benchmark parameters")
     if not 0 <= maximum_skip_rate < 1:
         raise ValueError("maximum_skip_rate must be in [0, 1)")
+    if latency_limit_ms < 1 or admission_latency_limit_ms < latency_limit_ms:
+        raise ValueError(
+            "admission_latency_limit_ms must be at least the completion SLO"
+        )
     path = Path(dataset_path)
     dataset = load_ibtracs(path)
     point_count = sum(len(track.points) for track in dataset.tracks)
@@ -797,8 +1166,11 @@ def run_slo_experiment(
         )
     token = uuid.uuid4().hex[:12]
     container = f"pulse-postgis-slo-{token}"
+    client_container = f"pulse-postgis-slo-client-{token}"
     volume = f"pulse-postgis-slo-{token}"
+    network = f"pulse-postgis-slo-network-{token}"
     pull_seconds, image_id = _ensure_image(image)
+    _docker(["network", "create", network])
     _docker(["volume", "create", volume])
     levels: list[dict[str, object]] = []
     try:
@@ -813,7 +1185,9 @@ def run_slo_experiment(
                 directory,
                 image,
                 initial_creation=True,
+                network=network,
             )
+            _start_load_generator(client_container, network, directory, image)
             _load_schema(container)
             live = _prepare_live_workload(container, device_count)
             durability = dict(
@@ -829,15 +1203,18 @@ def run_slo_experiment(
             )
             for rate in rate_levels:
                 for repetition in range(1, repetitions + 1):
+                    live = _prepare_live_workload(container, device_count)
                     levels.append(
                         _run_rate(
                             container,
+                            client_container,
                             scripts,
                             clients=clients,
                             rate=rate,
                             warmup_seconds=warmup_seconds,
                             duration_seconds=duration_seconds,
-                            latency_limit_ms=latency_limit_ms,
+                            completion_latency_slo_ms=latency_limit_ms,
+                            admission_latency_limit_ms=admission_latency_limit_ms,
                             maximum_skip_rate=maximum_skip_rate,
                             repetition=repetition,
                         )
@@ -846,8 +1223,7 @@ def run_slo_experiment(
         per_rate = []
         for rate in rate_levels:
             records = [level for level in levels if level["targetTps"] == rate]
-            per_rate.append(
-                {
+            rate_summary = {
                     "targetTps": rate,
                     "repetitions": len(records),
                     "allSloPass": all(record["sloPass"] for record in records),
@@ -868,11 +1244,13 @@ def run_slo_experiment(
                         int(record["skippedTransactions"]) for record in records
                     ),
                     "skipRateMax": max(float(record["skipRate"]) for record in records),
-                    "completedAboveLatencyLimit": sum(
-                        int(record["completedAboveLatencyLimit"]) for record in records
+                    "completedAboveCompletionSlo": sum(
+                        int(record["completedAboveCompletionSlo"])
+                        for record in records
                     ),
-                }
-            )
+            }
+            rate_summary.update(_telemetry_summary(records))
+            per_rate.append(rate_summary)
         passing_rates = [
             record["targetTps"] for record in per_rate if record["allSloPass"]
         ]
@@ -882,7 +1260,11 @@ def run_slo_experiment(
             "generatedAt": datetime.now(UTC).isoformat(),
             "claimBoundary": (
                 "Open-loop Poisson arrivals generated by pgbench against the "
-                "same durable mixed spatial workload. Passing means no database "
+                "same durable mixed spatial workload from a separate container. "
+                "PostgreSQL/WAL deltas and per-container resources are sampled. "
+                "Every measured run begins from the same rebuilt and checkpointed "
+                "50,000-device state. "
+                "Passing means no database "
                 "transaction failure, a skipped-arrival rate within the declared "
                 "admission budget, and observed completion p99 at or below the "
                 "stated latency limit on the reported host. It is not a universal SLA."
@@ -912,9 +1294,17 @@ def run_slo_experiment(
                 "measurementSecondsPerRate": duration_seconds,
                 "repetitions": repetitions,
                 "latencyLimitMs": latency_limit_ms,
+                "completionLatencySloMs": latency_limit_ms,
+                "admissionLatencyLimitMs": admission_latency_limit_ms,
+                "latencyOrigin": "scheduled transaction start; includes schedule lag",
                 "maximumSkipRate": maximum_skip_rate,
                 "deviceCount": device_count,
                 "scriptWeights": dict(zip(SCRIPT_NAMES, SCRIPT_WEIGHTS, strict=True)),
+                "loadGeneratorPlacement": (
+                    "separate container on the same Docker network and host"
+                ),
+                "resourceSampleIntervalSeconds": RESOURCE_SAMPLE_INTERVAL_SECONDS,
+                "stateResetPerMeasuredRun": True,
             },
             "levels": levels,
             "summaryByRate": per_rate,
@@ -939,8 +1329,10 @@ def run_slo_experiment(
             "environment": _runtime_environment(container),
         }
     finally:
+        _docker(["rm", "--force", client_container], check=False)
         _docker(["rm", "--force", container], check=False)
         _docker(["volume", "rm", "--force", volume], check=False)
+        _docker(["network", "rm", network], check=False)
 
 
 def render_slo_markdown(result: dict[str, object]) -> str:
@@ -953,7 +1345,8 @@ def render_slo_markdown(result: dict[str, object]) -> str:
     rows = [
         "# PostGIS open-loop spatial SLO saturation",
         "",
-        f"- Latency limit: {protocol['latencyLimitMs']} ms",
+        f"- Scheduled-start completion p99 SLO: {protocol['completionLatencySloMs']} ms",
+        f"- pgbench admission/skip threshold: {protocol['admissionLatencyLimitMs']} ms",
         f"- Maximum skipped-arrival rate: {100 * protocol['maximumSkipRate']:.3f}%",
         f"- Maximum passing target: {capacity['maximumPassingTargetTps']} TPS",
         f"- Saturation observed: **{capacity['saturationObserved']}**",
@@ -967,6 +1360,28 @@ def render_slo_markdown(result: dict[str, object]) -> str:
         "{skippedTransactions} | {skipRateMax:.4%} | {allSloPass} |".format(**summary)
         for summary in summaries
     )
+    if summaries and all("telemetryRuns" in summary for summary in summaries):
+        rows.extend(
+            (
+                "",
+                "## Separated-container resources",
+                "",
+                "| Target TPS | DB CPU mean/max | generator CPU mean/max | DB memory max MiB | WAL MiB | block hit ratio |",
+                "|---:|---:|---:|---:|---:|---:|",
+            )
+        )
+        rows.extend(
+            "| {targetTps} | {databaseCpuPercentMean:.1f}% / "
+            "{databaseCpuPercentMax:.1f}% | {loadGeneratorCpuPercentMean:.1f}% / "
+            "{loadGeneratorCpuPercentMax:.1f}% | {memory:.1f} | {wal:.2f} | "
+            "{hit:.5f} |".format(
+                **summary,
+                memory=summary["databaseMemoryBytesMax"] / 1_048_576,
+                wal=summary["walBytes"] / 1_048_576,
+                hit=summary["sharedBlockHitRatio"] or 0.0,
+            )
+            for summary in summaries
+        )
     rows.extend(("", "## Claim boundary", "", str(result["claimBoundary"]), ""))
     return "\n".join(rows)
 
@@ -1005,7 +1420,7 @@ def render_markdown(result: dict[str, object]) -> str:
     rows.extend(
         (
             "",
-            "## Three-run summary",
+            "## Cross-repetition summary",
             "",
             "| Clients | mean TPS | TPS CV | mean p99 ms | p99 range ms |",
             "|---:|---:|---:|---:|---:|",
@@ -1016,6 +1431,28 @@ def render_markdown(result: dict[str, object]) -> str:
         "{p99MeanMs:.3f} | {p99MinMs:.3f}--{p99MaxMs:.3f} |".format(**summary)
         for summary in summaries
     )
+    if summaries and all("telemetryRuns" in summary for summary in summaries):
+        rows.extend(
+            (
+                "",
+                "## Separated-container resources",
+                "",
+                "| Clients | DB CPU mean/max | generator CPU mean/max | DB memory max MiB | WAL MiB | block hit ratio |",
+                "|---:|---:|---:|---:|---:|---:|",
+            )
+        )
+        rows.extend(
+            "| {clients} | {databaseCpuPercentMean:.1f}% / "
+            "{databaseCpuPercentMax:.1f}% | {loadGeneratorCpuPercentMean:.1f}% / "
+            "{loadGeneratorCpuPercentMax:.1f}% | {memory:.1f} | {wal:.2f} | "
+            "{hit:.5f} |".format(
+                **summary,
+                memory=summary["databaseMemoryBytesMax"] / 1_048_576,
+                wal=summary["walBytes"] / 1_048_576,
+                hit=summary["sharedBlockHitRatio"] or 0.0,
+            )
+            for summary in summaries
+        )
     rows.extend(("", "## Claim boundary", "", str(result["claimBoundary"]), ""))
     return "\n".join(rows)
 
@@ -1103,6 +1540,7 @@ def main_slo() -> None:
     parser.add_argument("--repetitions", type=int, default=1)
     parser.add_argument("--device-count", type=int, default=50_000)
     parser.add_argument("--latency-limit-ms", type=int, default=20)
+    parser.add_argument("--admission-latency-limit-ms", type=int, default=100)
     parser.add_argument("--maximum-skip-rate", type=float, default=0.001)
     parser.add_argument("--output-json")
     parser.add_argument("--output-markdown")
@@ -1119,6 +1557,7 @@ def main_slo() -> None:
             repetitions=arguments.repetitions,
             device_count=arguments.device_count,
             latency_limit_ms=arguments.latency_limit_ms,
+            admission_latency_limit_ms=arguments.admission_latency_limit_ms,
             maximum_skip_rate=arguments.maximum_skip_rate,
         )
     except (OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:

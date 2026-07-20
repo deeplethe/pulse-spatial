@@ -160,24 +160,28 @@ pairs. See the [`PostGIS baseline`](experiments/postgis/README.md).
 
 An eleventh evidence path refines every identifier in the normative
 GeoSPARQL 1.1 Abstract Test Suite: all 7 conformance classes and all 55
-abstract tests are represented by 124 executable or explicit manual probes.
-Against the pinned unmodified Jena 6.1.0 backend, 4/7 classes are claimable;
-the geometry, DGGS, and query-rewrite classes remain failed rather than being
-silently counted as supported. This is complete ATS *coverage*, not an
-OGC-issued certification or a 7/7 implementation claim; see the
+abstract tests are represented by 185 executable probes, including 96
+query-rewrite rule-shape assertions. The pinned unmodified Jena 6.1.0 baseline
+claims 5/7 classes. The isolated PULSE 1.1 profiles add the non-DGGS Geometry
+Extension and an H3 4.4.0 DGGS profile; the combined run passes 185/185 probes
+and claims 7/7 classes under the researcher-authored refinements. This is not
+an OGC-issued certification; the finite-resolution H3 and local metric
+approximation boundaries are reported explicitly. See the
 [`GeoSPARQL 1.1 conformance matrix`](experiments/ogc-geosparql-1.1/README.md).
 
 A twelfth experiment exercises a durable mixed PostGIS workload: 60% point
 membership, 20% GiST window scans, and 20% synchronous position updates plus
-event appends. Closed-loop runs at 1--32 clients completed without failures or
-retries; 32 clients averaged 20,952.99 TPS with 6.784 ms mean p99 across three
-one-minute repeats. A SIGKILL/restart recovered the same volume in 8.448 s and
-passed row, version, index, and post-recovery workload checks. Separate
-open-loop Poisson-arrival tests processed 14,801,450 transactions in the
-three-repeat capacity sweep. Under a declared 20 ms completion-p99 and 0.1%
-skipped-arrival budget, the conservative contiguous lower bound is 5,000 TPS;
-the exploratory saturation run completed up to 25,166.22 TPS but did not meet
-that SLO. See the
+event appends. The database and pgbench load generator run in separate
+containers; every measured run starts from the same rebuilt, checkpointed
+50,000-device state. A 32/64/96-client closed-loop resource sweep reaches
+24,683.86 TPS at 96 clients with 17.402 ms p99 and zero failures; the database
+uses 13.71 CPU cores on average while the generator uses 4.79. SIGKILL recovery
+takes 2.348 s and passes row, version, index, and post-recovery workload checks.
+Open-loop Poisson tests use scheduled-start latency, so p99 includes queueing.
+Across 18,864,158 completed transactions, the conservative three-repeat,
+60-second lower bound is 10,000 TPS (13.044 ms worst p99, 0.0576% maximum skip),
+and 12,000 TPS is the first failed target under the 20 ms p99 and 0.1% skip
+budget. The 43,898.03 TPS exploratory completion peak is not SLO capacity. See the
 [`production-oriented concurrency protocol`](experiments/postgis/CONCURRENCY.md).
 
 ## Repository map
@@ -212,8 +216,8 @@ that SLO. See the
 2. Add explicit accuracy regions and coordinate transformations.
 3. Add polygon holes, multipolygons, and explicit antimeridian handling.
 4. Project temporal events and intervals through an OWL-Time profile.
-5. Implement and independently test the three currently failed GeoSPARQL 1.1
-   conformance classes instead of treating projection as implementation.
+5. Submit the GeoSPARQL profiles to an independent implementation test and
+   replace the local H3 metric approximation with geodesic operations.
 6. Repeat the open-loop protocol on pinned bare-metal and cloud instances,
    then study connection pooling, partitioning, replicas, and failover.
 7. Expand beyond the supported Point/simple-Polygon standards profile without

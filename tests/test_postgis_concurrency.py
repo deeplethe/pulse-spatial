@@ -1,6 +1,9 @@
 import unittest
 
 from pulse_spatial.experiments.postgis_concurrency import (
+    _parse_bytes,
+    _resource_summary,
+    _statistics_delta,
     parse_pgbench_log,
     percentile,
     summarize_levels,
@@ -52,6 +55,48 @@ class PostgisConcurrencyTests(unittest.TestCase):
         self.assertEqual(summary[0]["tpsMean"], 110.0)
         self.assertEqual(summary[0]["p99MeanMs"], 3.0)
         self.assertEqual(summary[0]["lateTransactions"], 1)
+
+    def test_telemetry_helpers_preserve_numeric_units_and_deltas(self) -> None:
+        self.assertEqual(_parse_bytes("1.5MiB"), 1_572_864)
+        self.assertEqual(_parse_bytes("2 GB"), 2_000_000_000)
+        self.assertEqual(
+            _statistics_delta(
+                {"wal": {"wal_bytes": 100, "stats_reset": "before"}},
+                {"wal": {"wal_bytes": 260, "stats_reset": "after"}},
+            ),
+            {"wal": {"wal_bytes": 160}},
+        )
+
+    def test_resource_summary_reports_load_and_counter_growth(self) -> None:
+        summary = _resource_summary(
+            [
+                {
+                    "cpuPercent": 10.0,
+                    "memoryUsedBytes": 100,
+                    "memoryPercent": 1.0,
+                    "networkReadBytes": 1_000,
+                    "networkWriteBytes": 2_000,
+                    "blockReadBytes": 3_000,
+                    "blockWriteBytes": 4_000,
+                    "pids": 5,
+                },
+                {
+                    "cpuPercent": 30.0,
+                    "memoryUsedBytes": 200,
+                    "memoryPercent": 2.0,
+                    "networkReadBytes": 1_500,
+                    "networkWriteBytes": 3_000,
+                    "blockReadBytes": 3_500,
+                    "blockWriteBytes": 5_500,
+                    "pids": 7,
+                },
+            ]
+        )
+        self.assertEqual(summary["cpuPercentMean"], 20.0)
+        self.assertEqual(summary["memoryUsedBytesMax"], 200)
+        self.assertEqual(summary["networkWriteBytesDelta"], 1_000)
+        self.assertEqual(summary["blockWriteBytesDelta"], 1_500)
+        self.assertEqual(summary["pidsMax"], 7)
 
 
 if __name__ == "__main__":
