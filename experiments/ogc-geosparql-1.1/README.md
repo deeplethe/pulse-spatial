@@ -17,6 +17,16 @@ realization of all 55 abstract tests. PULSE therefore reports:
    treating unsupported serializations or DGGS as successes; and
 4. conformance-class claims only when all tests in that class pass.
 
+The official `opengeospatial/ogc-geosparql` tag `1.1.0-ghpages` is also pinned
+at commit `cd53678be2e9775066d63791c84c3fa010fc29ff`. Its two auxiliary RDF
+registers are integrity-checked and parsed by
+`pulse-spatial-ogc-source-audit`. They are deliberately not presented as an
+executable ETS or as interchangeable with Annex A: the requirements register
+contains 58 `spec:ConformanceTest` resources, while its service description
+lists 52 `sd:feature` resources and Annex A allocates 55 tests across seven
+classes. The audit corroborates all 55 Annex names and preserves the exact
+cross-source deltas in machine-readable evidence.
+
 The existing 7,396-row Jena comparison remains a differential topology
 experiment. It is complementary to this class-level conformance audit.
 
@@ -39,6 +49,7 @@ approximated metric operations; see `docs/geosparql-profile.md`.
 
 ```bash
 docker build --tag pulse-jena-geosparql:6.1.0 external/jena-geosparql
+pulse-spatial-ogc-source-audit --require-audit-pass
 pulse-spatial-ogc-conformance --require-complete-coverage
 pulse-spatial-ogc-conformance \
   --query-rewrite --geometry-profile --dggs-profile \

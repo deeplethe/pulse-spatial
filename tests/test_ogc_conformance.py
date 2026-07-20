@@ -8,9 +8,25 @@ from pulse_spatial.experiments.ogc_conformance import (
     load_manifest,
     probes_for,
 )
+from pulse_spatial.experiments.ogc_source_audit import run_source_audit
 
 
 class OgcConformanceTests(unittest.TestCase):
+    def test_pinned_official_rdf_sources_are_audited_without_equating_them(self) -> None:
+        result = run_source_audit()
+        self.assertTrue(result["auditPassed"])
+        inventories = result["inventories"]
+        self.assertEqual(inventories["annexA"]["testAllocations"], 55)
+        self.assertEqual(
+            inventories["requirementsRegister"]["conformanceTestResources"],
+            58,
+        )
+        self.assertEqual(inventories["serviceDescription"]["features"], 52)
+        self.assertEqual(
+            result["crosswalkSummary"]["annexAllocationsCorroborated"],
+            55,
+        )
+
     def test_manifest_covers_all_normative_abstract_tests(self) -> None:
         manifest = load_manifest()
         plan = build_probe_plan(manifest)

@@ -28,3 +28,18 @@ the separate but schema-compatible
 [`production-oriented concurrency protocol`](CONCURRENCY.md). Keeping the
 parity and systems protocols distinct prevents a fast indexed query from being
 misreported as concurrent service capacity.
+
+## Shared topology cross-engine experiment
+
+The command below loads the exact 86-point by 86-region CRS84 graph used by the
+Apache Jena experiment and evaluates 7,396 pairs with `ST_Within`,
+`ST_CoveredBy`, `ST_Disjoint`, and `ST_Touches`:
+
+```text
+pulse-spatial-postgis-topology --require-parity
+```
+
+The checked-in run returns all 7,396 rows with zero differences from the PULSE
+kernel. Because Jena independently returns the same shared graph without
+differences, this is a three-system semantic triangulation on one workload.
+It is not a GeoSPARQL conformance certificate or a performance comparison.

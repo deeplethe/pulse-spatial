@@ -23,6 +23,9 @@ classifiers = [
   "Programming Language :: Python :: 3",
   "Topic :: Scientific/Engineering :: GIS"
 ]
+dependencies = [
+  "rdflib>=7.1,<8"
+]
 
 [project.urls]
 Homepage = "https://github.com/deeplethe/pulse-spatial"
@@ -40,7 +43,9 @@ pulse-spatial-geosparql-external = "pulse_spatial.experiments.geosparql_external
 pulse-spatial-formal-properties = "pulse_spatial.experiments.formal_properties:main"
 pulse-spatial-scalability = "pulse_spatial.experiments.scalability:main"
 pulse-spatial-postgis = "pulse_spatial.experiments.postgis_baseline:main"
+pulse-spatial-postgis-topology = "pulse_spatial.experiments.postgis_topology_external:main"
 pulse-spatial-ogc-conformance = "pulse_spatial.experiments.ogc_conformance:main"
+pulse-spatial-ogc-source-audit = "pulse_spatial.experiments.ogc_source_audit:main"
 pulse-spatial-postgis-concurrency = "pulse_spatial.experiments.postgis_concurrency:main"
 pulse-spatial-postgis-slo = "pulse_spatial.experiments.postgis_concurrency:main_slo"
 pulse-spatial-postgis-slo-evidence = "pulse_spatial.experiments.postgis_slo_evidence:main"

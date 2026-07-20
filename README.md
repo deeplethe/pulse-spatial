@@ -112,7 +112,7 @@ duration-qualified event, and final state. The checked-in artifact metrics are
 descriptive rather than a usability claim; see the
 [`composition comparison`](experiments/composition/README.md).
 
-A fourth experiment probes the Point/simple-Polygon kernel with 89 boundary,
+A fourth experiment probes the Point/simple-Polygon kernel with 86 boundary,
 concavity, ring-orientation, and numeric-scale cases plus 9 explicit rejection
 cases. The checked-in run has zero differences from Shapely/GEOS and rejects all
 invalid inputs as declared. This is a differential regression corpus, not an
@@ -136,6 +136,10 @@ GeoSPARQL 6.1.0. The expanded 86 x 86 topology cross product produces 7,396
 query rows, including 56 intended boundary pairs, with zero differences for
 `sfWithin`, `sfIntersects`, `sfDisjoint`, and `sfTouches`; see the
 [`external GeoSPARQL protocol`](experiments/geosparql-external/README.md).
+The identical 7,396-pair graph is now also executed independently by
+PostgreSQL/PostGIS using `ST_Within`, `ST_CoveredBy`, `ST_Disjoint`, and
+`ST_Touches`, again with zero mismatches. This supplies a shared-workload
+PULSE/Jena/PostGIS triangulation rather than comparisons over unrelated data.
 
 An eighth experiment supports the general proofs with bounded exhaustive
 checking. Every sequence through a four-position abstraction up to depth four
@@ -146,6 +150,9 @@ failure; see the [`formal property protocol`](experiments/formal-properties/READ
 A ninth evidence path mechanizes the transition-safety kernel in Lean 4.30.0.
 Lean checks preservation, deterministic evaluation, observation
 non-interference, scenario isolation, finite time advance, and atomic failure.
+It also models duration-qualified rule matching, opposite-crossing monitor
+cancellation, and monitor creation, proving exact deadlines, future-deadline
+preservation, cancellation filtering, and a finite batch-growth bound.
 The proof model abstracts computational geometry behind a total membership
 function, so it verifies execution discipline rather than floating-point
 topology; see [`formal/lean`](formal/lean/README.md).
@@ -168,6 +175,11 @@ and claims 7/7 classes under the researcher-authored refinements. This is not
 an OGC-issued certification; the finite-resolution H3 and local metric
 approximation boundaries are reported explicitly. See the
 [`GeoSPARQL 1.1 conformance matrix`](experiments/ogc-geosparql-1.1/README.md).
+The official `opengeospatial/ogc-geosparql` RDF registers are separately pinned
+by tag, commit, and SHA-256. A reproducible source audit records that Annex A,
+the requirements register, and the service-description graph contain 55, 58,
+and 52 entries respectively; all 55 Annex names are corroborated without
+misrepresenting those auxiliary graphs as an executable OGC ETS.
 
 A twelfth experiment exercises a durable mixed PostGIS workload: 60% point
 membership, 20% GiST window scans, and 20% synchronous position updates plus
@@ -203,6 +215,7 @@ budget. The 43,898.03 TPS exploratory completion peak is not SLO capacity. See t
 - `experiments/semantic-sensitivity/` — semantic policy mutation checks
 - `experiments/postgis/` — persistence, concurrency, recovery, and SLO reports
 - `external/jena-geosparql/` — pinned Java/Docker comparison harness
+- `external/ogc-geosparql-1.1/` — integrity-pinned official auxiliary RDF registers
 - `formal/lean/` — Lean 4 mechanized transition-safety kernel
 - `grammar/pulse-s.ebnf` — proposed PULSE-S surface syntax
 - `src/pulse_spatial/` — language, compiler, geometry, runtime, and projections
@@ -211,8 +224,8 @@ budget. The 43,898.03 TPS exploratory completion peak is not SLO capacity. See t
 
 ## Near-term roadmap
 
-1. Extend the Lean model from the safety kernel to rule application and
-   duration-monitor cancellation, then prove a refinement relation to Python.
+1. Prove a refinement relation from the Lean transition and monitor kernels to
+   the Python compiler/runtime, including declaration-ordered state updates.
 2. Add explicit accuracy regions and coordinate transformations.
 3. Add polygon holes, multipolygons, and explicit antimeridian handling.
 4. Project temporal events and intervals through an OWL-Time profile.

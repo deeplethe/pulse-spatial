@@ -286,13 +286,27 @@ without `sorry` placeholders:
 - `finite_advance`; and
 - `atomic_failure`.
 
+`PulseFormal.Monitors` additionally models duration-qualified rules over the
+crossing events produced by the core. It proof-checks:
+
+- `cancelled_not_in_cancelMatching` and
+  `cancelMatching_member_not_cancelled`;
+- `startFor_deadline_exact` and `startFor_future`;
+- `reconcile_future` and `reconcileAll_future`; and
+- `reconcile_length_le` and `reconcileAll_length_le`.
+
+Together these establish that an opposite crossing removes a matching pending
+monitor, a matching trigger creates the rule-defined deadline, positive
+durations keep reconciled deadlines in the future, and a finite event batch
+can add no more than `events.length * rules.length` monitors.
+
 The mechanization is intentionally narrower than this normative draft. It
 abstracts geometry as an environment-supplied total Boolean membership
-function and does not yet encode declaration-ordered rule updates, monitor
-start/cancellation, parsing, or RDF projection. Consequently it checks the
-transition discipline shared by the implementation and calculus; it is not a
-mechanized proof of the floating-point geometry kernel or full-language
-refinement.
+function and does not yet encode declaration-ordered state updates, parsing,
+RDF projection, or a refinement relation to the Python compiler/runtime.
+Consequently it checks the transition and monitor discipline shared by the
+implementation and calculus; it is not a mechanized proof of the
+floating-point geometry kernel or full-language refinement.
 
 ## 9. Claims intentionally excluded
 

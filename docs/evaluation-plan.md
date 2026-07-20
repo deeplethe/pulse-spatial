@@ -25,19 +25,21 @@ must not be reported as evidence for another.
 
 | ID | Evidence | Baseline | Status | Permitted claim |
 |---|---|---|---|---|
-| E0 | 59 semantic and integration tests | Explicit expected contracts | Executed | Core invariants hold for tested cases |
+| E0 | 68 semantic and integration tests | Explicit expected contracts | Executed | Core invariants hold for tested cases |
 | E1 | RDF/SHACL cross-view validation | pySHACL + GEOS functions | Executed | Tested projection outcomes agree |
 | E2 | 223 IBTrACS tracks, one polygon | Shapely/GEOS `covers` | Executed | Single-zone event-label parity |
 | E3 | Five zones; 6/12/24-hour events | GEOS + independent event sweep | Executed | Discrete multizone spatiotemporal parity |
-| E4 | 89 boundary/numeric cases; 9 rejection cases | Shapely/GEOS | Executed | Differential parity for the frozen Point/simple-Polygon corpus |
+| E4 | 86 boundary/numeric cases; 9 rejection cases | Shapely/GEOS | Executed | Differential parity for the frozen Point/simple-Polygon corpus |
 | E5 | Frozen cold-chain implementation | GeoSPARQL/SHACL and MF-JSON Prism compositions | Executed | Outcome equivalence and descriptive composition only |
 | E6 | Chronological frozen-rule holdout | Moving Features/workflow baseline | Planned | Limited temporal transfer |
 | E7 | Counterbalanced modeling tasks | Qualified participants | Planned | Usability differences with uncertainty |
 | E8 | 7,396 external query rows; four Simple Features relations | Apache Jena GeoSPARQL 6.1.0 | Executed | External-engine agreement for the supported profile |
-| E9 | Pure transition-safety kernel | Lean 4.30.0 | Executed | Six safety properties are proof-checked for the mechanized abstraction |
+| E9 | Transition kernel plus duration-monitor lifecycle | Lean 4.30.0 | Executed | Core safety plus cancellation, exact-deadline, future-deadline, and finite-growth properties are proof-checked |
 | E10 | 300,033 persisted points; 1,476,290 transition-zone pairs | PostgreSQL 18/PostGIS 3.6 with GiST | Executed | Indexed membership and derived-event parity with restart persistence |
 | E11 | 55/55 GeoSPARQL 1.1 ATS identifiers; 185 probes; 96 query-rewrite rule shapes; 7 classes | Normative OGC 22-047r1 inventory + Jena 6.1.0 + H3 4.4.0 | Executed | Native baseline 5/7; isolated PULSE profiles 7/7 under researcher-authored refinements, not OGC certification |
 | E12 | Separated-container concurrency, PostgreSQL/WAL/resource telemetry, SIGKILL recovery, open-loop SLO | PostgreSQL 18/PostGIS 3.6 + pgbench | Executed | Reset-state single-node scaling; 10k TPS host-scoped repeated-window lower bound; recovery evidence |
+| E13 | Official RDF source integrity and inventory audit | OGC `ogc-geosparql` tag `1.1.0-ghpages` | Executed | 55 Annex allocations are source-corroborated; 55/58/52 inventory differences are explicit, not treated as an ETS |
+| E14 | Same 7,396 Point/Polygon pairs and four predicates as E8 | PostgreSQL 18/PostGIS 3.6 | Executed | Zero-mismatch PULSE/Jena/PostGIS triangulation on one shared workload |
 
 ## Current E3 protocol
 
@@ -91,7 +93,8 @@ are excluded because the current language slice cannot represent them.
 - Do not call E2 or E3 GeoSPARQL conformance tests.
 - Do not call E4 an OGC or GeoSPARQL conformance suite.
 - Do not describe E9 as a proof of floating-point geometry or the complete
-  parser/compiler; geometry is abstracted by a total membership function.
+  parser/compiler; geometry is abstracted by a total membership function and
+  a Python refinement theorem remains future work.
 - Keep E10's parity claim separate from E12's concurrency and SLO evidence.
 - Report E12's 10,000 TPS value only with its scheduled-start 20 ms p99,
   100 ms pgbench admission threshold, 0.1% skip budget, three-repeat 60-second
@@ -101,5 +104,9 @@ are excluded because the current language slice cannot represent them.
   PULSE profiles under researcher-authored executable refinements, never as an
   OGC-issued certificate. State the H3 finite-resolution and local metric
   approximation boundaries.
+- Describe E13 as a provenance and cross-source consistency audit, never as
+  execution of an official ETS. Annex A remains the normative authority.
+- Describe E14 as shared-workload semantic agreement, not OGC certification or
+  a like-for-like performance contest.
 - Do not infer usability from syntax length or artifact count.
 - Do not extrapolate sample-and-hold results to continuous trajectories.

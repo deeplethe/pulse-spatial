@@ -1,0 +1,526 @@
+{
+  "experiment": "ogc-geosparql-1.1-official-source-audit-v1",
+  "generatedAt": "2026-07-20T08:13:35.621557+00:00",
+  "normativeAuthority": {
+    "document": "OGC 22-047r1",
+    "annex": "Annex A — Abstract Test Suite",
+    "url": "https://docs.ogc.org/is/22-047r1/22-047r1.html#_abstract_test_suite",
+    "statement": "Annex A is normative. The two pinned RDF files are official auxiliary registers, not an executable OGC ETS."
+  },
+  "upstream": {
+    "repository": "https://github.com/opengeospatial/ogc-geosparql",
+    "tag": "1.1.0-ghpages",
+    "commit": "cd53678be2e9775066d63791c84c3fa010fc29ff",
+    "files": {
+      "reqs.ttl": {
+        "sha256": "209fd99a08ea9a1992ab5bbbfe68193e0183c44e59c626e276379d2007298bfd",
+        "expectedSha256": "209fd99a08ea9a1992ab5bbbfe68193e0183c44e59c626e276379d2007298bfd"
+      },
+      "servicedescription_conformanceclasses.ttl": {
+        "sha256": "58fa4b6e7d1991522c2d9c7728a3d02478f91a1bbfdac7f7cb3eecbc6d7fe6dc",
+        "expectedSha256": "58fa4b6e7d1991522c2d9c7728a3d02478f91a1bbfdac7f7cb3eecbc6d7fe6dc"
+      }
+    }
+  },
+  "inventories": {
+    "annexA": {
+      "classCount": 7,
+      "testAllocations": 55,
+      "uniqueIdentifiers": 55
+    },
+    "requirementsRegister": {
+      "conformanceTestResources": 58,
+      "byVersion": {
+        "1.0": 30,
+        "1.1": 28
+      }
+    },
+    "serviceDescription": {
+      "features": 52,
+      "byVersion": {
+        "1.0": 23,
+        "1.1": 29
+      }
+    }
+  },
+  "crosswalkSummary": {
+    "annexAllocationsCorroborated": 55,
+    "unambiguous": 51,
+    "ambiguousAcrossVersionedUris": 4,
+    "unmatched": 0
+  },
+  "sourceDivergences": {
+    "registerTestsNotSelectedByAnnexNameCrosswalk": [
+      "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/query-functions-non-sf"
+    ],
+    "serviceFeaturesNotTypedAsConformanceTests": [
+      "http://www.opengis.net/spec/geosparql/1.1/conf/core/spatial-object-class",
+      "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/dggs-literal-srs"
+    ],
+    "conformanceTestsNotListedAsServiceFeatures": [
+      "http://www.opengis.net/spec/geosparql/1.0/conf/core/sparql-protocol",
+      "http://www.opengis.net/spec/geosparql/1.0/conf/rdfs-entailment-extension/bgp-rdfs-ent",
+      "http://www.opengis.net/spec/geosparql/1.0/conf/rdfs-entailment-extension/gml-geometry-types",
+      "http://www.opengis.net/spec/geosparql/1.0/conf/rdfs-entailment-extension/wkt-geometry-types",
+      "http://www.opengis.net/spec/geosparql/1.0/conf/topology-extension/eh-spatial-relations",
+      "http://www.opengis.net/spec/geosparql/1.0/conf/topology-extension/rcc8-spatial-relations",
+      "http://www.opengis.net/spec/geosparql/1.0/conf/topology-extension/sf-spatial-relations",
+      "http://www.opengis.net/spec/geosparql/1.1/conf/core/geometry-collection-class"
+    ]
+  },
+  "checks": {
+    "pinnedFileHashesMatch": true,
+    "annexInventoryIsSevenClassesAnd55UniqueAllocations": true,
+    "allAnnexAllocationsHaveRegisterCandidates": true,
+    "registerShapeMatchesPinnedSource": true,
+    "serviceDescriptionShapeMatchesPinnedSource": true
+  },
+  "auditPassed": true,
+  "claimBoundary": "Passing this audit establishes provenance, integrity, and explicit cross-source accounting. It is not execution of an OGC ETS and does not by itself establish GeoSPARQL conformance.",
+  "crosswalk": [
+    {
+      "annexIdentifier": "/conf/core/sparql-protocol",
+      "registerLocalName": "sparql-protocol",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/core/sparql-protocol",
+        "http://www.opengis.net/spec/geosparql/1.1/conf/core/sparql-protocol"
+      ],
+      "status": "ambiguous-version"
+    },
+    {
+      "annexIdentifier": "/conf/core/spatial-object-class",
+      "registerLocalName": "spatial-object-class",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/core/spatial-object-class"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/core/feature-class",
+      "registerLocalName": "feature-class",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/core/feature-class"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/core/spatial-object-collection-class",
+      "registerLocalName": "spatial-object-collection-class",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/core/spatial-object-collection-class"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/core/feature-collection-class",
+      "registerLocalName": "feature-collection-class",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/core/feature-collection-class"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/core/spatial-object-properties",
+      "registerLocalName": "spatial-object-properties",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/core/spatial-object-properties"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/topology-vocab-extension/sf-spatial-relations",
+      "registerLocalName": "sf-spatial-relations",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/topology-extension/sf-spatial-relations"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/topology-vocab-extension/eh-spatial-relations",
+      "registerLocalName": "eh-spatial-relations",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/topology-extension/eh-spatial-relations"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/topology-vocab-extension/rcc8-spatial-relations",
+      "registerLocalName": "rcc8-spatial-relations",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/topology-extension/rcc8-spatial-relations"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/geometry-class",
+      "registerLocalName": "geometry-class",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-extension/geometry-class"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/geometry-collection-class",
+      "registerLocalName": "geometry-collection-class",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/core/geometry-collection-class"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/feature-properties",
+      "registerLocalName": "feature-properties",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-extension/feature-properties",
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/feature-properties"
+      ],
+      "status": "ambiguous-version"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/geometry-properties",
+      "registerLocalName": "geometry-properties",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-extension/geometry-properties",
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/geometry-properties"
+      ],
+      "status": "ambiguous-version"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/query-functions",
+      "registerLocalName": "query-functions",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-extension/query-functions",
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/query-functions"
+      ],
+      "status": "ambiguous-version"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/srid-function",
+      "registerLocalName": "srid-function",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-extension/srid-function"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/sa-functions",
+      "registerLocalName": "sa-functions",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/sa-functions"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/wkt-literal",
+      "registerLocalName": "wkt-literal",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-extension/wkt-literal"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/wkt-literal-default-srs",
+      "registerLocalName": "wkt-literal-default-srs",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-extension/wkt-literal-default-srs"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/wkt-axis-order",
+      "registerLocalName": "wkt-axis-order",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-extension/wkt-axis-order"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/wkt-literal-empty",
+      "registerLocalName": "wkt-literal-empty",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-extension/wkt-literal-empty"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/geometry-as-wkt-literal",
+      "registerLocalName": "geometry-as-wkt-literal",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-extension/geometry-as-wkt-literal"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/asWKT-function",
+      "registerLocalName": "geometry-as-wkt-function",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/geometry-as-wkt-function"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/gml-literal",
+      "registerLocalName": "gml-literal",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-extension/gml-literal"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/gml-literal-empty",
+      "registerLocalName": "gml-literal-empty",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-extension/gml-literal-empty"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/gml-profile",
+      "registerLocalName": "gml-profile",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-extension/gml-profile"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/geometry-as-gml-literal",
+      "registerLocalName": "geometry-as-gml-literal",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-extension/geometry-as-gml-literal"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/asGML-function",
+      "registerLocalName": "geometry-as-gml-function",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/geometry-as-gml-function"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/geojson-literal",
+      "registerLocalName": "geojson-literal",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/geojson-literal"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/geojson-literal-srs",
+      "registerLocalName": "geojson-literal-srs",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/geojson-literal-srs"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/geojson-literal-empty",
+      "registerLocalName": "geojson-literal-empty",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/geojson-literal-empty"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/geometry-as-geojson-literal",
+      "registerLocalName": "geometry-as-geojson-literal",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/geometry-as-geojson-literal"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/asGeoJSON-function",
+      "registerLocalName": "geometry-as-geojson-function",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/geometry-as-geojson-function"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/kml-literal",
+      "registerLocalName": "kml-literal",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/kml-literal"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/kml-literal-srs",
+      "registerLocalName": "kml-literal-srs",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/kml-literal-srs"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/kml-literal-empty",
+      "registerLocalName": "kml-literal-empty",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/kml-literal-empty"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/geometry-as-kml-literal",
+      "registerLocalName": "geometry-as-kml-literal",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/geometry-as-kml-literal"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension/asKML-function",
+      "registerLocalName": "geometry-as-kml-function",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/geometry-as-kml-function"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension-dggs/query-functions",
+      "registerLocalName": "query-functions-dggs",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/query-functions-dggs"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension-dggs/query-functions-non-sf",
+      "registerLocalName": "query-functions-non-sf-dggs",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/query-functions-non-sf-dggs"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension-dggs/srid-function",
+      "registerLocalName": "srid-function",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-extension/srid-function"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension-dggs/sa-functions",
+      "registerLocalName": "sa-functions",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/sa-functions"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension-dggs/dggs-literal",
+      "registerLocalName": "dggs-literal",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/dggs-literal"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension-dggs/dggs-literal-empty",
+      "registerLocalName": "dggs-literal-empty",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/dggs-literal-empty"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension-dggs/geometry-as-dggs-literal",
+      "registerLocalName": "geometry-as-dggs-literal",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/geometry-as-dggs-literal"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-extension-dggs/asDGGS-function",
+      "registerLocalName": "geometry-as-dggs-function",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.1/conf/geometry-extension/geometry-as-dggs-function"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-topology-extension/relate-query-function",
+      "registerLocalName": "relate-query-function",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-topology-extension/relate-query-function"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-topology-extension/sf-query-functions",
+      "registerLocalName": "sf-query-functions",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-topology-extension/sf-query-functions"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-topology-extension/eh-query-functions",
+      "registerLocalName": "eh-query-functions",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-topology-extension/eh-query-functions"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/geometry-topology-extension/rcc8-query-functions",
+      "registerLocalName": "rcc8-query-functions",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/geometry-topology-extension/rcc8-query-functions"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/rdfs-entailment-extension/bgp-rdfs-ent",
+      "registerLocalName": "bgp-rdfs-ent",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/rdfs-entailment-extension/bgp-rdfs-ent"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/rdfs-entailment-extension/wkt-geometry-types",
+      "registerLocalName": "wkt-geometry-types",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/rdfs-entailment-extension/wkt-geometry-types"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/rdfs-entailment-extension/gml-geometry-types",
+      "registerLocalName": "gml-geometry-types",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/rdfs-entailment-extension/gml-geometry-types"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/query-rewrite-extension/sf-query-rewrite",
+      "registerLocalName": "sf-query-rewrite",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/query-rewrite-extension/sf-query-rewrite"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/query-rewrite-extension/eh-query-rewrite",
+      "registerLocalName": "eh-query-rewrite",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/query-rewrite-extension/eh-query-rewrite"
+      ],
+      "status": "corroborated"
+    },
+    {
+      "annexIdentifier": "/conf/query-rewrite-extension/rcc8-query-rewrite",
+      "registerLocalName": "rcc8-query-rewrite",
+      "candidateRegisterTests": [
+        "http://www.opengis.net/spec/geosparql/1.0/conf/query-rewrite-extension/rcc8-query-rewrite"
+      ],
+      "status": "corroborated"
+    }
+  ]
+}

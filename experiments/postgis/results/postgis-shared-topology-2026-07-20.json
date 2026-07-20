@@ -1,0 +1,32 @@
+{
+  "experiment": "postgis-shared-topology-external-agreement-v1",
+  "generatedAt": "2026-07-20T08:19:42.562556+00:00",
+  "claimBoundary": "Agreement with PostgreSQL/PostGIS ST_Within, ST_CoveredBy, ST_Disjoint, and ST_Touches on the exact 7,396 CRS84 Point/Polygon pairs used by the Apache Jena baseline. This is a shared semantic workload, not an OGC conformance certificate, geodesic test, or performance contest.",
+  "summary": {
+    "points": 86,
+    "regions": 86,
+    "pairs": 7396,
+    "rows": 7396,
+    "boundarySelfPairs": 38,
+    "mismatches": 0,
+    "boundaryMismatches": 0,
+    "allChecksPass": true
+  },
+  "timingSeconds": {
+    "imagePull": null,
+    "inputSerialization": 0.008336300030350685,
+    "databaseStartup": 5.788337599951774,
+    "databaseLoadAndIndex": 0.342875299975276,
+    "crossProductQuery": 0.6580430999747477
+  },
+  "mismatches": [],
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "externalSystem": "PostgreSQL/PostGIS",
+    "postgresVersion": "PostgreSQL 18.4 (Debian 18.4-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+    "postgisVersion": "POSTGIS=\"3.6.4 94d984b\" [EXTENSION] PGSQL=\"180\" GEOS=\"3.13.1-CAPI-1.19.2\" PROJ=\"9.6.0 NETWORK_ENABLED=OFF URL_ENDPOINT=https://cdn.proj.org USER_WRITABLE_DIRECTORY=/var/lib/postgresql/.local/share/proj DATABASE_PATH=/usr/share/proj/proj.db\" (compiled against PROJ 9.6.0) LIBXML=\"2.9.14\" LIBJSON=\"0.18\" LIBPROTOBUF=\"1.5.1\" WAGYU=\"0.5.0 (Internal)\" TOPOLOGY",
+    "containerImage": "postgis/postgis:18-3.6",
+    "containerImageId": "sha256:4f755ac224323a73961dfb21bdddffcb97f40bb916fda3e8a627b116489c9e12"
+  }
+}

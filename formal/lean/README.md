@@ -7,11 +7,18 @@ kernel.  It makes the following mechanisms explicit:
 - logical-clock validation and atomic error outcomes;
 - boundary-policy-parametric sampled entry/exit events;
 - finite pending-monitor discharge;
+- duration-qualified rule matching, opposite-crossing cancellation, and
+  monitor creation with exact deadlines;
 - pure scenario execution; and
 - the `record`, `move`, and `advance` core actions.
 
 Lean checks preservation, deterministic evaluation, observation
 non-interference, scenario isolation, finite time advance, and atomic failure.
+For duration-qualified rules it additionally checks that cancelled monitors are
+removed, retained monitors preserve future deadlines, newly started monitors
+have the exact rule-defined deadline, positive durations keep all deadlines in
+the future, and a batch of crossing events can grow the pending set by at most
+`events.length * rules.length`.
 The geometry predicate is an environment-supplied total Boolean function.  The
 mechanization therefore verifies the transition discipline, not floating-point
 computational geometry or full surface-language parsing.
