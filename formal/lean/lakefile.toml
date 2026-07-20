@@ -1,6 +1,10 @@
 name = "PulseFormal"
 version = "0.1.0"
-defaultTargets = ["PulseFormal"]
+defaultTargets = ["PulseFormal", "pulse_ir"]
 
 [[lean_lib]]
 name = "PulseFormal"
+
+[[lean_exe]]
+name = "pulse_ir"
+root = "CompilerMain"

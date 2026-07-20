@@ -109,6 +109,11 @@ jobs:
           build: true
           test: false
           leanchecker: true
+      - name: Verify checked-in compiler IR fixture
+        working-directory: formal/lean
+        run: |
+          lake exe pulse_ir > /tmp/paper-cold-chain-ir.json
+          diff -u paper-cold-chain-ir.json /tmp/paper-cold-chain-ir.json
 
   persistent-postgis:
     runs-on: ubuntu-latest

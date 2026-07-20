@@ -12,6 +12,12 @@ kernel.  It makes the following mechanisms explicit:
 - pure scenario execution; and
 - the `record`, `move`, and `advance` core actions.
 
+`PulseFormal.Compiler` connects a post-parse surface subset to the kernel. It
+resolves symbolic identifiers, converts seconds/minutes/hours to seconds,
+compiles duration rules, and lowers Point-valued scenario assumptions plus a
+horizon to `move`/`advance` actions. Lean proves trigger, guard, duration,
+deadline, horizon, well-typedness, and scenario-desugaring preservation.
+
 Lean checks preservation, deterministic evaluation, observation
 non-interference, scenario isolation, finite time advance, and atomic failure.
 For duration-qualified rules it additionally checks that cancelled monitors are
@@ -21,7 +27,10 @@ positive durations keep all deadlines in the future, and a batch of crossing
 events can grow the pending set by at most `events.length * rules.length`.
 The geometry predicate is an environment-supplied total Boolean function.  The
 mechanization therefore verifies the transition discipline, not floating-point
-computational geometry or full surface-language parsing.
+computational geometry or full surface-language parsing. The general compiler
+theorems apply to the mechanized subset. Cross-implementation correspondence is
+currently a byte-identical canonical-IR check for the executable paper model,
+not a theorem about every Python compiler path.
 
 The toolchain is pinned to Lean 4.30.0.  Build locally with an installed Lean
 toolchain:
@@ -36,3 +45,12 @@ or from this directory with Docker:
 docker build --tag pulse-lean:4.30.0 .
 docker run --rm pulse-lean:4.30.0
 ```
+
+Regenerate the canonical paper IR with:
+
+```text
+lake exe pulse_ir
+```
+
+CI compares that output with `paper-cold-chain-ir.json`; the Python suite
+independently compiles `examples/paper_cold_chain_st.pulse` to the same bytes.

@@ -306,12 +306,29 @@ holds, the monitor has the rule-defined deadline, positive durations keep
 reconciled deadlines in the future, and a finite event batch can add no more
 than `events.length * rules.length` monitors.
 
+`PulseFormal.Compiler` adds a post-parse surface language and a deterministic
+Core IR. It performs identifier resolution, duration-unit normalization, and
+scenario desugaring. The checked declarations include:
+
+- `compileRule_preserves_fields` and `compileRule_preserves_guard`;
+- `compileRule_preserves_wellTyped` and `compileRule_deadline_exact`;
+- `compileScenario_preserves_horizon` and
+  `compileScenario_preserves_wellTyped`; and
+- `compileScenario_simulates_execution`.
+
+The last theorem relates surface scenario semantics to `Core.run` over the
+generated move/advance action sequence. A Lean executable emits canonical IR
+for Listing 1.1; a Python regression test compiles the actual `.pulse` file and
+requires byte-identical IR. Thus the general preservation result is for the
+mechanized subset, while the cross-implementation result currently covers the
+paper model rather than every accepted Python program.
+
 The mechanization is intentionally narrower than this normative draft. It
 abstracts geometry as an environment-supplied total Boolean membership
-function and does not yet encode declaration-ordered state updates, parsing,
-RDF projection, or a refinement relation to the Python compiler/runtime.
-Consequently it checks the transition and monitor discipline shared by the
-implementation and calculus; it is not a mechanized proof of the
+function and does not yet encode the text parser, declaration-ordered state
+updates, RDF projection, or a general refinement relation to every Python
+compiler/runtime path. Consequently it checks the transition, monitor, and
+paper-subset compilation disciplines; it is not a mechanized proof of the
 floating-point geometry kernel or full-language refinement.
 
 ## 9. Claims intentionally excluded

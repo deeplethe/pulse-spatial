@@ -8,6 +8,7 @@ from dataclasses import asdict, is_dataclass
 from datetime import date, datetime
 from enum import Enum
 
+from .canonical_ir import write_canonical_ir
 from .compiler import PulseModelError, load_pulse
 from .parser import PulseSyntaxError
 from .projection import project_standards, write_projection_bundle
@@ -35,6 +36,11 @@ def main() -> None:
     )
     argument_parser.add_argument("source", help="path to a .pulse model")
     argument_parser.add_argument("--scenario", help="scenario name to execute")
+    argument_parser.add_argument(
+        "--emit-canonical-ir",
+        metavar="FILE",
+        help="write the verified-subset canonical compiler IR",
+    )
     argument_parser.add_argument(
         "--emit-projections",
         metavar="DIRECTORY",
@@ -67,6 +73,10 @@ def main() -> None:
                 "events": _json_value(report.result.events),
                 "answers": _json_value(report.answers),
             }
+        if arguments.emit_canonical_ir:
+            output["canonicalIr"] = str(
+                write_canonical_ir(model, arguments.emit_canonical_ir).resolve()
+            )
         if arguments.emit_projections:
             paths = write_projection_bundle(
                 project_standards(model.world, model.constraints),

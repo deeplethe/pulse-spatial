@@ -80,8 +80,10 @@ No runtime dependency is required for the core topological kernel. The
 `validation` extra adds pySHACL and Shapely/GEOS for independent projection
 checks. A pinned Apache Jena GeoSPARQL 6.1.0 container provides a genuinely
 external query-engine comparison without adding Java to the core runtime.
-A Lean 4.30.0 project mechanically checks the transition-safety kernel, and a
-pinned PostgreSQL 18/PostGIS 3.6 container supplies an on-disk GiST-indexed
+A Lean 4.30.0 project mechanically checks the transition-safety kernel and a
+surface-to-Core compiler for the paper subset. The Python compiler exports the
+same canonical IR for the executable paper listing. A pinned PostgreSQL
+18/PostGIS 3.6 container supplies an on-disk GiST-indexed
 database baseline.
 
 ## Executed real-trajectory experiment
@@ -167,6 +169,13 @@ It also models duration-qualified rule matching, opposite-crossing monitor
 cancellation, and state-guarded monitor creation, proving guard eligibility,
 exact deadlines, future-deadline preservation, cancellation filtering, and a
 finite batch-growth bound.
+The `PulseFormal.Compiler` module additionally resolves names, normalizes
+seconds/minutes/hours, lowers Point assumptions and scenario horizons to Core
+actions, and proves preservation of rule triggers, source-state guards,
+positive durations, exact deadlines, finite horizons, and scenario execution
+under that desugaring. The Python compiler and Lean exporter produce the same
+canonical IR for `examples/paper_cold_chain_st.pulse`; CI regenerates both
+sides and rejects drift.
 The proof model abstracts computational geometry behind a total membership
 function, so it verifies execution discipline rather than floating-point
 topology; see [`formal/lean`](formal/lean/README.md).
@@ -231,7 +240,7 @@ budget. The 43,898.03 TPS exploratory completion peak is not SLO capacity. See t
 - `experiments/postgis/` — persistence, concurrency, recovery, and SLO reports
 - `external/jena-geosparql/` — pinned Java/Docker comparison harness
 - `external/ogc-geosparql-1.1/` — integrity-pinned official auxiliary RDF registers
-- `formal/lean/` — Lean 4 mechanized transition-safety kernel
+- `formal/lean/` — Lean 4 safety kernel and verified paper-subset compiler
 - `grammar/pulse-s.ebnf` — proposed PULSE-S surface syntax
 - `src/pulse_spatial/` — language, compiler, geometry, runtime, and projections
 - `examples/` — executable language examples
@@ -239,8 +248,9 @@ budget. The 43,898.03 TPS exploratory completion peak is not SLO capacity. See t
 
 ## Near-term roadmap
 
-1. Prove a refinement relation from the Lean transition and monitor kernels to
-   the Python compiler/runtime, including declaration-ordered state updates.
+1. Extend the one-model Python/Lean canonical-IR correspondence to a generated
+   well-typed corpus and prove rule-aware, declaration-ordered runtime
+   refinement beyond the current scenario-action desugaring theorem.
 2. Add explicit accuracy regions and coordinate transformations.
 3. Add polygon holes, multipolygons, and explicit antimeridian handling.
 4. Project temporal events and intervals through an OWL-Time profile.

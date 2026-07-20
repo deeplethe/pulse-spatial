@@ -25,7 +25,7 @@ must not be reported as evidence for another.
 
 | ID | Evidence | Baseline | Status | Permitted claim |
 |---|---|---|---|---|
-| E0 | 72 semantic and integration tests | Explicit expected contracts | Executed | Core invariants and the paper listing hold for tested cases |
+| E0 | 74 semantic and integration tests | Explicit expected contracts | Executed | Core invariants, the paper listing, and the Python/Lean canonical IR fixture hold for tested cases |
 | E1 | RDF/SHACL cross-view validation | pySHACL + GEOS functions | Executed | Tested projection outcomes agree |
 | E2 | 223 IBTrACS tracks, one polygon | Shapely/GEOS `covers` | Executed | Single-zone event-label parity |
 | E3 | Five zones; 6/12/24-hour events | GEOS + independent event sweep | Executed | Discrete multizone spatiotemporal parity |
@@ -40,6 +40,7 @@ must not be reported as evidence for another.
 | E12 | Separated-container concurrency, PostgreSQL/WAL/resource telemetry, SIGKILL recovery, open-loop SLO | PostgreSQL 18/PostGIS 3.6 + pgbench | Executed | Reset-state single-node scaling; 10k TPS host-scoped repeated-window lower bound; recovery evidence |
 | E13 | Official RDF source integrity and inventory audit | OGC `ogc-geosparql` tag `1.1.0-ghpages` | Executed | 55 Annex allocations are source-corroborated; 55/58/52 inventory differences are explicit, not treated as an ETS |
 | E14 | Same 7,396 Point/Polygon pairs and four predicates as E8 | PostgreSQL 18/PostGIS 3.6 | Executed | Zero-mismatch PULSE/Jena/PostGIS triangulation on one shared workload |
+| E15 | Lean surface-to-Core compiler plus canonical IR for the paper listing | Lean 4.30.0 exporter + Python compiler | Executed | General preservation for the mechanized subset; exact cross-implementation IR equality for one executable model |
 
 ## Current E3 protocol
 
@@ -92,9 +93,10 @@ are excluded because the current language slice cannot represent them.
 - Report exact mismatch counts and samples, not only aggregate event counts.
 - Do not call E2 or E3 GeoSPARQL conformance tests.
 - Do not call E4 an OGC or GeoSPARQL conformance suite.
-- Do not describe E9 as a proof of floating-point geometry or the complete
-  parser/compiler; geometry is abstracted by a total membership function and
-  a Python refinement theorem remains future work.
+- Do not describe E9 or E15 as a proof of floating-point geometry, the complete
+  parser/compiler, or arbitrary Python-runtime refinement. E15 proves the Lean
+  subset compiler generally and checks one Python/Lean canonical-IR fixture;
+  declaration-ordered rule-aware runtime refinement remains future work.
 - Keep E10's parity claim separate from E12's concurrency and SLO evidence.
 - Report E12's 10,000 TPS value only with its scheduled-start 20 ms p99,
   100 ms pgbench admission threshold, 0.1% skip budget, three-repeat 60-second
