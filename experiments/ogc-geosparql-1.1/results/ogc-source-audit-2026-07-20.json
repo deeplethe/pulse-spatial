@@ -1,11 +1,12 @@
 {
   "experiment": "ogc-geosparql-1.1-official-source-audit-v1",
-  "generatedAt": "2026-07-20T08:32:05.833163+00:00",
+  "generatedAt": "2026-07-20T11:22:44.709336+00:00",
   "normativeAuthority": {
     "document": "OGC 22-047r1",
     "annex": "Annex A — Abstract Test Suite",
     "url": "https://docs.ogc.org/is/22-047r1/22-047r1.html#_abstract_test_suite",
-    "statement": "Annex A is normative. The two pinned RDF files are official auxiliary registers, not an executable OGC ETS."
+    "statement": "Annex A is normative. The two pinned RDF files are official auxiliary registers, not an executable OGC ETS.",
+    "inventoryEncoding": "Researcher-authored manifest transcribed from Annex A; the audit does not independently parse the specification HTML."
   },
   "upstream": {
     "repository": "https://github.com/opengeospatial/ogc-geosparql",
@@ -24,6 +25,7 @@
   },
   "inventories": {
     "annexA": {
+      "source": "researcher-authored Annex A manifest transcription",
       "classCount": 7,
       "testAllocations": 55,
       "uniqueIdentifiers": 55
@@ -70,13 +72,13 @@
   },
   "checks": {
     "pinnedFileHashesMatch": true,
-    "annexInventoryIsSevenClassesAnd55UniqueAllocations": true,
+    "manifestHasSevenClassesAnd55UniqueAllocations": true,
     "allAnnexAllocationsHaveRegisterCandidates": true,
     "registerShapeMatchesPinnedSource": true,
     "serviceDescriptionShapeMatchesPinnedSource": true
   },
   "auditPassed": true,
-  "claimBoundary": "Passing this audit establishes provenance, integrity, and explicit cross-source accounting. It is not execution of an OGC ETS and does not by itself establish GeoSPARQL conformance.",
+  "claimBoundary": "Passing this audit establishes integrity of the two pinned official RDF files and explicit accounting against a researcher-authored Annex A manifest transcription. It does not independently parse Annex A, execute an OGC ETS, or establish GeoSPARQL conformance.",
   "crosswalk": [
     {
       "annexIdentifier": "/conf/core/sparql-protocol",

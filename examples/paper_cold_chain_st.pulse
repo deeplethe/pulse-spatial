@@ -1,0 +1,45 @@
+model ColdChainST version "0.1"
+
+crs C = "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+
+region Z crs C = polygon [
+  [121.49, 31.19],
+  [121.51, 31.19],
+  [121.51, 31.21],
+  [121.49, 31.21],
+  [121.49, 31.19]
+]
+
+entity Shipment {
+  property position: Point crs C
+  state condition oneof [Safe, AtRisk]
+}
+
+instance batch: Shipment {
+  position = point(121.50, 31.20)
+  condition = Safe
+}
+
+observe batch.position = point(121.512, 31.201) {
+  at "2026-07-19T08:20:00Z"
+  source gps
+  confidence 0.98
+  accuracy 5 m
+}
+
+constraint Containment {
+  must coveredBy(batch.position, Z)
+  while Shipment.condition == Safe
+}
+
+process SustainedDeparture(s: Shipment) {
+  when leaves(s.position, Z) for 10 min
+  changes s.condition: Safe -> AtRisk
+}
+
+scenario Reroute {
+  assume batch.position == point(121.515, 31.205)
+  run 20 min
+  ask coveredBy(batch.position, Z)
+  ask batch.condition
+}

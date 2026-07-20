@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 from dataclasses import asdict, is_dataclass
+from datetime import date, datetime
 from enum import Enum
 
 from .compiler import PulseModelError, load_pulse
@@ -16,6 +17,8 @@ from .validation import ReferenceBackendUnavailable, validate_projection_parity
 def _json_value(value: object) -> object:
     if isinstance(value, Enum):
         return value.value
+    if isinstance(value, (datetime, date)):
+        return value.isoformat()
     if is_dataclass(value):
         return {key: _json_value(item) for key, item in asdict(value).items()}
     if isinstance(value, dict):
@@ -58,6 +61,8 @@ def main() -> None:
             report = model.run_scenario(arguments.scenario)
             output["scenario"] = {
                 "name": report.name,
+                "startedAt": report.started_at.isoformat(),
+                "completedAt": report.completed_at.isoformat(),
                 "horizonSeconds": report.horizon_seconds,
                 "events": _json_value(report.result.events),
                 "answers": _json_value(report.answers),

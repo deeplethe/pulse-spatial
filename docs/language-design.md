@@ -42,9 +42,13 @@ timestamp-ordered, discrete sample-and-hold clock. The position asserted at one
 sample is retained until the next move. An inverse crossing before the deadline
 cancels a pending qualification. Timers due at the same time as a move fire
 first. `started_at` records the crossing, `effective_at` the duration deadline,
-and `emitted_at` the runtime clock advance that exposed the event. A scenario
-`run` duration remains a horizon annotation; it does not imply continuous
-simulation.
+and `emitted_at` the runtime clock advance that exposed the event. A guarded
+duration rule starts only when its source state matches at the crossing; its
+state transition is guarded again at emission. A scenario begins at an explicit
+start or, by default, the latest observation timestamp (Unix epoch if none),
+applies untimed assumptions at that instant in declaration order, and advances
+its isolated clock by the declared `run` duration. This remains discrete
+sample-and-hold execution, not continuous simulation.
 
 ## Operational sketch
 

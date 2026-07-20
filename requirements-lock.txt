@@ -1,0 +1,15 @@
+# Reproduction lock for Python 3.11/3.12, generated from the 2026-07-20
+# artifact environment. Install this file, then install the local package with
+# `python -m pip install -e . --no-deps`.
+colorama==0.4.6
+html5rdf==1.2.1
+numpy==2.5.1
+owlrl==7.6.2
+packaging==26.2
+prettytable==3.18.0
+pyparsing==3.3.2
+pyshacl==0.40.0
+rdflib==7.6.0
+ruff==0.15.22
+shapely==2.1.2
+wcwidth==0.8.2

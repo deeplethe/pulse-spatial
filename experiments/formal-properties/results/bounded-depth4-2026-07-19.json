@@ -1,7 +1,7 @@
 {
   "experiment": "pulse-core-bounded-metatheory-check-v1",
   "generatedAt": "2026-07-19T13:33:34.173871+00:00",
-  "claimBoundary": "Exhaustive exploration of every action sequence through the finite four-position abstraction up to depth 4. It supports testing of the proof assumptions but is not a general, machine-checked proof of the unbounded calculus.",
+  "claimBoundary": "Exhaustive exploration of every move-only trace through the finite four-position abstraction up to depth 4. Record, advance, scenario, and invalid-action properties are checked separately. It supports testing of the proof assumptions but is not a general, machine-checked proof of the unbounded calculus.",
   "abstraction": {
     "positions": [
       "west",

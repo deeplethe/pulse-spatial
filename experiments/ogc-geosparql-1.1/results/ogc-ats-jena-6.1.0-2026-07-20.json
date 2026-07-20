@@ -1,7 +1,7 @@
 {
-  "experiment": "ogc-geosparql-1.1-complete-ats-coverage-v1",
-  "generatedAt": "2026-07-20T06:19:36.916367+00:00",
-  "claimBoundary": "Complete coverage of all 55 normative GeoSPARQL 1.1 abstract-test identifiers with researcher-authored executable refinements. No PULSE query-rewrite adapter is enabled; Apache Jena native GeoSPARQL inferencing remains active. No PULSE geometry-function profile is enabled. No PULSE DGGS profile is enabled. A class is claimable only when all its abstract tests pass. This is not an OGC-issued certificate, and manual requirements remain manual rather than being silently counted as passes.",
+  "experiment": "ogc-geosparql-1.1-researcher-probe-coverage-v2",
+  "generatedAt": "2026-07-20T11:17:24.265582+00:00",
+  "claimBoundary": "Complete coverage of all 55 normative GeoSPARQL 1.1 abstract-test identifiers with researcher-authored executable refinements. No PULSE query-rewrite adapter is enabled; Apache Jena native GeoSPARQL inferencing remains active. No PULSE geometry-function profile is enabled. No PULSE DGGS profile is enabled. Class groupings report only whether every mapped custom probe passed. They are descriptive coverage groups, not GeoSPARQL conformance-class claims or an OGC-issued certificate. Manual requirements remain manual rather than being silently counted as passes.",
   "normativeInventory": {
     "document": "OGC 22-047r1",
     "source": "https://docs.ogc.org/is/22-047r1/22-047r1.html#_abstract_test_suite",
@@ -20,7 +20,7 @@
       "error": 0,
       "manual": 1
     },
-    "claimableClasses": [
+    "probeCompleteClassGroups": [
       "/conf/core",
       "/conf/topology-vocab-extension",
       "/conf/geometry-topology-extension",
@@ -32,7 +32,7 @@
     {
       "identifier": "/conf/core",
       "status": "pass",
-      "claimable": true,
+      "probeComplete": true,
       "tests": [
         {
           "identifier": "/conf/core/sparql-protocol",
@@ -41,7 +41,7 @@
             {
               "name": "sparql-protocol",
               "status": "pass",
-              "seconds": 1.291124299983494
+              "seconds": 1.6173697999911383
             }
           ]
         },
@@ -52,7 +52,7 @@
             {
               "name": "spatial-object-class",
               "status": "pass",
-              "seconds": 1.1109839999699034
+              "seconds": 1.5580677000107244
             }
           ]
         },
@@ -63,7 +63,7 @@
             {
               "name": "feature-class",
               "status": "pass",
-              "seconds": 1.0700916000059806
+              "seconds": 1.5573870000080206
             }
           ]
         },
@@ -74,7 +74,7 @@
             {
               "name": "spatial-object-collection-class",
               "status": "pass",
-              "seconds": 1.1123859999934211
+              "seconds": 1.5709318000008352
             }
           ]
         },
@@ -85,7 +85,7 @@
             {
               "name": "feature-collection-class",
               "status": "pass",
-              "seconds": 1.276467700023204
+              "seconds": 1.4494273999589495
             }
           ]
         },
@@ -96,7 +96,7 @@
             {
               "name": "spatial-object-properties",
               "status": "pass",
-              "seconds": 1.283603599993512
+              "seconds": 1.55005209997762
             }
           ]
         }
@@ -105,7 +105,7 @@
     {
       "identifier": "/conf/topology-vocab-extension",
       "status": "pass",
-      "claimable": true,
+      "probeComplete": true,
       "tests": [
         {
           "identifier": "/conf/topology-vocab-extension/sf-spatial-relations",
@@ -114,42 +114,42 @@
             {
               "name": "sfEquals",
               "status": "pass",
-              "seconds": 1.2891624000039883
+              "seconds": 1.565988800022751
             },
             {
               "name": "sfDisjoint",
               "status": "pass",
-              "seconds": 1.2698246000218205
+              "seconds": 1.4809210999519564
             },
             {
               "name": "sfIntersects",
               "status": "pass",
-              "seconds": 1.2868398999562487
+              "seconds": 1.4763279000180773
             },
             {
               "name": "sfTouches",
               "status": "pass",
-              "seconds": 1.2774515000055544
+              "seconds": 1.494532699987758
             },
             {
               "name": "sfCrosses",
               "status": "pass",
-              "seconds": 1.3015809999778867
+              "seconds": 1.673125000030268
             },
             {
               "name": "sfWithin",
               "status": "pass",
-              "seconds": 1.2998801000067033
+              "seconds": 1.5476523999823257
             },
             {
               "name": "sfContains",
               "status": "pass",
-              "seconds": 1.3073006000486203
+              "seconds": 1.5464895999757573
             },
             {
               "name": "sfOverlaps",
               "status": "pass",
-              "seconds": 1.2491222000098787
+              "seconds": 1.5305561000132002
             }
           ]
         },
@@ -160,42 +160,42 @@
             {
               "name": "ehEquals",
               "status": "pass",
-              "seconds": 1.2910761999664828
+              "seconds": 1.6042953999713063
             },
             {
               "name": "ehDisjoint",
               "status": "pass",
-              "seconds": 1.2716963000129908
+              "seconds": 1.4452609999570996
             },
             {
               "name": "ehMeet",
               "status": "pass",
-              "seconds": 1.2752939000492916
+              "seconds": 1.5397625000332482
             },
             {
               "name": "ehOverlap",
               "status": "pass",
-              "seconds": 1.2697746999911033
+              "seconds": 1.5482531000161543
             },
             {
               "name": "ehCovers",
               "status": "pass",
-              "seconds": 1.304754499986302
+              "seconds": 1.503066500008572
             },
             {
               "name": "ehCoveredBy",
               "status": "pass",
-              "seconds": 1.2987503000185825
+              "seconds": 1.474055300001055
             },
             {
               "name": "ehInside",
               "status": "pass",
-              "seconds": 1.289641199982725
+              "seconds": 1.5209190000314265
             },
             {
               "name": "ehContains",
               "status": "pass",
-              "seconds": 1.2718744999729097
+              "seconds": 1.655221699969843
             }
           ]
         },
@@ -206,42 +206,42 @@
             {
               "name": "rcc8eq",
               "status": "pass",
-              "seconds": 1.2865255999495275
+              "seconds": 1.5163429999956861
             },
             {
               "name": "rcc8dc",
               "status": "pass",
-              "seconds": 1.2756509000319056
+              "seconds": 1.514527499966789
             },
             {
               "name": "rcc8ec",
               "status": "pass",
-              "seconds": 1.2875067999702878
+              "seconds": 1.522525999986101
             },
             {
               "name": "rcc8po",
               "status": "pass",
-              "seconds": 1.2830172999529168
+              "seconds": 1.5166280000121333
             },
             {
               "name": "rcc8tppi",
               "status": "pass",
-              "seconds": 1.3018079999601468
+              "seconds": 1.5883567000273615
             },
             {
               "name": "rcc8tpp",
               "status": "pass",
-              "seconds": 1.289800800033845
+              "seconds": 1.5807840999914333
             },
             {
               "name": "rcc8ntpp",
               "status": "pass",
-              "seconds": 1.2733418000279926
+              "seconds": 1.528177100000903
             },
             {
               "name": "rcc8ntppi",
               "status": "pass",
-              "seconds": 1.2733635999611579
+              "seconds": 1.6964754000073299
             }
           ]
         }
@@ -250,7 +250,7 @@
     {
       "identifier": "/conf/geometry-extension",
       "status": "fail",
-      "claimable": false,
+      "probeComplete": false,
       "tests": [
         {
           "identifier": "/conf/geometry-extension/geometry-class",
@@ -259,7 +259,7 @@
             {
               "name": "geometry-class",
               "status": "pass",
-              "seconds": 1.2865994999883696
+              "seconds": 1.4674163999734446
             }
           ]
         },
@@ -270,7 +270,7 @@
             {
               "name": "geometry-collection-class",
               "status": "pass",
-              "seconds": 1.2715788999921642
+              "seconds": 1.6220197000075132
             }
           ]
         },
@@ -281,7 +281,7 @@
             {
               "name": "feature-properties",
               "status": "pass",
-              "seconds": 1.280058900010772
+              "seconds": 1.5371421999880113
             }
           ]
         },
@@ -292,7 +292,7 @@
             {
               "name": "geometry-properties",
               "status": "pass",
-              "seconds": 1.2782286000438035
+              "seconds": 1.592928399972152
             }
           ]
         },
@@ -303,117 +303,117 @@
             {
               "name": "boundary",
               "status": "pass",
-              "seconds": 1.2993580999900587
+              "seconds": 1.6138594999792986
             },
             {
               "name": "boundingCircle",
               "status": "fail",
-              "seconds": 1.3894381999853067
+              "seconds": 1.589064400002826
             },
             {
               "name": "metricBuffer",
               "status": "fail",
-              "seconds": 1.1865484999725595
+              "seconds": 1.7068406000034884
             },
             {
               "name": "buffer",
               "status": "fail",
-              "seconds": 1.1245800000033341
+              "seconds": 1.5886990000144579
             },
             {
               "name": "centroid",
               "status": "fail",
-              "seconds": 1.150125099986326
+              "seconds": 1.519159400020726
             },
             {
               "name": "convexHull",
               "status": "pass",
-              "seconds": 1.2675256000366062
+              "seconds": 1.5442896999884397
             },
             {
               "name": "concaveHull",
               "status": "fail",
-              "seconds": 1.2797640000353567
+              "seconds": 1.6196523999678902
             },
             {
               "name": "coordinateDimension",
               "status": "pass",
-              "seconds": 1.2821476999670267
+              "seconds": 1.649959999951534
             },
             {
               "name": "difference",
               "status": "pass",
-              "seconds": 1.2921424999949522
+              "seconds": 1.5859978999942541
             },
             {
               "name": "dimension",
               "status": "pass",
-              "seconds": 1.3042500999872573
+              "seconds": 1.471711200021673
             },
             {
               "name": "metricDistance",
               "status": "fail",
-              "seconds": 1.277779099997133
+              "seconds": 1.4760332999867387
             },
             {
               "name": "distance",
               "status": "fail",
-              "seconds": 1.292349600000307
+              "seconds": 1.598850600013975
             },
             {
               "name": "envelope",
               "status": "pass",
-              "seconds": 1.2899293000227772
+              "seconds": 1.5716083000297658
             },
             {
               "name": "geometryType",
               "status": "fail",
-              "seconds": 1.278475700004492
+              "seconds": 1.5320493000326678
             },
             {
               "name": "intersection",
               "status": "pass",
-              "seconds": 1.2939325000043027
+              "seconds": 1.7434099999954924
             },
             {
               "name": "is3D",
               "status": "fail",
-              "seconds": 1.2800483999890275
+              "seconds": 1.5000504999770783
             },
             {
               "name": "isEmpty",
               "status": "pass",
-              "seconds": 1.310548799985554
+              "seconds": 1.6254453000146896
             },
             {
               "name": "isMeasured",
               "status": "fail",
-              "seconds": 1.3031972000026144
+              "seconds": 1.5256079999962822
             },
             {
               "name": "isSimple",
               "status": "pass",
-              "seconds": 1.2885088000330143
+              "seconds": 1.5084431000286713
             },
             {
               "name": "spatialDimension",
               "status": "pass",
-              "seconds": 1.2767839999869466
+              "seconds": 1.591245700023137
             },
             {
               "name": "symDifference",
               "status": "pass",
-              "seconds": 1.2863421000074595
+              "seconds": 1.6883544999873266
             },
             {
               "name": "transform",
               "status": "fail",
-              "seconds": 1.2849291000165977
+              "seconds": 1.5912172999815084
             },
             {
               "name": "union",
               "status": "pass",
-              "seconds": 1.2869118000380695
+              "seconds": 1.7100771999685094
             }
           ]
         },
@@ -424,7 +424,7 @@
             {
               "name": "getSRID",
               "status": "pass",
-              "seconds": 1.2684583999798633
+              "seconds": 1.5212394999689423
             }
           ]
         },
@@ -435,32 +435,32 @@
             {
               "name": "aggBoundingBox",
               "status": "fail",
-              "seconds": 1.304207300010603
+              "seconds": 1.5557150999666192
             },
             {
               "name": "aggBoundingCircle",
               "status": "fail",
-              "seconds": 1.2941408000187948
+              "seconds": 1.5251131999539211
             },
             {
               "name": "aggCentroid",
               "status": "fail",
-              "seconds": 1.288703300000634
+              "seconds": 1.5626813999842852
             },
             {
               "name": "aggConcaveHull",
               "status": "fail",
-              "seconds": 1.2734653999796137
+              "seconds": 1.5686898999847472
             },
             {
               "name": "aggConvexHull",
               "status": "fail",
-              "seconds": 1.2904453999944963
+              "seconds": 1.5586144999833778
             },
             {
               "name": "aggUnion",
               "status": "fail",
-              "seconds": 1.2854701000032946
+              "seconds": 1.6538168000406586
             }
           ]
         },
@@ -471,7 +471,7 @@
             {
               "name": "wkt-literal",
               "status": "pass",
-              "seconds": 1.2832567999721505
+              "seconds": 1.492348400002811
             }
           ]
         },
@@ -482,7 +482,7 @@
             {
               "name": "wkt-literal-default-srs",
               "status": "fail",
-              "seconds": 1.288081599981524
+              "seconds": 1.5147277999785729
             }
           ]
         },
@@ -493,7 +493,7 @@
             {
               "name": "wkt-axis-order",
               "status": "fail",
-              "seconds": 1.3052058999892324
+              "seconds": 1.5856586000300013
             }
           ]
         },
@@ -504,7 +504,7 @@
             {
               "name": "wkt-literal-empty",
               "status": "pass",
-              "seconds": 1.3043197999941185
+              "seconds": 1.5057810999569483
             }
           ]
         },
@@ -515,7 +515,7 @@
             {
               "name": "geometry-as-wkt-literal",
               "status": "pass",
-              "seconds": 1.2818062999867834
+              "seconds": 1.6724658000166528
             }
           ]
         },
@@ -526,7 +526,7 @@
             {
               "name": "asWKT",
               "status": "fail",
-              "seconds": 1.2845789999701083
+              "seconds": 1.6655686000012793
             }
           ]
         },
@@ -537,7 +537,7 @@
             {
               "name": "gml-literal",
               "status": "pass",
-              "seconds": 1.2839365999680012
+              "seconds": 1.5054055000073276
             }
           ]
         },
@@ -548,7 +548,7 @@
             {
               "name": "gml-literal-empty",
               "status": "pass",
-              "seconds": 1.2428064999985509
+              "seconds": 1.559686699998565
             }
           ]
         },
@@ -570,7 +570,7 @@
             {
               "name": "geometry-as-gml-literal",
               "status": "pass",
-              "seconds": 1.1277767000137828
+              "seconds": 1.6210350000183098
             }
           ]
         },
@@ -581,7 +581,7 @@
             {
               "name": "asGML",
               "status": "fail",
-              "seconds": 1.0324614999699406
+              "seconds": 1.5673096000100486
             }
           ]
         },
@@ -592,7 +592,7 @@
             {
               "name": "geojson-literal",
               "status": "pass",
-              "seconds": 1.1782521000131965
+              "seconds": 1.519572299963329
             }
           ]
         },
@@ -603,7 +603,7 @@
             {
               "name": "geojson-literal-srs",
               "status": "pass",
-              "seconds": 1.3028586999862455
+              "seconds": 1.5233051999821328
             }
           ]
         },
@@ -614,7 +614,7 @@
             {
               "name": "geojson-literal-empty",
               "status": "fail",
-              "seconds": 1.314268699963577
+              "seconds": 1.483393199974671
             }
           ]
         },
@@ -625,7 +625,7 @@
             {
               "name": "geometry-as-geojson-literal",
               "status": "pass",
-              "seconds": 1.2944603000069037
+              "seconds": 1.607440099993255
             }
           ]
         },
@@ -636,7 +636,7 @@
             {
               "name": "asGeoJSON",
               "status": "pass",
-              "seconds": 1.1250277000362985
+              "seconds": 1.5768440999672748
             }
           ]
         },
@@ -647,7 +647,7 @@
             {
               "name": "kml-literal",
               "status": "pass",
-              "seconds": 1.4075042000040412
+              "seconds": 1.544915199978277
             }
           ]
         },
@@ -658,7 +658,7 @@
             {
               "name": "kml-literal-srs",
               "status": "pass",
-              "seconds": 1.2882493999786675
+              "seconds": 1.531446099979803
             }
           ]
         },
@@ -669,7 +669,7 @@
             {
               "name": "kml-literal-empty",
               "status": "fail",
-              "seconds": 1.2846394999651238
+              "seconds": 1.5998854000354186
             }
           ]
         },
@@ -680,7 +680,7 @@
             {
               "name": "geometry-as-kml-literal",
               "status": "pass",
-              "seconds": 1.303819500026293
+              "seconds": 1.7363440000335686
             }
           ]
         },
@@ -691,7 +691,7 @@
             {
               "name": "asKML",
               "status": "fail",
-              "seconds": 1.3057754000183195
+              "seconds": 1.5112813000450842
             }
           ]
         }
@@ -700,7 +700,7 @@
     {
       "identifier": "/conf/geometry-extension-dggs",
       "status": "fail",
-      "claimable": false,
+      "probeComplete": false,
       "tests": [
         {
           "identifier": "/conf/geometry-extension-dggs/query-functions",
@@ -709,117 +709,117 @@
             {
               "name": "boundary",
               "status": "fail",
-              "seconds": 1.2919743999955244
+              "seconds": 1.5729800999979489
             },
             {
               "name": "boundingCircle",
               "status": "fail",
-              "seconds": 1.277148400025908
+              "seconds": 1.5755909000290558
             },
             {
               "name": "metricBuffer",
               "status": "fail",
-              "seconds": 1.2940791999571957
+              "seconds": 1.6947122000274248
             },
             {
               "name": "buffer",
               "status": "fail",
-              "seconds": 1.2779949000105262
+              "seconds": 1.674976299982518
             },
             {
               "name": "centroid",
               "status": "fail",
-              "seconds": 1.284063099999912
+              "seconds": 1.6666175999562256
             },
             {
               "name": "convexHull",
               "status": "fail",
-              "seconds": 1.286218099994585
+              "seconds": 1.6092718999716453
             },
             {
               "name": "concaveHull",
               "status": "fail",
-              "seconds": 1.3067423999891616
+              "seconds": 1.6429790999973193
             },
             {
               "name": "coordinateDimension",
               "status": "fail",
-              "seconds": 1.2919364999979734
+              "seconds": 1.4904933999641798
             },
             {
               "name": "difference",
               "status": "fail",
-              "seconds": 1.2750433000037447
+              "seconds": 1.5388490000041202
             },
             {
               "name": "dimension",
               "status": "fail",
-              "seconds": 1.2835261999862269
+              "seconds": 1.5288989000255242
             },
             {
               "name": "metricDistance",
               "status": "fail",
-              "seconds": 1.2766847000457346
+              "seconds": 1.6249502999708056
             },
             {
               "name": "distance",
               "status": "fail",
-              "seconds": 1.2798680000123568
+              "seconds": 1.6417145000305027
             },
             {
               "name": "envelope",
               "status": "fail",
-              "seconds": 1.28199470002437
+              "seconds": 1.532096899987664
             },
             {
               "name": "geometryType",
               "status": "fail",
-              "seconds": 1.2842197000281885
+              "seconds": 1.523033800011035
             },
             {
               "name": "intersection",
               "status": "fail",
-              "seconds": 1.3101377000566572
+              "seconds": 1.5968871000222862
             },
             {
               "name": "is3D",
               "status": "fail",
-              "seconds": 1.2991252000210807
+              "seconds": 1.597677699988708
             },
             {
               "name": "isEmpty",
               "status": "fail",
-              "seconds": 1.2881739999866113
+              "seconds": 1.4897362000192516
             },
             {
               "name": "isMeasured",
               "status": "fail",
-              "seconds": 1.284205399977509
+              "seconds": 1.5500259999535047
             },
             {
               "name": "isSimple",
               "status": "fail",
-              "seconds": 1.2887069000280462
+              "seconds": 1.5591378000099212
             },
             {
               "name": "spatialDimension",
               "status": "fail",
-              "seconds": 1.2807785999611951
+              "seconds": 1.7229800000204705
             },
             {
               "name": "symDifference",
               "status": "fail",
-              "seconds": 1.2861868000472896
+              "seconds": 1.6669038999825716
             },
             {
               "name": "transform",
               "status": "fail",
-              "seconds": 1.2759982999996282
+              "seconds": 1.5912882999982685
             },
             {
               "name": "union",
               "status": "fail",
-              "seconds": 1.3179858999792486
+              "seconds": 1.4688656000071205
             }
           ]
         },
@@ -830,72 +830,72 @@
             {
               "name": "metricLength",
               "status": "fail",
-              "seconds": 1.3010141999693587
+              "seconds": 1.5376071999780834
             },
             {
               "name": "length",
               "status": "fail",
-              "seconds": 1.2161248000338674
+              "seconds": 1.6478024999960326
             },
             {
               "name": "metricPerimeter",
               "status": "fail",
-              "seconds": 1.104234299971722
+              "seconds": 1.5069057999644428
             },
             {
               "name": "perimeter",
               "status": "fail",
-              "seconds": 1.2719332000124268
+              "seconds": 1.493410600000061
             },
             {
               "name": "metricArea",
               "status": "fail",
-              "seconds": 1.2883117000455968
+              "seconds": 1.4671503999852575
             },
             {
               "name": "area",
               "status": "fail",
-              "seconds": 1.284582699998282
+              "seconds": 1.5601999000064097
             },
             {
               "name": "geometryN",
               "status": "fail",
-              "seconds": 1.2788427000050433
+              "seconds": 1.5736143999965861
             },
             {
               "name": "maxX",
               "status": "fail",
-              "seconds": 1.2966878000297584
+              "seconds": 1.5589974999893457
             },
             {
               "name": "maxY",
               "status": "fail",
-              "seconds": 1.3052873000269756
+              "seconds": 1.4934216999681666
             },
             {
               "name": "maxZ",
               "status": "fail",
-              "seconds": 1.2869582999846898
+              "seconds": 1.6373191000311635
             },
             {
               "name": "minX",
               "status": "fail",
-              "seconds": 1.2899034000001848
+              "seconds": 1.5396891999989748
             },
             {
               "name": "minY",
               "status": "fail",
-              "seconds": 1.289240600017365
+              "seconds": 1.5309156999574043
             },
             {
               "name": "minZ",
               "status": "fail",
-              "seconds": 1.2829656999674626
+              "seconds": 1.5216103999991901
             },
             {
               "name": "numGeometries",
               "status": "fail",
-              "seconds": 1.2782804999733344
+              "seconds": 1.5172943000216037
             }
           ]
         },
@@ -906,7 +906,7 @@
             {
               "name": "getSRID",
               "status": "fail",
-              "seconds": 1.2886136999586597
+              "seconds": 1.6383584000286646
             }
           ]
         },
@@ -917,32 +917,32 @@
             {
               "name": "aggBoundingBox",
               "status": "fail",
-              "seconds": 1.3054566000355408
+              "seconds": 1.5434488000464626
             },
             {
               "name": "aggBoundingCircle",
               "status": "fail",
-              "seconds": 1.3097146999789402
+              "seconds": 1.5125421999837272
             },
             {
               "name": "aggCentroid",
               "status": "fail",
-              "seconds": 1.2815809000167064
+              "seconds": 1.5398295000195503
             },
             {
               "name": "aggConcaveHull",
               "status": "fail",
-              "seconds": 1.290331199998036
+              "seconds": 1.8022480999934487
             },
             {
               "name": "aggConvexHull",
               "status": "fail",
-              "seconds": 1.2821325000259094
+              "seconds": 1.6670158000197262
             },
             {
               "name": "aggUnion",
               "status": "fail",
-              "seconds": 1.2780633999500424
+              "seconds": 1.5913634999888018
             }
           ]
         },
@@ -953,7 +953,7 @@
             {
               "name": "dggs-literal",
               "status": "fail",
-              "seconds": 1.2846100000315346
+              "seconds": 1.6138111000182107
             }
           ]
         },
@@ -964,7 +964,7 @@
             {
               "name": "dggs-literal-empty",
               "status": "fail",
-              "seconds": 1.2807101999642327
+              "seconds": 1.6834251999971457
             }
           ]
         },
@@ -975,7 +975,7 @@
             {
               "name": "geometry-as-dggs-literal",
               "status": "fail",
-              "seconds": 1.296973299991805
+              "seconds": 1.6915559999761172
             }
           ]
         },
@@ -986,7 +986,7 @@
             {
               "name": "asDGGS",
               "status": "fail",
-              "seconds": 1.3096813000156544
+              "seconds": 1.5537234999937937
             }
           ]
         }
@@ -995,7 +995,7 @@
     {
       "identifier": "/conf/geometry-topology-extension",
       "status": "pass",
-      "claimable": true,
+      "probeComplete": true,
       "tests": [
         {
           "identifier": "/conf/geometry-topology-extension/relate-query-function",
@@ -1004,7 +1004,7 @@
             {
               "name": "relate",
               "status": "pass",
-              "seconds": 1.2833030999754556
+              "seconds": 1.6242320000310428
             }
           ]
         },
@@ -1015,42 +1015,42 @@
             {
               "name": "sfEquals",
               "status": "pass",
-              "seconds": 1.290362700005062
+              "seconds": 1.6493939000065438
             },
             {
               "name": "sfDisjoint",
               "status": "pass",
-              "seconds": 1.2726097999839112
+              "seconds": 1.6231816000072286
             },
             {
               "name": "sfIntersects",
               "status": "pass",
-              "seconds": 1.279501699958928
+              "seconds": 1.6653716000146233
             },
             {
               "name": "sfTouches",
               "status": "pass",
-              "seconds": 1.2828340000123717
+              "seconds": 1.5837540000211447
             },
             {
               "name": "sfCrosses",
               "status": "pass",
-              "seconds": 1.283260500000324
+              "seconds": 1.6377555000362918
             },
             {
               "name": "sfWithin",
               "status": "pass",
-              "seconds": 1.2984056999557652
+              "seconds": 1.5772880999720655
             },
             {
               "name": "sfContains",
               "status": "pass",
-              "seconds": 1.3030438999994658
+              "seconds": 1.5805229999823496
             },
             {
               "name": "sfOverlaps",
               "status": "pass",
-              "seconds": 1.276710500009358
+              "seconds": 1.6109062999603339
             }
           ]
         },
@@ -1061,42 +1061,42 @@
             {
               "name": "ehEquals",
               "status": "pass",
-              "seconds": 1.2821369000012055
+              "seconds": 1.5037865999620408
             },
             {
               "name": "ehDisjoint",
               "status": "pass",
-              "seconds": 1.2853721000137739
+              "seconds": 1.6945462999865413
             },
             {
               "name": "ehMeet",
               "status": "pass",
-              "seconds": 1.279067200026475
+              "seconds": 1.8458377000060864
             },
             {
               "name": "ehOverlap",
               "status": "pass",
-              "seconds": 1.2795282000442967
+              "seconds": 1.5242157999891788
             },
             {
               "name": "ehCovers",
               "status": "pass",
-              "seconds": 1.2938306999858469
+              "seconds": 1.6094580999924801
             },
             {
               "name": "ehCoveredBy",
               "status": "pass",
-              "seconds": 1.3057598000159487
+              "seconds": 1.52337410004111
             },
             {
               "name": "ehInside",
               "status": "pass",
-              "seconds": 1.3045557000441477
+              "seconds": 1.6127974000410177
             },
             {
               "name": "ehContains",
               "status": "pass",
-              "seconds": 1.2803428000188433
+              "seconds": 1.5292064000386745
             }
           ]
         },
@@ -1107,42 +1107,42 @@
             {
               "name": "rcc8eq",
               "status": "pass",
-              "seconds": 1.2805959000252187
+              "seconds": 1.571236299991142
             },
             {
               "name": "rcc8dc",
               "status": "pass",
-              "seconds": 1.2717203999636695
+              "seconds": 1.5562277999706566
             },
             {
               "name": "rcc8ec",
               "status": "pass",
-              "seconds": 1.2789649999467656
+              "seconds": 1.5377250000019558
             },
             {
               "name": "rcc8po",
               "status": "pass",
-              "seconds": 1.2776130000129342
+              "seconds": 1.508672799973283
             },
             {
               "name": "rcc8tppi",
               "status": "pass",
-              "seconds": 1.278254700009711
+              "seconds": 1.564887100015767
             },
             {
               "name": "rcc8tpp",
               "status": "pass",
-              "seconds": 1.2927952000172809
+              "seconds": 1.5793985999771394
             },
             {
               "name": "rcc8ntpp",
               "status": "pass",
-              "seconds": 1.295981400005985
+              "seconds": 1.6683419999899343
             },
             {
               "name": "rcc8ntppi",
               "status": "pass",
-              "seconds": 1.2756422000238672
+              "seconds": 1.5925597000168636
             }
           ]
         }
@@ -1151,7 +1151,7 @@
     {
       "identifier": "/conf/rdfs-entailment-extension",
       "status": "pass",
-      "claimable": true,
+      "probeComplete": true,
       "tests": [
         {
           "identifier": "/conf/rdfs-entailment-extension/bgp-rdfs-ent",
@@ -1160,7 +1160,7 @@
             {
               "name": "bgp-rdfs-ent",
               "status": "pass",
-              "seconds": 1.2801647000014782
+              "seconds": 1.4469502000138164
             }
           ]
         },
@@ -1171,7 +1171,7 @@
             {
               "name": "wkt-geometry-types",
               "status": "pass",
-              "seconds": 1.2736710000317544
+              "seconds": 1.4956140000140294
             }
           ]
         },
@@ -1182,7 +1182,7 @@
             {
               "name": "gml-geometry-types",
               "status": "pass",
-              "seconds": 1.2806894999812357
+              "seconds": 1.5633846000418998
             }
           ]
         }
@@ -1191,7 +1191,7 @@
     {
       "identifier": "/conf/query-rewrite-extension",
       "status": "pass",
-      "claimable": true,
+      "probeComplete": true,
       "tests": [
         {
           "identifier": "/conf/query-rewrite-extension/sf-query-rewrite",
@@ -1200,42 +1200,42 @@
             {
               "name": "sfEquals",
               "status": "pass",
-              "seconds": 1.2687342000426725
+              "seconds": 1.6340493999887258
             },
             {
               "name": "sfDisjoint",
               "status": "pass",
-              "seconds": 1.2774674999527633
+              "seconds": 1.5852917000302114
             },
             {
               "name": "sfIntersects",
               "status": "pass",
-              "seconds": 1.2968065000022762
+              "seconds": 1.7193714000168256
             },
             {
               "name": "sfTouches",
               "status": "pass",
-              "seconds": 1.3042890999931842
+              "seconds": 1.6452088000369258
             },
             {
               "name": "sfCrosses",
               "status": "pass",
-              "seconds": 1.2777680000290275
+              "seconds": 1.551188400015235
             },
             {
               "name": "sfWithin",
               "status": "pass",
-              "seconds": 1.2831754999933764
+              "seconds": 1.298492600035388
             },
             {
               "name": "sfContains",
               "status": "pass",
-              "seconds": 1.2822476999717765
+              "seconds": 1.3104336999822408
             },
             {
               "name": "sfOverlaps",
               "status": "pass",
-              "seconds": 1.2709855000139214
+              "seconds": 1.257203400018625
             }
           ]
         },
@@ -1246,42 +1246,42 @@
             {
               "name": "ehEquals",
               "status": "pass",
-              "seconds": 1.2769544000038877
+              "seconds": 1.3215579999960028
             },
             {
               "name": "ehDisjoint",
               "status": "pass",
-              "seconds": 1.277647499984596
+              "seconds": 1.379741400014609
             },
             {
               "name": "ehMeet",
               "status": "pass",
-              "seconds": 1.2990531000541523
+              "seconds": 1.2457349000032991
             },
             {
               "name": "ehOverlap",
               "status": "pass",
-              "seconds": 1.304111500037834
+              "seconds": 1.3624448999762535
             },
             {
               "name": "ehCovers",
               "status": "pass",
-              "seconds": 1.287651599966921
+              "seconds": 1.3461127000045963
             },
             {
               "name": "ehCoveredBy",
               "status": "pass",
-              "seconds": 1.2837908000219613
+              "seconds": 1.3400241000344977
             },
             {
               "name": "ehInside",
               "status": "pass",
-              "seconds": 1.2769346000277437
+              "seconds": 1.2502034999779426
             },
             {
               "name": "ehContains",
               "status": "pass",
-              "seconds": 1.2860968000022694
+              "seconds": 1.3458661999902688
             }
           ]
         },
@@ -1292,42 +1292,42 @@
             {
               "name": "rcc8eq",
               "status": "pass",
-              "seconds": 1.2843327000155114
+              "seconds": 1.3292640999425203
             },
             {
               "name": "rcc8dc",
               "status": "pass",
-              "seconds": 1.2838660000124946
+              "seconds": 1.3392509000259452
             },
             {
               "name": "rcc8ec",
               "status": "pass",
-              "seconds": 1.3006939999759197
+              "seconds": 1.2779875999549404
             },
             {
               "name": "rcc8po",
               "status": "pass",
-              "seconds": 1.3115238000173122
+              "seconds": 1.3223579000332393
             },
             {
               "name": "rcc8tppi",
               "status": "pass",
-              "seconds": 1.2794482000172138
+              "seconds": 1.3614497000235133
             },
             {
               "name": "rcc8tpp",
               "status": "pass",
-              "seconds": 1.2967175000230782
+              "seconds": 1.3914236000273377
             },
             {
               "name": "rcc8ntpp",
               "status": "pass",
-              "seconds": 1.2766320999944583
+              "seconds": 1.3617749999975786
             },
             {
               "name": "rcc8ntppi",
               "status": "pass",
-              "seconds": 1.2765444000251591
+              "seconds": 1.3468484999611974
             }
           ]
         }

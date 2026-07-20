@@ -101,8 +101,9 @@ The calculus uses total deterministic helpers on well-formed inputs:
 - `membership(g,r)` is boundary-inclusive Point/Polygon membership;
 - `cross(A,i,g)` enumerates regions in declaration order and returns `enters`
   or `leaves` when old and new sampled membership differ;
-- `cancelStart(Q,events,t')` first cancels inverse monitors and then starts
-  matching positive-duration monitors in declaration order; and
+- `cancelStart(q,Q,events,t')` first cancels inverse monitors and then starts
+  matching positive-duration monitors whose source-state guards hold in `q`, in
+  declaration order; and
 - `applyRules(q,events)` applies immediate rules in declaration order.  A
   later rule observes earlier state changes, and a source-state mismatch skips
   the rule.
@@ -145,7 +146,7 @@ t' ≥ t    Γ ⊢ g : Point[crs(i)]
 Γ ⊢ <X,advance(t')> ⇓ ok(X0,Td)
 E = cross(A0,i,g)
 A1 = A0[i ↦ g]
-Q1 = cancelStart(Q0,E,t')
+Q1 = cancelStart(q0,Q0,E,t')
 q1 = applyRules(q0,E)
 ---------------------------------------------------------------- MOVE
 Γ ⊢ <X,move(i,g,t')> ⇓ ok(<A1,O0,q1,Q1,t'>, Td·E)
@@ -175,8 +176,12 @@ clone(X) = Xs    Γ ⊢ <Xs,as> ⇓* ok(Xs',T)
 Γ ⊢ scenario(X,as) ⇓ <Xs',T>       and the source X is unchanged
 ```
 
-The surface `run for d` field is currently a horizon annotation.  It does not
-introduce continuous simulation or advance scenario time implicitly.
+For an untimestamped surface scenario, `t0` is explicit when supplied and
+otherwise is the latest observation timestamp (or the Unix epoch when there is
+no observation). Assumption moves execute at `t0` in declaration order; `run d`
+then executes `advance(t0+d)` before questions are answered. This advances the
+discrete sample-and-hold clock and exposes due monitors; it does not introduce
+continuous interpolation.
 
 ## 6. Projection relation
 
@@ -291,14 +296,15 @@ crossing events produced by the core. It proof-checks:
 
 - `cancelled_not_in_cancelMatching` and
   `cancelMatching_member_not_cancelled`;
-- `startFor_deadline_exact` and `startFor_future`;
+- `startFor_guard_holds`, `startFor_deadline_exact`, and `startFor_future`;
 - `reconcile_future` and `reconcileAll_future`; and
 - `reconcile_length_le` and `reconcileAll_length_le`.
 
 Together these establish that an opposite crossing removes a matching pending
-monitor, a matching trigger creates the rule-defined deadline, positive
-durations keep reconciled deadlines in the future, and a finite event batch
-can add no more than `events.length * rules.length` monitors.
+monitor, a matching trigger creates a monitor only when its source-state guard
+holds, the monitor has the rule-defined deadline, positive durations keep
+reconciled deadlines in the future, and a finite event batch can add no more
+than `events.length * rules.length` monitors.
 
 The mechanization is intentionally narrower than this normative draft. It
 abstracts geometry as an environment-supplied total Boolean membership

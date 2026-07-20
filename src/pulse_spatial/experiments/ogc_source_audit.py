@@ -1,6 +1,8 @@
 """Audit the pinned OGC GeoSPARQL 1.1 auxiliary RDF registers.
 
-Annex A of OGC 22-047r1 remains the normative Abstract Test Suite.  The RDF
+Annex A of OGC 22-047r1 remains the normative Abstract Test Suite. The local
+manifest is a researcher transcription of that inventory, not an independent
+parser for the specification HTML. The RDF
 requirements register and SPARQL service-description graph are useful official
 corroborating sources, but they are not an executable ETS and are not identical
 encodings of the Annex A inventory.  This module makes that distinction
@@ -140,7 +142,7 @@ def run_source_audit(
 
     checks = {
         "pinnedFileHashesMatch": hashes == EXPECTED_HASHES,
-        "annexInventoryIsSevenClassesAnd55UniqueAllocations": (
+        "manifestHasSevenClassesAnd55UniqueAllocations": (
             len(classes) == 7
             and len(allocations) == 55
             and len(set(allocations)) == 55
@@ -172,6 +174,10 @@ def run_source_audit(
                 "Annex A is normative. The two pinned RDF files are official "
                 "auxiliary registers, not an executable OGC ETS."
             ),
+            "inventoryEncoding": (
+                "Researcher-authored manifest transcribed from Annex A; the "
+                "audit does not independently parse the specification HTML."
+            ),
         },
         "upstream": {
             "repository": UPSTREAM_REPOSITORY,
@@ -184,6 +190,7 @@ def run_source_audit(
         },
         "inventories": {
             "annexA": {
+                "source": "researcher-authored Annex A manifest transcription",
                 "classCount": len(classes),
                 "testAllocations": len(allocations),
                 "uniqueIdentifiers": len(set(allocations)),
@@ -211,9 +218,10 @@ def run_source_audit(
         "checks": checks,
         "auditPassed": audit_passed,
         "claimBoundary": (
-            "Passing this audit establishes provenance, integrity, and explicit "
-            "cross-source accounting. It is not execution of an OGC ETS and does "
-            "not by itself establish GeoSPARQL conformance."
+            "Passing this audit establishes integrity of the two pinned official "
+            "RDF files and explicit accounting against a researcher-authored "
+            "Annex A manifest transcription. It does not independently parse "
+            "Annex A, execute an OGC ETS, or establish GeoSPARQL conformance."
         ),
         "crosswalk": crosswalk,
     }
@@ -237,9 +245,9 @@ def render_markdown(result: dict[str, object]) -> str:
     lines = [
         "# OGC GeoSPARQL 1.1 official-source audit",
         "",
-        "## Independently counted inventories",
+        "## Audited inventory counts",
         "",
-        f"- Normative Annex A: {annex['classCount']} classes, "
+        f"- Researcher-transcribed Annex A manifest: {annex['classCount']} classes, "
         f"{annex['testAllocations']} test allocations",
         f"- Official requirements register: "
         f"{register['conformanceTestResources']} `spec:ConformanceTest` resources",

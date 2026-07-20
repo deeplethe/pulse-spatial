@@ -85,7 +85,7 @@ class _PendingSustainedEvent:
 @dataclass(frozen=True, slots=True)
 class ScenarioResult:
     world: SpatialWorld
-    events: tuple[GeofenceEvent, ...]
+    events: tuple[GeofenceEvent | SustainedGeofenceEvent, ...]
 
 
 class SpatialRuntime:
@@ -151,7 +151,13 @@ def _require_aware(value: datetime, label: str) -> None:
 
 
 class TemporalSpatialRuntime:
-    """Discrete-time geofence runtime with sample-and-hold duration semantics."""
+    """Discrete-time geofence runtime with sample-and-hold duration semantics.
+
+    A duration-qualified rule is eligible at a sampled crossing only when its
+    source-state guard holds.  The guard is checked again at the deadline before
+    the attached state transition is applied.  The sustained event itself is
+    emitted once an eligible monitor survives to its deadline.
+    """
 
     def __init__(
         self,
@@ -241,6 +247,9 @@ class TemporalSpatialRuntime:
         target: Point,
         observed_at: datetime,
     ) -> TemporalStepResult:
+        _require_aware(observed_at, "Observation time")
+        if observed_at < self.current_time:
+            raise ValueError("Temporal runtime cannot move backwards")
         source = self.world.positions.get(subject)
         if source is not None and source.crs != target.crs:
             raise ValueError(

@@ -1,8 +1,8 @@
 # OGC GeoSPARQL 1.1 official-source audit
 
-## Independently counted inventories
+## Audited inventory counts
 
-- Normative Annex A: 7 classes, 55 test allocations
+- Researcher-transcribed Annex A manifest: 7 classes, 55 test allocations
 - Official requirements register: 58 `spec:ConformanceTest` resources
 - Official service description: 52 `sd:feature` resources
 - Annex allocations corroborated by local-name crosswalk: 55/55
@@ -28,7 +28,7 @@
 ## Integrity checks
 
 - PASS — pinnedFileHashesMatch
-- PASS — annexInventoryIsSevenClassesAnd55UniqueAllocations
+- PASS — manifestHasSevenClassesAnd55UniqueAllocations
 - PASS — allAnnexAllocationsHaveRegisterCandidates
 - PASS — registerShapeMatchesPinnedSource
 - PASS — serviceDescriptionShapeMatchesPinnedSource
@@ -37,4 +37,4 @@ Overall audit: **PASS**
 
 ## Claim boundary
 
-Passing this audit establishes provenance, integrity, and explicit cross-source accounting. It is not execution of an OGC ETS and does not by itself establish GeoSPARQL conformance.
+Passing this audit establishes integrity of the two pinned official RDF files and explicit accounting against a researcher-authored Annex A manifest transcription. It does not independently parse Annex A, execute an OGC ETS, or establish GeoSPARQL conformance.

@@ -829,7 +829,9 @@ def run_experiment(
                 {
                     "identifier": class_id,
                     "status": _aggregate_status(test_records),
-                    "claimable": all(test["status"] == "pass" for test in test_records),
+                    "probeComplete": all(
+                        test["status"] == "pass" for test in test_records
+                    ),
                     "tests": test_records,
                 }
             )
@@ -842,7 +844,7 @@ def run_experiment(
         for status in ("pass", "fail", "error", "manual")
     }
     return {
-        "experiment": "ogc-geosparql-1.1-complete-ats-coverage-v1",
+        "experiment": "ogc-geosparql-1.1-researcher-probe-coverage-v2",
         "generatedAt": datetime.now(UTC).isoformat(),
         "claimBoundary": " ".join(
             (
@@ -870,10 +872,11 @@ def run_experiment(
                     if dggs_profile
                     else "No PULSE DGGS profile is enabled."
                 ),
-                "A class is claimable only when all its abstract tests pass. "
-                "This is not an OGC-issued certificate, and manual "
-                "requirements remain manual rather than being silently "
-                "counted as passes.",
+                "Class groupings report only whether every mapped custom probe "
+                "passed. They are descriptive coverage groups, not GeoSPARQL "
+                "conformance-class claims or an OGC-issued certificate. Manual "
+                "requirements remain manual rather than being silently counted "
+                "as passes.",
             )
         ),
         "normativeInventory": {
@@ -894,8 +897,10 @@ def run_experiment(
                 if identifier.startswith("/conf/query-rewrite-extension/")
             ),
             "componentStatus": counts,
-            "claimableClasses": [
-                record["identifier"] for record in records if record["claimable"]
+            "probeCompleteClassGroups": [
+                record["identifier"]
+                for record in records
+                if record["probeComplete"]
             ],
         },
         "classes": records,
@@ -934,9 +939,9 @@ def render_markdown(result: dict[str, object]) -> str:
     assert isinstance(summary, dict)
     assert isinstance(classes, list)
     rows = [
-        "# OGC GeoSPARQL 1.1 complete ATS coverage",
+        "# GeoSPARQL 1.1 researcher-authored probe coverage",
         "",
-        f"- Conformance classes: {inventory['conformanceClasses']}",
+        f"- Annex A class groups represented: {inventory['conformanceClasses']}",
         f"- Normative abstract tests: {inventory['abstractTests']}",
         f"- Executable/manual component probes: {summary['componentProbes']}",
         "- Query-rewrite rule-shape assertions: "
@@ -945,13 +950,15 @@ def render_markdown(result: dict[str, object]) -> str:
         f"- Query-rewrite profile: {result['environment']['queryRewriteProfile']}",
         f"- Geometry profile: {result['environment']['geometryProfile']}",
         f"- DGGS profile: {result['environment']['dggsProfile']}",
-        f"- Claimable classes: {', '.join(summary['claimableClasses']) or 'none'}",
+        "- Probe-complete class groups: "
+        f"{', '.join(summary['probeCompleteClassGroups']) or 'none'}",
         "",
-        "| Conformance class | Status | Claimable |",
+        "| Annex A class group | Probe status | All mapped probes pass |",
         "|---|---:|---:|",
     ]
     rows.extend(
-        f"| `{record['identifier']}` | {record['status']} | {record['claimable']} |"
+        f"| `{record['identifier']}` | {record['status']} | "
+        f"{record['probeComplete']} |"
         for record in classes
     )
     rows.extend(("", "## Claim boundary", "", str(result["claimBoundary"]), ""))
@@ -990,11 +997,16 @@ def main() -> None:
     parser.add_argument("--output-markdown")
     parser.add_argument("--require-complete-coverage", action="store_true")
     parser.add_argument(
+        "--require-probe-complete-class",
         "--require-class",
+        dest="require_probe_complete_class",
         action="append",
         default=[],
         metavar="CLASS_ID",
-        help="Fail unless the named conformance class is claimable; repeatable.",
+        help=(
+            "Fail unless every custom probe mapped to the named Annex A class "
+            "group passes; repeatable. This is not a conformance assertion."
+        ),
     )
     parser.add_argument(
         "--only-class",
@@ -1026,11 +1038,14 @@ def main() -> None:
         assert isinstance(inventory, dict)
         if not inventory["coverageComplete"]:
             raise SystemExit(1)
-    if arguments.require_class:
+    if arguments.require_probe_complete_class:
         summary = result["summary"]
         assert isinstance(summary, dict)
-        claimable = set(summary["claimableClasses"])
-        if any(class_id not in claimable for class_id in arguments.require_class):
+        complete_groups = set(summary["probeCompleteClassGroups"])
+        if any(
+            class_id not in complete_groups
+            for class_id in arguments.require_probe_complete_class
+        ):
             raise SystemExit(1)
 
 

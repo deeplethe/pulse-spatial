@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterable, TypeVar
 
@@ -54,6 +54,8 @@ class QuestionAnswer:
 @dataclass(frozen=True, slots=True)
 class ScenarioReport:
     name: str
+    started_at: datetime
+    completed_at: datetime
     horizon_seconds: float | None
     result: ScenarioResult
     answers: tuple[QuestionAnswer, ...]
@@ -80,19 +82,54 @@ class CompiledModel:
     def validate(self) -> tuple[SpatialViolation, ...]:
         return self.world.validate(self.constraints)
 
-    def run_scenario(self, name: str) -> ScenarioReport:
+    def run_scenario(
+        self,
+        name: str,
+        initial_time: datetime | None = None,
+    ) -> ScenarioReport:
+        """Execute a scenario on an isolated temporal branch.
+
+        Untimed assumptions are applied in declaration order at ``initial_time``.
+        If no start is supplied, the latest observation timestamp is used, with
+        the Unix epoch as the deterministic fallback.  ``run N`` then advances
+        the branch clock by exactly ``N`` seconds before questions are answered.
+        """
+
         try:
             scenario = self.scenarios[name]
         except KeyError as error:
             raise PulseModelError(f"unknown scenario {name!r}") from error
-        result = self.runtime().scenario(scenario.moves)
+
+        if initial_time is None:
+            initial_time = max(
+                (observation.observed_at for observation in self.world.observations),
+                default=datetime(1970, 1, 1, tzinfo=timezone.utc),
+            )
+
+        horizon_seconds = _duration_seconds(scenario.declaration.run_for)
+        scenario_world = self.world.clone()
+        runtime = TemporalSpatialRuntime(scenario_world, initial_time, self.rules)
+        events = []
+        for subject, target in scenario.moves:
+            step = runtime.move_at(subject, target, initial_time)
+            events.extend(step.sustained)
+            events.extend(step.instantaneous)
+
+        completed_at = initial_time
+        if horizon_seconds is not None:
+            completed_at = initial_time + timedelta(seconds=horizon_seconds)
+            events.extend(runtime.advance_to(completed_at))
+
+        result = ScenarioResult(runtime.world, tuple(events))
         answers = tuple(
             QuestionAnswer(str(question), self._answer(question, result.world))
             for question in scenario.declaration.questions
         )
         return ScenarioReport(
             name,
-            _duration_seconds(scenario.declaration.run_for),
+            initial_time,
+            completed_at,
+            horizon_seconds,
             result,
             answers,
         )

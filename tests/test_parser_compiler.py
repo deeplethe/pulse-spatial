@@ -1,3 +1,4 @@
+import json
 import unittest
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -11,6 +12,7 @@ from pulse_spatial import (
     load_pulse,
     parse_pulse,
 )
+from pulse_spatial.__main__ import _json_value
 
 
 EXAMPLE = (
@@ -22,6 +24,11 @@ TEMPORAL_EXAMPLE = (
     Path(__file__).resolve().parents[1]
     / "examples"
     / "cold_chain_spatiotemporal.pulse"
+)
+PAPER_EXAMPLE = (
+    Path(__file__).resolve().parents[1]
+    / "examples"
+    / "paper_cold_chain_st.pulse"
 )
 
 
@@ -46,6 +53,10 @@ class ParserCompilerTests(unittest.TestCase):
         model = load_pulse(EXAMPLE)
         report = model.run_scenario("EmergencyReroute")
         self.assertEqual(report.horizon_seconds, 1200)
+        self.assertEqual(
+            report.completed_at - report.started_at,
+            timedelta(minutes=20),
+        )
         self.assertEqual(report.result.events[0].kind, EventKind.LEAVES)
         self.assertEqual(
             tuple(answer.value for answer in report.answers),
@@ -53,6 +64,37 @@ class ParserCompilerTests(unittest.TestCase):
         )
         self.assertEqual(model.world.states["batch_102"], "Safe")
         self.assertEqual(model.world.positions["batch_102"].x, 121.5)
+
+    def test_paper_listing_executes_duration_scenario_end_to_end(self) -> None:
+        model = load_pulse(PAPER_EXAMPLE)
+        source_position = model.world.positions["batch"]
+        source_state = model.world.states["batch"]
+
+        report = model.run_scenario("Reroute")
+
+        self.assertEqual(
+            report.started_at,
+            datetime.fromisoformat("2026-07-19T08:20:00+00:00"),
+        )
+        self.assertEqual(
+            report.completed_at,
+            datetime.fromisoformat("2026-07-19T08:40:00+00:00"),
+        )
+        self.assertEqual(report.horizon_seconds, 1200)
+        self.assertEqual(len(report.result.events), 2)
+        # CLI output must remain JSON-serializable when events carry datetimes.
+        json.dumps(_json_value(report.result.events))
+        self.assertEqual(report.result.events[0].kind, EventKind.LEAVES)
+        self.assertEqual(
+            report.result.events[1].effective_at,
+            report.started_at + timedelta(minutes=10),
+        )
+        self.assertEqual(
+            tuple(answer.value for answer in report.answers),
+            (False, "AtRisk"),
+        )
+        self.assertEqual(model.world.positions["batch"], source_position)
+        self.assertEqual(model.world.states["batch"], source_state)
 
     def test_duration_qualified_process_compiles_and_executes(self) -> None:
         model = load_pulse(TEMPORAL_EXAMPLE)

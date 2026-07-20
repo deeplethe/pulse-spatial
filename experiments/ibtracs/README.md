@@ -60,10 +60,28 @@ claim is event-label parity for this Point/Polygon workload.
 
 The larger `since1980` run is recorded separately in
 `results/ibtracs-since1980-2026-07-19.*`. It covers 4,775 tracks, 300,033
-points, and 295,258 transitions from 1980--2025 across seven basins. All 571
+loaded tracks and 295,258 transitions from 1980--2025 across seven basins.
+Of those tracks, 4,768 contain at least two accepted points and are replayable;
+the remaining seven single-point tracks contribute points but no transition.
+All 571
 event-bearing transitions match the GEOS path. The 143 MB official input is
 identified by URL, DOI, and SHA-256 in the report and remains under ignored
 `.data/`; it is not duplicated in the repository.
+
+The pinned-byte run can be fetched only if the downloaded file still matches
+the recorded digest:
+
+```powershell
+pulse-spatial-ibtracs `
+  --data .data/ibtracs.since1980.list.v04r01.csv `
+  --url https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/csv/ibtracs.since1980.list.v04r01.csv `
+  --download `
+  --expect-sha256 9f3db13f92bdc47d49edcdec677e64bafe9f20c67529552a65a10882205bb7fe `
+  --require-parity
+```
+
+Full byte-level provenance is recorded in
+[`snapshots/SINCE1980_PROVENANCE.md`](snapshots/SINCE1980_PROVENANCE.md).
 
 ## Reproduce from the immutable snapshot
 

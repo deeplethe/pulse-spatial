@@ -15,7 +15,8 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - run: python -m pip install -e .
+      - run: python -m pip install -r requirements-lock.txt
+      - run: python -m pip install -e . --no-deps
       - run: >-
           pulse-spatial examples/cold_chain_geofence.pulse
           --scenario EmergencyReroute
@@ -30,7 +31,8 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-      - run: python -m pip install -e .[test]
+      - run: python -m pip install -r requirements-lock.txt
+      - run: python -m pip install -e . --no-deps
       - run: python -m unittest discover -s tests -v
       - run: >-
           pulse-spatial examples/cold_chain_geofence.pulse
@@ -65,7 +67,8 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - run: python -m pip install -e .
+      - run: python -m pip install -r requirements-lock.txt
+      - run: python -m pip install -e . --no-deps
       - run: pulse-spatial-ogc-source-audit --require-audit-pass > /dev/null
       - run: >-
           docker build --quiet
@@ -75,11 +78,11 @@ jobs:
       - run: >-
           pulse-spatial-ogc-conformance
           --require-complete-coverage
-          --require-class /conf/core
-          --require-class /conf/topology-vocab-extension
-          --require-class /conf/geometry-topology-extension
-          --require-class /conf/rdfs-entailment-extension
-          --require-class /conf/query-rewrite-extension
+          --require-probe-complete-class /conf/core
+          --require-probe-complete-class /conf/topology-vocab-extension
+          --require-probe-complete-class /conf/geometry-topology-extension
+          --require-probe-complete-class /conf/rdfs-entailment-extension
+          --require-probe-complete-class /conf/query-rewrite-extension
           > /dev/null
       - run: >-
           pulse-spatial-ogc-conformance
@@ -87,13 +90,13 @@ jobs:
           --geometry-profile
           --dggs-profile
           --require-complete-coverage
-          --require-class /conf/core
-          --require-class /conf/topology-vocab-extension
-          --require-class /conf/geometry-extension
-          --require-class /conf/geometry-extension-dggs
-          --require-class /conf/geometry-topology-extension
-          --require-class /conf/rdfs-entailment-extension
-          --require-class /conf/query-rewrite-extension
+          --require-probe-complete-class /conf/core
+          --require-probe-complete-class /conf/topology-vocab-extension
+          --require-probe-complete-class /conf/geometry-extension
+          --require-probe-complete-class /conf/geometry-extension-dggs
+          --require-probe-complete-class /conf/geometry-topology-extension
+          --require-probe-complete-class /conf/rdfs-entailment-extension
+          --require-probe-complete-class /conf/query-rewrite-extension
           > /dev/null
 
   lean-formal:
@@ -114,7 +117,8 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - run: python -m pip install -e .[test]
+      - run: python -m pip install -r requirements-lock.txt
+      - run: python -m pip install -e . --no-deps
       - run: >-
           pulse-spatial-postgis
           --data experiments/ibtracs/snapshots/ibtracs-last3years-main-2026-07-16.csv

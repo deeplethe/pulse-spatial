@@ -1,9 +1,11 @@
 # Bounded checks for the PULSE core metatheory
 
 The general proofs are stated in `docs/formal-semantics.md`.  This experiment
-adds executable support by exhaustively exploring every action sequence over a
+adds executable support by exhaustively exploring every move-only trace over a
 finite abstraction with four point positions (outside west, boundary, inside,
-outside east), one region, three states, immediate and sustained rules.
+outside east), one region, three states, immediate and sustained rules. Record,
+advance, scenario, and invalid-action properties are checked separately rather
+than included in the four-symbol trace alphabet.
 
 At depth four the experiment explores all 340 sequences twice and checks:
 

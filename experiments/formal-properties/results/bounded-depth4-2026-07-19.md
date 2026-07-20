@@ -3,7 +3,7 @@
 ## Exploration
 
 - Maximum depth: 4
-- Action sequences: 340
+- Move-only traces: 340
 - Executed move steps: 2504
 
 ## Property checks
@@ -19,4 +19,4 @@
 
 ## Claim boundary
 
-Exhaustive exploration of every action sequence through the finite four-position abstraction up to depth 4. It supports testing of the proof assumptions but is not a general, machine-checked proof of the unbounded calculus.
+Exhaustive exploration of every move-only trace through the finite four-position abstraction up to depth 4. Record, advance, scenario, and invalid-action properties are checked separately. The result supports testing of proof assumptions but is not a general, machine-checked proof of the unbounded calculus.

@@ -29,7 +29,9 @@ PULSE-S source is parsed into an immutable typed document and then compiled
 into a validated runtime model; syntax and semantic failures are kept distinct.
 Duration-qualified spatial events use an explicit discrete sample-and-hold
 clock: an inverse crossing before the deadline cancels the pending event, while
-a reached deadline records start, effective, and emission times separately.
+a reached deadline records start, effective, and emission times separately. A
+guarded duration rule starts a monitor only when its source state matches at the
+crossing and rechecks that state before applying the deadline transition.
 
 ## Quick start
 
@@ -53,6 +55,15 @@ The command reports the model inventory, normative violations, derived
 remains inside `ColdZone`; its later GPS observation is outside but does not
 silently replace that assertion. The scenario moves an isolated copy and
 changes its state from `Safe` to `AtRisk`.
+
+The exact paper listing is also executable. Its relative scenario clock starts
+at the latest observation timestamp, applies assumptions in declaration order,
+and advances the isolated branch through the declared horizon:
+
+```powershell
+.\.venv\Scripts\pulse-spatial examples\paper_cold_chain_st.pulse `
+  --scenario Reroute
+```
 
 Projection export writes two UTF-8 Turtle files. The data graph combines
 asserted GeoSPARQL geometry and SOSA observations while retaining PULSE-S modal
@@ -90,8 +101,9 @@ tested Point/Polygon workload. It is not a claim of full GeoSPARQL conformance,
 geodesic accuracy, prediction quality, or industrial performance.
 
 The scale run uses the official `since1980` subset rather than the small
-checked-in snapshot. It covers 4,775 tracks, 300,033 points, and 295,258
-transitions from 1980--2025 across seven basins. All 571 event-bearing
+checked-in snapshot. It loads 4,775 tracks; 4,768 contain at least two accepted
+points and therefore contribute replay transitions. The workload has 300,033
+points and 295,258 transitions from 1980--2025 across seven basins. All 571 event-bearing
 transitions agree with the GEOS path. The five-zone duration run evaluates
 1,476,290 transition-zone pairs, including 4,832 instantaneous and 12,870
 sustained events, with zero membership, event, or timestamp differences. The
@@ -112,11 +124,12 @@ duration-qualified event, and final state. The checked-in artifact metrics are
 descriptive rather than a usability claim; see the
 [`composition comparison`](experiments/composition/README.md).
 
-A fourth experiment probes the Point/simple-Polygon kernel with 86 boundary,
-concavity, ring-orientation, and numeric-scale cases plus 9 explicit rejection
-cases. The checked-in run has zero differences from Shapely/GEOS and rejects all
-invalid inputs as declared. This is a differential regression corpus, not an
-OGC or GeoSPARQL conformance suite; see the
+A fourth experiment probes the Point/simple-Polygon kernel with 89 valid
+boundary, concavity, ring-orientation, and numeric-scale cases plus 9 explicit
+rejection cases. Of the 89 valid cases, 86 use CRS84 and form the shared
+Jena/PostGIS projection subset. The checked-in run has zero differences from
+Shapely/GEOS and rejects all invalid inputs as declared. This is a differential
+regression corpus, not an OGC or GeoSPARQL conformance suite; see the
 [`topology corpus`](experiments/topology/README.md).
 
 A fifth experiment replays one frozen 91-point IBTrACS track through the full
@@ -151,8 +164,9 @@ A ninth evidence path mechanizes the transition-safety kernel in Lean 4.30.0.
 Lean checks preservation, deterministic evaluation, observation
 non-interference, scenario isolation, finite time advance, and atomic failure.
 It also models duration-qualified rule matching, opposite-crossing monitor
-cancellation, and monitor creation, proving exact deadlines, future-deadline
-preservation, cancellation filtering, and a finite batch-growth bound.
+cancellation, and state-guarded monitor creation, proving guard eligibility,
+exact deadlines, future-deadline preservation, cancellation filtering, and a
+finite batch-growth bound.
 The proof model abstracts computational geometry behind a total membership
 function, so it verifies execution discipline rather than floating-point
 topology; see [`formal/lean`](formal/lean/README.md).
@@ -165,27 +179,28 @@ derived membership, 4,832 instantaneous-event, and 12,870 sustained-event
 layers have zero differences from PULSE across 1,476,290 transition-zone
 pairs. See the [`PostGIS baseline`](experiments/postgis/README.md).
 
-An eleventh evidence path refines every identifier in the normative
-GeoSPARQL 1.1 Abstract Test Suite: all 7 conformance classes and all 55
-abstract tests are represented by 185 executable probes, including 96
-query-rewrite rule-shape assertions. The pinned unmodified Jena 6.1.0 baseline
-claims 5/7 classes. The isolated PULSE 1.1 profiles add the non-DGGS Geometry
-Extension and an H3 4.4.0 DGGS profile; the combined run passes 185/185 probes
-and claims 7/7 classes under the researcher-authored refinements. This is not
-an OGC-issued certification; the finite-resolution H3 and local metric
-approximation boundaries are reported explicitly. See the
-[`GeoSPARQL 1.1 conformance matrix`](experiments/ogc-geosparql-1.1/README.md).
+An eleventh evidence path maps every identifier in the normative GeoSPARQL 1.1
+Abstract Test Suite: all seven class groups and all 55 abstract-test identifiers
+are represented by 185 researcher-authored probes, including 96 query-rewrite
+rule-shape assertions. The pinned unmodified Jena 6.1.0 baseline passes 112/185
+probes, while the isolated PULSE Geometry and H3 profiles pass 185/185. These are
+custom probe-coverage results, not conformance-class claims or an OGC-issued
+certification; the finite-resolution H3 and local metric approximation
+boundaries are reported explicitly. See the
+[`GeoSPARQL 1.1 probe matrix`](experiments/ogc-geosparql-1.1/README.md).
 The official `opengeospatial/ogc-geosparql` RDF registers are separately pinned
-by tag, commit, and SHA-256. A reproducible source audit records that Annex A,
-the requirements register, and the service-description graph contain 55, 58,
-and 52 entries respectively; all 55 Annex names are corroborated without
-misrepresenting those auxiliary graphs as an executable OGC ETS.
+by tag, commit, and SHA-256. A reproducible source audit compares the
+researcher-transcribed 55-name Annex A manifest with 58 independently counted
+requirements-register resources and 52 service-description features. The audit
+does not independently parse the specification HTML and does not misrepresent
+the auxiliary graphs as an executable OGC ETS.
 
-A twelfth experiment exercises a durable mixed PostGIS workload: 60% point
+A twelfth experiment exercises a durable mixed PostGIS component workload: 60% point
 membership, 20% GiST window scans, and 20% synchronous position updates plus
 event appends. The database and pgbench load generator run in separate
 containers; every measured run starts from the same rebuilt, checkpointed
-50,000-device state. A 32/64/96-client closed-loop resource sweep reaches
+50,000-device state. It bypasses the PULSE parser, modal runtime, and projection
+path, so its throughput is not end-to-end PULSE throughput. A 32/64/96-client closed-loop resource sweep reaches
 24,683.86 TPS at 96 clients with 17.402 ms p99 and zero failures; the database
 uses 13.71 CPU cores on average while the generator uses 4.79. SIGKILL recovery
 takes 2.348 s and passes row, version, index, and post-recovery workload checks.

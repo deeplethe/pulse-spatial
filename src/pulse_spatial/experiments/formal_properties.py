@@ -231,10 +231,11 @@ def run_bounded_checks(max_depth: int = 4) -> dict[str, object]:
         "experiment": "pulse-core-bounded-metatheory-check-v1",
         "generatedAt": datetime.now(UTC).isoformat(),
         "claimBoundary": (
-            "Exhaustive exploration of every action sequence through the "
-            f"finite four-position abstraction up to depth {max_depth}. It "
-            "supports testing of the proof assumptions but is not a general, "
-            "machine-checked proof of the unbounded calculus."
+            "Exhaustive exploration of every move-only trace through the "
+            f"finite four-position abstraction up to depth {max_depth}. Record, "
+            "advance, scenario, and invalid-action properties are checked "
+            "separately. It supports testing of the proof assumptions but is "
+            "not a general, machine-checked proof of the unbounded calculus."
         ),
         "abstraction": {
             "positions": [name for name, _ in POSITIONS],
@@ -283,7 +284,7 @@ def render_markdown(result: dict[str, object]) -> str:
         "## Exploration",
         "",
         f"- Maximum depth: {abstraction['maxDepth']}",
-        f"- Action sequences: {abstraction['sequenceCount']}",
+        f"- Move-only traces: {abstraction['sequenceCount']}",
         f"- Executed move steps: {abstraction['executedMoveSteps']}",
         "",
         "## Property checks",

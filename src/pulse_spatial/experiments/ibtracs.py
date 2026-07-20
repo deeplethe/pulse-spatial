@@ -32,6 +32,10 @@ SINCE_1980_SOURCE_URL = (
     "v04r01/access/csv/ibtracs.since1980.list.v04r01.csv"
 )
 SOURCE_DOI = "10.25921/82ty-9e16"
+PINNED_SINCE_1980_SHA256 = (
+    "9f3db13f92bdc47d49edcdec677e64bafe9f20c67529552a65a10882205bb7fe"
+)
+PINNED_SINCE_1980_BYTES = 142_982_689
 STUDY_ZONE_NAME = "NorthAtlanticStudyZone"
 STUDY_ZONE_COORDINATES = (
     (-100.0, 5.0),
@@ -266,7 +270,7 @@ def download_ibtracs(
     temporary = target.with_suffix(f"{target.suffix}.part")
     request = Request(
         str(url),
-        headers={"User-Agent": "DeepLethe-PULSE-Spatial/0.1 research"},
+            headers={"User-Agent": "PULSE-Spatial/0.1 research"},
     )
     try:
         with urlopen(request, timeout=120) as response, temporary.open("wb") as output:
@@ -555,6 +559,7 @@ def render_markdown(result: dict[str, object]) -> str:
             "",
             "## Workload",
             "",
+            f"- Tracks loaded: {workload['tracksLoaded']:,}",
             f"- Tracks replayed: {workload['tracksReplayed']:,}",
             f"- Points: {workload['points']:,}",
             f"- Transitions: {workload['transitions']:,}",
@@ -608,6 +613,10 @@ def main() -> None:
     parser.add_argument("--url", default=SOURCE_URL, help="dataset source URL")
     parser.add_argument("--download", action="store_true")
     parser.add_argument("--force-download", action="store_true")
+    parser.add_argument(
+        "--expect-sha256",
+        help="reject the input unless its SHA-256 equals this hex digest",
+    )
     parser.add_argument("--repetitions", type=int, default=3)
     parser.add_argument("--max-tracks", type=int)
     parser.add_argument("--output-json")
@@ -631,6 +640,13 @@ def main() -> None:
             parser.error(
                 f"dataset not found: {data_path}; pass --download to fetch it"
             )
+        if arguments.expect_sha256:
+            actual_sha256 = _sha256(data_path)
+            if actual_sha256.lower() != arguments.expect_sha256.lower():
+                raise ValueError(
+                    "dataset SHA-256 mismatch: "
+                    f"expected {arguments.expect_sha256.lower()}, got {actual_sha256}"
+                )
         result = run_experiment(
             data_path,
             source_url=arguments.url,

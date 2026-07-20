@@ -17,15 +17,22 @@ structure DurationRule where
   trigger : EventKind
   subject : Id
   region : Id
+  fromState : Id
   duration : Time
   deriving DecidableEq, Repr
+
+abbrev RuleState := Id → Id
 
 def opposite : EventKind → EventKind
   | .enters => .leaves
   | .leaves => .enters
   | .sustained => .sustained
 
-def TriggeredBy (rule : DurationRule) (event : Event) : Prop :=
+def EnabledBy (state : RuleState) (rule : DurationRule) : Prop :=
+  state rule.subject = rule.fromState
+
+def TriggeredBy (state : RuleState) (rule : DurationRule) (event : Event) : Prop :=
+  EnabledBy state rule ∧
   event.kind = rule.trigger ∧
   event.subject = rule.subject ∧
   event.region = rule.region
@@ -38,9 +45,11 @@ def CancelledBy
     event.subject == rule.subject &&
     event.region == rule.region) = true
 
-instance (rule : DurationRule) (event : Event) : Decidable (TriggeredBy rule event) :=
+instance
+    (state : RuleState) (rule : DurationRule) (event : Event) :
+    Decidable (TriggeredBy state rule event) :=
   by
-    unfold TriggeredBy
+    unfold TriggeredBy EnabledBy
     infer_instance
 
 instance
@@ -61,25 +70,26 @@ def cancelMatching
     List Monitor :=
   pending.filter fun monitor => decide (¬ CancelledBy rules event monitor)
 
-def startFor : List DurationRule → Event → Time → List Monitor
-  | [], _, _ => []
-  | rule :: rest, event, time =>
-      if TriggeredBy rule event then
-        monitorOf rule time :: startFor rest event time
+def startFor : RuleState → List DurationRule → Event → Time → List Monitor
+  | _, [], _, _ => []
+  | state, rule :: rest, event, time =>
+      if TriggeredBy state rule event then
+        monitorOf rule time :: startFor state rest event time
       else
-        startFor rest event time
+        startFor state rest event time
 
 def reconcile
-    (pending : List Monitor) (rules : List DurationRule) (event : Event)
+    (pending : List Monitor) (rules : List DurationRule) (state : RuleState)
+    (event : Event)
     (time : Time) : List Monitor :=
-  cancelMatching pending rules event ++ startFor rules event time
+  cancelMatching pending rules event ++ startFor state rules event time
 
 def reconcileAll
-    (pending : List Monitor) (rules : List DurationRule) :
+    (pending : List Monitor) (rules : List DurationRule) (state : RuleState) :
     List Event → Time → List Monitor
   | [], _ => pending
   | event :: rest, time =>
-      reconcileAll (reconcile pending rules event time) rules rest time
+      reconcileAll (reconcile pending rules state event time) rules state rest time
 
 def PositiveDurations (rules : List DurationRule) : Prop :=
   ∀ rule ∈ rules, 0 < rule.duration
@@ -111,14 +121,15 @@ theorem cancelMatching_member_was_pending
   exact (List.mem_filter.mp present).1
 
 theorem startFor_characterization
-    {rules : List DurationRule} {event : Event} {time : Time}
+    {state : RuleState} {rules : List DurationRule} {event : Event} {time : Time}
     {monitor : Monitor}
-    (present : monitor ∈ startFor rules event time) :
-    ∃ rule ∈ rules, TriggeredBy rule event ∧ monitor = monitorOf rule time := by
+    (present : monitor ∈ startFor state rules event time) :
+    ∃ rule ∈ rules, TriggeredBy state rule event ∧
+      monitor = monitorOf rule time := by
   induction rules with
   | nil => simp [startFor] at present
   | cons rule rest inductionHypothesis =>
-      by_cases triggered : TriggeredBy rule event
+      by_cases triggered : TriggeredBy state rule event
       · simp only [startFor, if_pos triggered, List.mem_cons] at present
         rcases present with rfl | present
         · exact ⟨rule, by simp, triggered, rfl⟩
@@ -131,11 +142,11 @@ theorem startFor_characterization
         exact ⟨candidate, by simp [member], applies, same⟩
 
 theorem startFor_deadline_exact
-    {rules : List DurationRule} {event : Event} {time : Time}
+    {state : RuleState} {rules : List DurationRule} {event : Event} {time : Time}
     {monitor : Monitor}
-    (present : monitor ∈ startFor rules event time) :
+    (present : monitor ∈ startFor state rules event time) :
     ∃ rule ∈ rules,
-      TriggeredBy rule event ∧
+      TriggeredBy state rule event ∧
       monitor.name = rule.name ∧
       monitor.subject = rule.subject ∧
       monitor.region = rule.region ∧
@@ -143,10 +154,19 @@ theorem startFor_deadline_exact
   obtain ⟨rule, member, applies, rfl⟩ := startFor_characterization present
   exact ⟨rule, member, applies, rfl, rfl, rfl, rfl⟩
 
+theorem startFor_guard_holds
+    {state : RuleState} {rules : List DurationRule} {event : Event} {time : Time}
+    {monitor : Monitor}
+    (present : monitor ∈ startFor state rules event time) :
+    ∃ rule ∈ rules,
+      EnabledBy state rule ∧ monitor = monitorOf rule time := by
+  obtain ⟨rule, member, triggered, same⟩ := startFor_characterization present
+  exact ⟨rule, member, triggered.1, same⟩
+
 theorem startFor_future
-    {rules : List DurationRule} {event : Event} {time : Time}
+    {state : RuleState} {rules : List DurationRule} {event : Event} {time : Time}
     (positive : PositiveDurations rules) :
-    FutureDeadlines (startFor rules event time) time := by
+    FutureDeadlines (startFor state rules event time) time := by
   intro monitor present
   obtain ⟨rule, member, _, rfl⟩ := startFor_characterization present
   simp only [monitorOf]
@@ -162,10 +182,10 @@ theorem cancelMatching_future
 
 theorem reconcile_future
     {pending : List Monitor} {rules : List DurationRule} {event : Event}
-    {time : Time}
+    {state : RuleState} {time : Time}
     (future : FutureDeadlines pending time)
     (positive : PositiveDurations rules) :
-    FutureDeadlines (reconcile pending rules event time) time := by
+    FutureDeadlines (reconcile pending rules state event time) time := by
   intro monitor present
   simp only [reconcile, List.mem_append] at present
   rcases present with retained | started
@@ -173,32 +193,33 @@ theorem reconcile_future
   · exact startFor_future positive monitor started
 
 theorem startFor_length_le
-    (rules : List DurationRule) (event : Event) (time : Time) :
-    (startFor rules event time).length ≤ rules.length := by
+    (state : RuleState) (rules : List DurationRule) (event : Event) (time : Time) :
+    (startFor state rules event time).length ≤ rules.length := by
   induction rules with
   | nil => simp [startFor]
   | cons rule rest inductionHypothesis =>
-      by_cases triggered : TriggeredBy rule event
+      by_cases triggered : TriggeredBy state rule event
       · simp [startFor, triggered, inductionHypothesis]
       · simp [startFor, triggered]
         exact Nat.le_trans inductionHypothesis (Nat.le_succ _)
 
 theorem reconcile_length_le
-    (pending : List Monitor) (rules : List DurationRule) (event : Event)
+    (pending : List Monitor) (rules : List DurationRule) (state : RuleState)
+    (event : Event)
     (time : Time) :
-    (reconcile pending rules event time).length ≤
+    (reconcile pending rules state event time).length ≤
       pending.length + rules.length := by
   simp only [reconcile, List.length_append]
   exact Nat.add_le_add
     (List.length_filter_le _ _)
-    (startFor_length_le rules event time)
+    (startFor_length_le state rules event time)
 
 theorem reconcileAll_future
     {pending : List Monitor} {rules : List DurationRule} {events : List Event}
-    {time : Time} :
+    {state : RuleState} {time : Time} :
     FutureDeadlines pending time →
     PositiveDurations rules →
-    FutureDeadlines (reconcileAll pending rules events time) time := by
+    FutureDeadlines (reconcileAll pending rules state events time) time := by
   induction events generalizing pending with
   | nil =>
       intro future _
@@ -211,21 +232,22 @@ theorem reconcileAll_future
       · exact positive
 
 theorem reconcileAll_length_le
-    (pending : List Monitor) (rules : List DurationRule) (events : List Event)
-    (time : Time) :
-    (reconcileAll pending rules events time).length ≤
+    (pending : List Monitor) (rules : List DurationRule) (state : RuleState)
+    (events : List Event) (time : Time) :
+    (reconcileAll pending rules state events time).length ≤
       pending.length + events.length * rules.length := by
   induction events generalizing pending with
   | nil => simp [reconcileAll]
   | cons event rest inductionHypothesis =>
       simp only [reconcileAll, List.length_cons]
       calc
-        (reconcileAll (reconcile pending rules event time) rules rest time).length
-            ≤ (reconcile pending rules event time).length +
+        (reconcileAll (reconcile pending rules state event time) rules state rest time).length
+            ≤ (reconcile pending rules state event time).length +
                 rest.length * rules.length := inductionHypothesis _
         _ ≤ (pending.length + rules.length) +
                 rest.length * rules.length :=
-              Nat.add_le_add_right (reconcile_length_le pending rules event time) _
+              Nat.add_le_add_right
+                (reconcile_length_le pending rules state event time) _
         _ = pending.length + (rest.length + 1) * rules.length := by
               simp [Nat.add_mul, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
 

@@ -125,6 +125,48 @@ class ModalRuntimeTests(unittest.TestCase):
         self.assertEqual(events[0].effective_at, started + timedelta(minutes=10))
         self.assertEqual(runtime.world.states["batch_102"], "AtRisk")
 
+    def test_duration_rule_guard_is_required_when_monitor_starts(self) -> None:
+        started = datetime.fromisoformat("2026-07-19T08:00:00+00:00")
+        world = self.make_world()
+        world.states["batch_102"] = "AtRisk"
+        rule = GeofenceRule(
+            name="SustainedDeparture",
+            kind=EventKind.LEAVES,
+            subject="batch_102",
+            region="ColdZone",
+            from_state="Safe",
+            to_state="AtRisk",
+            minimum_duration_seconds=600,
+        )
+        runtime = TemporalSpatialRuntime(world, started, [rule])
+
+        runtime.move_at("batch_102", Point(12, 5), started)
+
+        self.assertEqual(
+            runtime.advance_to(started + timedelta(minutes=10)),
+            (),
+        )
+
+    def test_duration_rule_guard_is_rechecked_at_deadline(self) -> None:
+        started = datetime.fromisoformat("2026-07-19T08:00:00+00:00")
+        rule = GeofenceRule(
+            name="SustainedDeparture",
+            kind=EventKind.LEAVES,
+            subject="batch_102",
+            region="ColdZone",
+            from_state="Safe",
+            to_state="AtRisk",
+            minimum_duration_seconds=600,
+        )
+        runtime = TemporalSpatialRuntime(self.make_world(), started, [rule])
+        runtime.move_at("batch_102", Point(12, 5), started)
+        runtime.world.states["batch_102"] = "Maintenance"
+
+        events = runtime.advance_to(started + timedelta(minutes=10))
+
+        self.assertEqual(len(events), 1)
+        self.assertEqual(runtime.world.states["batch_102"], "Maintenance")
+
     def test_sustained_leave_is_cancelled_by_reentry(self) -> None:
         started = datetime.fromisoformat("2026-07-19T08:00:00+00:00")
         monitor = SustainedEventSpec(
@@ -189,6 +231,20 @@ class ModalRuntimeTests(unittest.TestCase):
                 Point(12, 5, "https://example.org/crs/local"),
                 started + timedelta(minutes=5),
             )
+        self.assertEqual(runtime.current_time, started)
+        self.assertEqual(runtime.world.positions["batch_102"], Point(5, 5))
+
+    def test_backwards_time_has_priority_over_crs_mismatch(self) -> None:
+        started = datetime.fromisoformat("2026-07-19T08:00:00+00:00")
+        runtime = TemporalSpatialRuntime(self.make_world(), started)
+
+        with self.assertRaisesRegex(ValueError, "backwards"):
+            runtime.move_at(
+                "batch_102",
+                Point(12, 5, "https://example.org/crs/local"),
+                started - timedelta(seconds=1),
+            )
+
         self.assertEqual(runtime.current_time, started)
         self.assertEqual(runtime.world.positions["batch_102"], Point(5, 5))
 

@@ -19,7 +19,8 @@ pulse-spatial-postgis \
   --require-parity
 ```
 
-The default image is pinned to `postgis/postgis:18-3.6`.  The experiment does
+The default image is pinned to `postgis/postgis:18-3.6` at digest
+`sha256:c893f6f2652d11e13f50f8623045b3523991b41d038b4d213dc040f42641f0d7`. The experiment does
 not expose a database port and removes its temporary volume unless
 `--keep-volume` is supplied.
 
