@@ -1,7 +1,9 @@
 # Lean 4 mechanization
 
-This directory contains a proof-checked abstraction of the executable PULSE
-kernel.  It makes the following mechanisms explicit:
+This directory contains proof-checked, reduced abstractions of selected PULSE
+mechanisms. The transition Core, monitor lifecycle, and compiler modules are
+not yet composed into a refinement of the complete Python runtime. They make
+the following mechanisms explicit:
 
 - authoritative positions versus append-only observations;
 - logical-clock validation and atomic error outcomes;
@@ -12,7 +14,7 @@ kernel.  It makes the following mechanisms explicit:
 - pure scenario execution; and
 - the `record`, `move`, and `advance` core actions.
 
-`PulseFormal.Compiler` connects a post-parse surface subset to the kernel. It
+`PulseFormal.Compiler` lowers a post-parse surface subset to the reduced Core. It
 resolves symbolic identifiers, converts seconds/minutes/hours to seconds,
 compiles duration rules, and lowers Point-valued scenario assumptions plus a
 horizon to `move`/`advance` actions. Lean proves trigger, guard, duration,
@@ -25,10 +27,11 @@ removed, retained monitors preserve future deadlines, every newly started
 monitor has a satisfied source-state guard and the exact rule-defined deadline,
 positive durations keep all deadlines in the future, and a batch of crossing
 events can grow the pending set by at most `events.length * rules.length`.
-The geometry predicate is an environment-supplied total Boolean function.  The
-mechanization therefore verifies the transition discipline, not floating-point
-computational geometry or full surface-language parsing. The general compiler
-theorems apply to the mechanized subset. Cross-implementation correspondence is
+The geometry predicate is an environment-supplied total Boolean function. The
+mechanization therefore verifies properties of the reduced models, not
+floating-point geometry, full surface parsing, ordered state updates, or the
+composition of monitor reconciliation with Core moves. The compiler theorems
+apply to the mechanized subset. Cross-implementation correspondence is
 currently a byte-identical canonical-IR check for the executable paper model,
 not a theorem about every Python compiler path.
 

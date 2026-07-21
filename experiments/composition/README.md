@@ -2,7 +2,7 @@
 
 This experiment implements one frozen cold-chain task through three paths:
 
-1. one authoritative PULSE model and the PULSE temporal runtime;
+1. one typed PULSE model, runner inputs, and the PULSE temporal runtime;
 2. GeoSPARQL + SOSA + OWL-Time RDF, SHACL validation, a GeoSPARQL function
    adapter, and an explicit duration workflow;
 3. OGC MF-JSON Prism with `MovingPoint`/`Step`, a separate policy document,
@@ -51,14 +51,16 @@ All three paths produced the frozen expected trace:
 
 | Path | Input files | Substantive lines | Execution components | Median |
 |---|---:|---:|---:|---:|
-| PULSE | 1 | 40 | 3 | 0.000651 s |
-| Semantic Web composition | 3 | 123 | 5 | 0.016313 s |
-| MF-JSON Prism composition | 2 | 48 | 3 | 0.000400 s |
+| PULSE | 1 | 40 | 3 | 0.000673 s |
+| Semantic Web composition | 3 | 123 | 5 | 0.017651 s |
+| MF-JSON Prism composition | 2 | 48 | 3 | 0.000415 s |
 
 Timings are a five-repetition, warm-process local microbenchmark that includes
 parsing and validation. MF-JSON was faster than PULSE in this tiny task. The
-table is descriptive: file count, line count, component count, and timing do
-not establish usability, maintainability, or developer productivity.
+file and line counts cover only checked-in input artifacts; shared Python
+workflow and adapter source is excluded. The table is retained for
+reproducibility, not as evidence of usability, maintainability, concision, or
+developer productivity.
 
 The Semantic Web path uses RDFLib, pySHACL, and a Shapely/GEOS implementation
 of the referenced GeoSPARQL function. It is not an external GeoSPARQL server or
@@ -75,20 +77,21 @@ pulse-spatial-composition `
 
 The machine-readable and Markdown reports are in [`results/`](results/).
 
-## Contract fault localization
+## Temporal contract mutation sensitivity
 
-The companion mutation probe changes orchestration code, not the checked-in
-RDF/SHACL inputs. It seeds four faults: automatic observation acceptance,
-scenario write-back, move-before-timer ordering at a tie, and source-state guard
-elision. Corresponding PULSE probes exercise observation non-interference,
-scenario isolation, timer-before-move ordering, and guard preservation.
+The companion experiment uses four pre-specified traces with manually encoded
+exact outcomes. The unmodified PULSE runtime and an independently implemented
+reference workflow must both match each oracle. The reference workflow is then
+rerun with exactly one semantic switch changed: inverse-monitor cancellation,
+timer-before-sample ordering, the monitor start guard, or duration scaling.
 
 ```powershell
 pulse-spatial-contract-faults `
   --require-complete `
-  --output-json experiments/composition/results/contract-fault-localization-2026-07-21.json `
-  --output-markdown experiments/composition/results/contract-fault-localization-2026-07-21.md
+  --output-json experiments/composition/results/temporal-contract-mutation-sensitivity-2026-07-21.json `
+  --output-markdown experiments/composition/results/temporal-contract-mutation-sensitivity-2026-07-21.md
 ```
 
-This is a localization experiment: it does not measure defect prevalence,
-standards capability, usability, or developer productivity.
+This is a mutation-sensitivity and localization experiment. It does not compare
+language expressiveness, standards capability, usability, defect prevalence,
+or developer productivity.

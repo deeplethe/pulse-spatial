@@ -1,288 +1,294 @@
-"""Fault-localization probes for the PULSE composition comparison.
+"""Mutation sensitivity for four temporal execution obligations.
 
-The experiment does not claim that RDF standards cannot express the tested
-behavior.  It injects four code-only mutations into the orchestration layer of
-the Semantic Web composition and records whether unchanged RDF/SHACL inputs
-can expose them.  Corresponding PULSE probes exercise the language/runtime
-boundaries that own the same obligations.
+Each case has a manually specified exact outcome. The unmodified PULSE runtime
+and an independently implemented reference workflow must both match that
+oracle. The reference workflow is then rerun with one auditable semantic switch
+changed. This experiment measures sensitivity and fault localization; it does
+not claim language superiority or standards incapability.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+from dataclasses import asdict, dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-from ..compiler import load_pulse
 from ..geometry import CRS84, Point, Polygon
 from ..model import SpatialWorld
 from ..runtime import EventKind, GeofenceRule, TemporalSpatialRuntime
-from .composition import DEFAULT_ROOT, Policy, _reference_workflow, run_semantic_web
+from .composition import (
+    DEFAULT_ROOT,
+    InstantRecord,
+    Outcome,
+    Policy,
+    SustainedRecord,
+    WorkflowSemantics,
+    _iso,
+    _reference_workflow,
+)
 
 
-REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
-PAPER_EXAMPLE = REPOSITORY_ROOT / "examples" / "paper_cold_chain_st.pulse"
+BASE_TIME = datetime(2026, 7, 21, 8, 0, tzinfo=UTC)
 
 
-def _world(state: str = "Safe") -> SpatialWorld:
-    return SpatialWorld(
+@dataclass(frozen=True, slots=True)
+class WorkflowCase:
+    identifier: str
+    obligation: str
+    policy: Policy
+    timestamps: tuple[datetime, ...]
+    memberships: tuple[bool, ...]
+    expected: Outcome
+    mutant_identifier: str
+    mutant_description: str
+    mutant_semantics: WorkflowSemantics
+
+
+def _instant(kind: str, at_minutes: int) -> InstantRecord:
+    return InstantRecord(
+        kind,
+        "shipment_102",
+        "ColdZone",
+        _iso(BASE_TIME + timedelta(minutes=at_minutes)),
+    )
+
+
+def _sustained(
+    *,
+    duration_seconds: float,
+    started_minutes: int,
+    effective_minutes: int,
+    emitted_minutes: int,
+) -> SustainedRecord:
+    return SustainedRecord(
+        "leaves",
+        "shipment_102",
+        "ColdZone",
+        duration_seconds,
+        _iso(BASE_TIME + timedelta(minutes=started_minutes)),
+        _iso(BASE_TIME + timedelta(minutes=effective_minutes)),
+        _iso(BASE_TIME + timedelta(minutes=emitted_minutes)),
+    )
+
+
+def _policy(initial_state: str = "Safe") -> Policy:
+    return Policy(
+        "shipment_102",
+        "ColdZone",
+        EventKind.LEAVES,
+        600.0,
+        "Safe",
+        "AtRisk",
+        initial_state,
+    )
+
+
+def _cases() -> tuple[WorkflowCase, ...]:
+    return (
+        WorkflowCase(
+            "inverseCancellation",
+            "An inverse crossing cancels a pending duration monitor",
+            _policy(),
+            tuple(BASE_TIME + timedelta(minutes=value) for value in (0, 1, 9, 12)),
+            (True, False, True, True),
+            Outcome("Safe", (_instant("leaves", 1), _instant("enters", 9)), ()),
+            "M-CANCEL",
+            "retain a pending monitor after the inverse crossing",
+            WorkflowSemantics(cancel_inverse_crossing=False),
+        ),
+        WorkflowCase(
+            "timerBeforeMoveAtTie",
+            "A timer due at t fires before the sampled move at t",
+            _policy(),
+            tuple(BASE_TIME + timedelta(minutes=value) for value in (0, 1, 11)),
+            (True, False, True),
+            Outcome(
+                "AtRisk",
+                (_instant("leaves", 1), _instant("enters", 11)),
+                (
+                    _sustained(
+                        duration_seconds=600.0,
+                        started_minutes=1,
+                        effective_minutes=11,
+                        emitted_minutes=11,
+                    ),
+                ),
+            ),
+            "M-ORDER",
+            "process the sampled move before timers due at the same time",
+            WorkflowSemantics(timer_before_sample=False),
+        ),
+        WorkflowCase(
+            "startGuard",
+            "A duration monitor starts only when its source-state guard holds",
+            _policy("Maintenance"),
+            tuple(BASE_TIME + timedelta(minutes=value) for value in (0, 1, 12)),
+            (True, False, False),
+            Outcome("Maintenance", (_instant("leaves", 1),), ()),
+            "M-START-GUARD",
+            "start the monitor without checking the source-state guard",
+            WorkflowSemantics(require_start_guard=False),
+        ),
+        WorkflowCase(
+            "durationExactness",
+            "A declared ten-minute duration is neither shortened nor rounded",
+            _policy(),
+            tuple(BASE_TIME + timedelta(minutes=value) for value in (0, 1, 2)),
+            (True, False, False),
+            Outcome("Safe", (_instant("leaves", 1),), ()),
+            "M-DURATION",
+            "scale the declared duration by 0.1",
+            WorkflowSemantics(duration_scale=0.1),
+        ),
+    )
+
+
+def _pulse_outcome(case: WorkflowCase) -> Outcome:
+    inside = Point(5, 5, CRS84)
+    outside = Point(12, 5, CRS84)
+    world = SpatialWorld(
         regions={
-            "ColdZone": Polygon.from_xy(
+            case.policy.region: Polygon.from_xy(
                 [(0, 0), (10, 0), (10, 10), (0, 10)], CRS84
             )
         },
-        positions={"shipment_102": Point(5, 5, CRS84)},
-        states={"shipment_102": state},
+        positions={
+            case.policy.subject: inside if case.memberships[0] else outside
+        },
+        states={case.policy.subject: case.policy.initial_state},
     )
-
-
-def _rule() -> GeofenceRule:
-    return GeofenceRule(
+    rule = GeofenceRule(
         "SustainedDeparture",
-        EventKind.LEAVES,
-        "shipment_102",
-        "ColdZone",
-        "Safe",
-        "AtRisk",
-        600,
+        case.policy.trigger,
+        case.policy.subject,
+        case.policy.region,
+        case.policy.from_state,
+        case.policy.to_state,
+        case.policy.duration_seconds,
+    )
+    runtime = TemporalSpatialRuntime(world, case.timestamps[0], (rule,))
+    instantaneous: list[InstantRecord] = []
+    sustained: list[SustainedRecord] = []
+    for timestamp, membership in zip(case.timestamps[1:], case.memberships[1:]):
+        step = runtime.move_at(
+            case.policy.subject,
+            inside if membership else outside,
+            timestamp,
+        )
+        instantaneous.extend(
+            InstantRecord(
+                event.kind.value,
+                event.subject,
+                event.region,
+                _iso(timestamp),
+            )
+            for event in step.instantaneous
+        )
+        sustained.extend(
+            SustainedRecord(
+                event.kind.value,
+                event.subject,
+                event.region,
+                event.duration_seconds,
+                _iso(event.started_at),
+                _iso(event.effective_at),
+                _iso(event.emitted_at),
+            )
+            for event in step.sustained
+        )
+    return Outcome(
+        runtime.world.states[case.policy.subject],
+        tuple(instantaneous),
+        tuple(sustained),
     )
 
 
-def _pulse_observation_non_interference(root: Path) -> dict[str, object]:
-    model = load_pulse(root / "pulse" / "model.pulse")
-    asserted = model.world.positions["shipment_102"]
-    observed = model.world.observations[-1].value
-    return {
-        "contractHeld": asserted == Point(5, 5, CRS84) and observed != asserted,
-        "enforcementPoint": "observation-recording boundary",
-        "evidence": {
-            "assertedPosition": [asserted.x, asserted.y],
-            "lastObservedPosition": [observed.x, observed.y],
-        },
-    }
-
-
-def _pulse_scenario_isolation() -> dict[str, object]:
-    model = load_pulse(PAPER_EXAMPLE)
-    source_position = model.world.positions["batch"]
-    source_state = model.world.states["batch"]
-    report = model.run_scenario("Reroute")
-    source_unchanged = (
-        model.world.positions["batch"] == source_position
-        and model.world.states["batch"] == source_state
-    )
-    branch_changed = (
-        report.result.world.positions["batch"] != source_position
-        or report.result.world.states["batch"] != source_state
-    )
-    return {
-        "contractHeld": source_unchanged and branch_changed,
-        "enforcementPoint": "isolated scenario runtime",
-        "evidence": {
-            "sourceStateAfter": model.world.states["batch"],
-            "branchStateAfter": report.result.world.states["batch"],
-        },
-    }
-
-
-def _pulse_timer_precedence() -> dict[str, object]:
-    started = datetime(2026, 7, 21, 8, 0, tzinfo=UTC)
-    runtime = TemporalSpatialRuntime(_world(), started, [_rule()])
-    runtime.move_at("shipment_102", Point(12, 5, CRS84), started)
-    tied = runtime.move_at(
-        "shipment_102",
-        Point(5, 5, CRS84),
-        started + timedelta(minutes=10),
-    )
-    return {
-        "contractHeld": (
-            len(tied.sustained) == 1
-            and tied.sustained[0].effective_at == started + timedelta(minutes=10)
-            and runtime.world.states["shipment_102"] == "AtRisk"
-        ),
-        "enforcementPoint": "temporal step ordering",
-        "evidence": {
-            "sustainedEventsAtTie": len(tied.sustained),
-            "finalState": runtime.world.states["shipment_102"],
-        },
-    }
-
-
-def _pulse_guard_preservation() -> dict[str, object]:
-    started = datetime(2026, 7, 21, 8, 0, tzinfo=UTC)
-    runtime = TemporalSpatialRuntime(_world("Maintenance"), started, [_rule()])
-    runtime.move_at("shipment_102", Point(12, 5, CRS84), started)
-    emitted = runtime.advance_to(started + timedelta(minutes=10))
-    return {
-        "contractHeld": (
-            emitted == ()
-            and runtime.world.states["shipment_102"] == "Maintenance"
-        ),
-        "enforcementPoint": "transition guard at monitor start",
-        "evidence": {
-            "sustainedEvents": len(emitted),
-            "finalState": runtime.world.states["shipment_102"],
-        },
-    }
-
-
-def _mutant_auto_accepts_observation() -> dict[str, object]:
-    authoritative = {"position": (5.0, 5.0)}
-    observed = (13.0, 5.0)
-    authoritative["position"] = observed
-    caught = authoritative["position"] != (5.0, 5.0)
-    return {
-        "externalOracleCaught": caught,
-        "mutantEffect": "unaccepted observation overwrote authoritative position",
-    }
-
-
-def _mutant_writes_branch_back() -> dict[str, object]:
-    authoritative = {"position": (5.0, 5.0), "state": "Safe"}
-    before = dict(authoritative)
-    branch = authoritative
-    branch.update(position=(12.0, 5.0), state="AtRisk")
-    return {
-        "externalOracleCaught": authoritative != before,
-        "mutantEffect": "hypothetical branch mutated its source state",
-    }
-
-
-def _mutant_move_before_due_timer() -> dict[str, object]:
-    started = datetime(2026, 7, 21, 8, 0, tzinfo=UTC)
-    timestamps = (
-        started,
-        started + timedelta(minutes=1),
-        started + timedelta(minutes=11),
-    )
-    memberships = (True, False, True)
-    policy = Policy(
-        "shipment_102",
-        "ColdZone",
-        EventKind.LEAVES,
-        600,
-        "Safe",
-        "AtRisk",
-        "Safe",
-    )
-    expected = _reference_workflow(policy, timestamps, memberships)
-
-    # Mutant: process the re-entry first, cancelling the due monitor before
-    # checking the deadline at the same timestamp.
-    mutant_state = "Safe"
-    pending = timestamps[1]
-    current_inside = memberships[2]
-    if current_inside:
-        pending = None
-    if pending is not None and pending + timedelta(seconds=600) <= timestamps[2]:
-        mutant_state = "AtRisk"
-    return {
-        "externalOracleCaught": (
-            expected.final_state == "AtRisk" and mutant_state == "Safe"
-        ),
-        "mutantEffect": "same-time re-entry cancelled a timer before it fired",
-        "expectedFinalState": expected.final_state,
-        "mutantFinalState": mutant_state,
-    }
-
-
-def _mutant_elides_state_guard() -> dict[str, object]:
-    started = datetime(2026, 7, 21, 8, 0, tzinfo=UTC)
-    timestamps = (
-        started,
-        started + timedelta(minutes=1),
-        started + timedelta(minutes=12),
-    )
-    memberships = (True, False, False)
-    policy = Policy(
-        "shipment_102",
-        "ColdZone",
-        EventKind.LEAVES,
-        600,
-        "Safe",
-        "AtRisk",
-        "Maintenance",
-    )
-    expected = _reference_workflow(policy, timestamps, memberships)
-    mutant_state = "AtRisk"
-    return {
-        "externalOracleCaught": (
-            expected.final_state == "Maintenance" and mutant_state == "AtRisk"
-        ),
-        "mutantEffect": "transition fired although its source-state guard was false",
-        "expectedFinalState": expected.final_state,
-        "mutantFinalState": mutant_state,
-    }
+def _difference(expected: Outcome, actual: Outcome) -> list[str]:
+    changed: list[str] = []
+    if actual.final_state != expected.final_state:
+        changed.append("finalState")
+    if actual.instantaneous != expected.instantaneous:
+        changed.append("instantaneousTrace")
+    if actual.sustained != expected.sustained:
+        changed.append("sustainedTrace")
+    return changed
 
 
 def run_contract_faults(root: str | Path = DEFAULT_ROOT) -> dict[str, object]:
-    base = Path(root)
-    semantic_execution = run_semantic_web(base)
-    input_conforms = bool(semantic_execution.validation["shaclConforms"])
-    cases = (
-        (
-            "observationNonInterference",
-            "Observed evidence requires explicit acceptance before authoritative update",
-            _pulse_observation_non_interference(base),
-            _mutant_auto_accepts_observation(),
-        ),
-        (
-            "scenarioIsolation",
-            "Hypothetical execution must not mutate its source world",
-            _pulse_scenario_isolation(),
-            _mutant_writes_branch_back(),
-        ),
-        (
-            "timerBeforeMoveAtTie",
-            "A due timer fires before a move at the same timestamp",
-            _pulse_timer_precedence(),
-            _mutant_move_before_due_timer(),
-        ),
-        (
-            "guardPreservation",
-            "A state transition requires its declared source-state guard",
-            _pulse_guard_preservation(),
-            _mutant_elides_state_guard(),
-        ),
-    )
+    # Keep the argument for CLI compatibility; the v2 corpus is self-contained.
+    del root
     rendered_cases: list[dict[str, object]] = []
-    for identifier, obligation, pulse, mutant in cases:
+    for case in _cases():
+        pulse = _pulse_outcome(case)
+        reference = _reference_workflow(
+            case.policy, case.timestamps, case.memberships
+        )
+        mutant = _reference_workflow(
+            case.policy,
+            case.timestamps,
+            case.memberships,
+            case.mutant_semantics,
+        )
         rendered_cases.append(
             {
-                "id": identifier,
-                "obligation": obligation,
-                "pulse": pulse,
-                "standardsWorkflowMutant": {
-                    "unchangedRdfShaclInputConforms": input_conforms,
-                    "escapedArtifactValidation": input_conforms,
-                    **mutant,
+                "id": case.identifier,
+                "obligation": case.obligation,
+                "input": {
+                    "timestamps": [_iso(value) for value in case.timestamps],
+                    "memberships": list(case.memberships),
+                    "initialState": case.policy.initial_state,
+                    "durationSeconds": case.policy.duration_seconds,
+                },
+                "oracle": asdict(case.expected),
+                "pulse": {
+                    "outcome": asdict(pulse),
+                    "matchesOracle": pulse == case.expected,
+                },
+                "referenceWorkflow": {
+                    "outcome": asdict(reference),
+                    "matchesOracle": reference == case.expected,
+                },
+                "mutant": {
+                    "id": case.mutant_identifier,
+                    "singleChange": case.mutant_description,
+                    "outcome": asdict(mutant),
+                    "killedBySameOracle": mutant != case.expected,
+                    "changedFields": _difference(case.expected, mutant),
                 },
             }
         )
     return {
-        "experiment": "contract-fault-localization-v1",
+        "experiment": "temporal-contract-mutation-sensitivity-v2",
         "generatedAt": datetime.now(UTC).isoformat(),
+        "design": {
+            "cases": "four pre-specified traces with manually encoded exact outcomes",
+            "control": "unmodified PULSE and reference workflow run every case",
+            "mutation": "one semantic switch changes per reference-workflow run",
+            "oracle": "the same exact final-state and event-trace oracle for all paths",
+        },
         "cases": rendered_cases,
         "summary": {
             "caseCount": len(rendered_cases),
-            "pulseContractsHeld": sum(
-                bool(case["pulse"]["contractHeld"]) for case in rendered_cases
+            "pulseMatchesOracle": sum(
+                bool(case["pulse"]["matchesOracle"]) for case in rendered_cases
             ),
-            "workflowMutantsEscapingArtifactValidation": sum(
-                bool(case["standardsWorkflowMutant"]["escapedArtifactValidation"])
+            "referenceMatchesOracle": sum(
+                bool(case["referenceWorkflow"]["matchesOracle"])
                 for case in rendered_cases
             ),
-            "workflowMutantsCaughtByExternalOracle": sum(
-                bool(case["standardsWorkflowMutant"]["externalOracleCaught"])
+            "singleChangeMutantsKilled": sum(
+                bool(case["mutant"]["killedBySameOracle"])
                 for case in rendered_cases
             ),
         },
         "claimBoundary": (
-            "A mutation-based localization probe over four selected contract "
-            "obligations. It shows which checked boundary owns each obligation; "
-            "it does not establish defect prevalence, standards incapability, "
-            "usability, productivity, or complete mutation coverage."
+            "A mutation-sensitivity experiment over four selected temporal "
+            "obligations. It establishes observable consequences and locates "
+            "the corresponding PULSE runtime contracts. It does not compare "
+            "usability, productivity, defect prevalence, or the expressive "
+            "power of PULSE and standards-based workflows."
         ),
     }
 
@@ -293,24 +299,26 @@ def render_markdown(result: dict[str, object]) -> str:
     assert isinstance(summary, dict)
     assert isinstance(cases, list)
     lines = [
-        "# Contract fault-localization probe",
+        "# Temporal contract mutation sensitivity",
         "",
-        f"- PULSE contracts held: **{summary['pulseContractsHeld']}/{summary['caseCount']}**",
-        "- Workflow mutants escaping unchanged RDF/SHACL validation: "
-        f"**{summary['workflowMutantsEscapingArtifactValidation']}/{summary['caseCount']}**",
-        "- Workflow mutants caught by external postcondition oracles: "
-        f"**{summary['workflowMutantsCaughtByExternalOracle']}/{summary['caseCount']}**",
+        f"- PULSE matches exact oracle: **{summary['pulseMatchesOracle']}/{summary['caseCount']}**",
+        "- Reference workflow matches exact oracle: "
+        f"**{summary['referenceMatchesOracle']}/{summary['caseCount']}**",
+        "- Single-change mutants killed by the same oracle: "
+        f"**{summary['singleChangeMutantsKilled']}/{summary['caseCount']}**",
         "",
-        "| Obligation | PULSE boundary | RDF/SHACL sees code mutant | External oracle |",
-        "|---|---|---:|---:|",
+        "| Obligation | Mutant | PULSE | Reference | Mutant killed | Changed fields |",
+        "|---|---|---:|---:|---:|---|",
     ]
     for case in cases:
         pulse = case["pulse"]
-        mutant = case["standardsWorkflowMutant"]
+        reference = case["referenceWorkflow"]
+        mutant = case["mutant"]
         lines.append(
-            f"| {case['id']} | {pulse['enforcementPoint']} | "
-            f"{not mutant['escapedArtifactValidation']} | "
-            f"{mutant['externalOracleCaught']} |"
+            f"| {case['id']} | {mutant['id']} | "
+            f"{pulse['matchesOracle']} | {reference['matchesOracle']} | "
+            f"{mutant['killedBySameOracle']} | "
+            f"{', '.join(mutant['changedFields'])} |"
         )
     lines.extend(("", "## Claim boundary", "", str(result["claimBoundary"]), ""))
     return "\n".join(lines)
@@ -325,7 +333,7 @@ def _write(path: str | Path, value: str) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="pulse-spatial-contract-faults",
-        description="Locate four modal/temporal contract faults across boundaries.",
+        description="Run four temporal contract mutation-sensitivity cases.",
     )
     parser.add_argument("--root", default=str(DEFAULT_ROOT))
     parser.add_argument("--output-json")
@@ -342,11 +350,9 @@ def main() -> None:
     summary = result["summary"]
     assert isinstance(summary, dict)
     if arguments.require_complete and not (
-        summary["pulseContractsHeld"] == summary["caseCount"]
-        and summary["workflowMutantsEscapingArtifactValidation"]
-        == summary["caseCount"]
-        and summary["workflowMutantsCaughtByExternalOracle"]
-        == summary["caseCount"]
+        summary["pulseMatchesOracle"] == summary["caseCount"]
+        and summary["referenceMatchesOracle"] == summary["caseCount"]
+        and summary["singleChangeMutantsKilled"] == summary["caseCount"]
     ):
         raise SystemExit(1)
 

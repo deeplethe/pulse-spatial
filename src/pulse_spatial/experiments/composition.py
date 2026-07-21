@@ -57,6 +57,25 @@ class Policy:
 
 
 @dataclass(frozen=True, slots=True)
+class WorkflowSemantics:
+    """Auditable switches used only by the mutation-sensitivity experiment.
+
+    The default value is the reference workflow.  A mutant changes exactly one
+    switch, allowing the complete workflow loop to be rerun with the same
+    policy, trace, and outcome oracle.
+    """
+
+    timer_before_sample: bool = True
+    cancel_inverse_crossing: bool = True
+    require_start_guard: bool = True
+    duration_scale: float = 1.0
+
+    def __post_init__(self) -> None:
+        if self.duration_scale <= 0:
+            raise ValueError("Workflow duration scale must be positive")
+
+
+@dataclass(frozen=True, slots=True)
 class PathExecution:
     outcome: Outcome
     validation: dict[str, object]
@@ -75,6 +94,7 @@ def _reference_workflow(
     policy: Policy,
     timestamps: tuple[datetime, ...],
     memberships: tuple[bool, ...],
+    semantics: WorkflowSemantics = WorkflowSemantics(),
 ) -> Outcome:
     if len(timestamps) != len(memberships) or len(timestamps) < 2:
         raise ValueError("Workflow requires equally sized time and membership traces")
@@ -86,32 +106,38 @@ def _reference_workflow(
     pending_started_at: datetime | None = None
     instantaneous: list[InstantRecord] = []
     sustained: list[SustainedRecord] = []
-    for now, current in zip(timestamps[1:], memberships[1:]):
+
+    def emit_due(now: datetime) -> None:
+        nonlocal state, pending_started_at
+        effective_duration = policy.duration_seconds * semantics.duration_scale
         if (
-            pending_started_at is not None
-            and pending_started_at
-            + timedelta(seconds=policy.duration_seconds)
-            <= now
+            pending_started_at is None
+            or pending_started_at + timedelta(seconds=effective_duration) > now
         ):
-            effective_at = pending_started_at + timedelta(
-                seconds=policy.duration_seconds
+            return
+        effective_at = pending_started_at + timedelta(seconds=effective_duration)
+        sustained.append(
+            SustainedRecord(
+                policy.trigger.value,
+                policy.subject,
+                policy.region,
+                effective_duration,
+                _iso(pending_started_at),
+                _iso(effective_at),
+                _iso(now),
             )
-            sustained.append(
-                SustainedRecord(
-                    policy.trigger.value,
-                    policy.subject,
-                    policy.region,
-                    policy.duration_seconds,
-                    _iso(pending_started_at),
-                    _iso(effective_at),
-                    _iso(now),
-                )
-            )
-            if state == policy.from_state:
-                state = policy.to_state
-            pending_started_at = None
+        )
+        if state == policy.from_state:
+            state = policy.to_state
+        pending_started_at = None
+
+    for now, current in zip(timestamps[1:], memberships[1:]):
+        if semantics.timer_before_sample:
+            emit_due(now)
 
         if current == previous:
+            if not semantics.timer_before_sample:
+                emit_due(now)
             continue
         kind = EventKind.ENTERS if current else EventKind.LEAVES
         instantaneous.append(
@@ -122,11 +148,19 @@ def _reference_workflow(
                 _iso(now),
             )
         )
-        if pending_started_at is not None and kind is not policy.trigger:
+        if (
+            semantics.cancel_inverse_crossing
+            and pending_started_at is not None
+            and kind is not policy.trigger
+        ):
             pending_started_at = None
-        if kind is policy.trigger and state == policy.from_state:
+        if kind is policy.trigger and (
+            not semantics.require_start_guard or state == policy.from_state
+        ):
             pending_started_at = now
         previous = current
+        if not semantics.timer_before_sample:
+            emit_due(now)
     return Outcome(state, tuple(instantaneous), tuple(sustained))
 
 

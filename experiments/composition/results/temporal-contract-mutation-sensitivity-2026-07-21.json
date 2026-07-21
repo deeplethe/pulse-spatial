@@ -1,0 +1,452 @@
+{
+  "experiment": "temporal-contract-mutation-sensitivity-v2",
+  "generatedAt": "2026-07-21T08:37:10.015914+00:00",
+  "design": {
+    "cases": "four pre-specified traces with manually encoded exact outcomes",
+    "control": "unmodified PULSE and reference workflow run every case",
+    "mutation": "one semantic switch changes per reference-workflow run",
+    "oracle": "the same exact final-state and event-trace oracle for all paths"
+  },
+  "cases": [
+    {
+      "id": "inverseCancellation",
+      "obligation": "An inverse crossing cancels a pending duration monitor",
+      "input": {
+        "timestamps": [
+          "2026-07-21T08:00:00Z",
+          "2026-07-21T08:01:00Z",
+          "2026-07-21T08:09:00Z",
+          "2026-07-21T08:12:00Z"
+        ],
+        "memberships": [
+          true,
+          false,
+          true,
+          true
+        ],
+        "initialState": "Safe",
+        "durationSeconds": 600.0
+      },
+      "oracle": {
+        "final_state": "Safe",
+        "instantaneous": [
+          {
+            "kind": "leaves",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "at": "2026-07-21T08:01:00Z"
+          },
+          {
+            "kind": "enters",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "at": "2026-07-21T08:09:00Z"
+          }
+        ],
+        "sustained": []
+      },
+      "pulse": {
+        "outcome": {
+          "final_state": "Safe",
+          "instantaneous": [
+            {
+              "kind": "leaves",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:01:00Z"
+            },
+            {
+              "kind": "enters",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:09:00Z"
+            }
+          ],
+          "sustained": []
+        },
+        "matchesOracle": true
+      },
+      "referenceWorkflow": {
+        "outcome": {
+          "final_state": "Safe",
+          "instantaneous": [
+            {
+              "kind": "leaves",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:01:00Z"
+            },
+            {
+              "kind": "enters",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:09:00Z"
+            }
+          ],
+          "sustained": []
+        },
+        "matchesOracle": true
+      },
+      "mutant": {
+        "id": "M-CANCEL",
+        "singleChange": "retain a pending monitor after the inverse crossing",
+        "outcome": {
+          "final_state": "AtRisk",
+          "instantaneous": [
+            {
+              "kind": "leaves",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:01:00Z"
+            },
+            {
+              "kind": "enters",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:09:00Z"
+            }
+          ],
+          "sustained": [
+            {
+              "kind": "leaves",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "duration_seconds": 600.0,
+              "started_at": "2026-07-21T08:01:00Z",
+              "effective_at": "2026-07-21T08:11:00Z",
+              "emitted_at": "2026-07-21T08:12:00Z"
+            }
+          ]
+        },
+        "killedBySameOracle": true,
+        "changedFields": [
+          "finalState",
+          "sustainedTrace"
+        ]
+      }
+    },
+    {
+      "id": "timerBeforeMoveAtTie",
+      "obligation": "A timer due at t fires before the sampled move at t",
+      "input": {
+        "timestamps": [
+          "2026-07-21T08:00:00Z",
+          "2026-07-21T08:01:00Z",
+          "2026-07-21T08:11:00Z"
+        ],
+        "memberships": [
+          true,
+          false,
+          true
+        ],
+        "initialState": "Safe",
+        "durationSeconds": 600.0
+      },
+      "oracle": {
+        "final_state": "AtRisk",
+        "instantaneous": [
+          {
+            "kind": "leaves",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "at": "2026-07-21T08:01:00Z"
+          },
+          {
+            "kind": "enters",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "at": "2026-07-21T08:11:00Z"
+          }
+        ],
+        "sustained": [
+          {
+            "kind": "leaves",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "duration_seconds": 600.0,
+            "started_at": "2026-07-21T08:01:00Z",
+            "effective_at": "2026-07-21T08:11:00Z",
+            "emitted_at": "2026-07-21T08:11:00Z"
+          }
+        ]
+      },
+      "pulse": {
+        "outcome": {
+          "final_state": "AtRisk",
+          "instantaneous": [
+            {
+              "kind": "leaves",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:01:00Z"
+            },
+            {
+              "kind": "enters",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:11:00Z"
+            }
+          ],
+          "sustained": [
+            {
+              "kind": "leaves",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "duration_seconds": 600.0,
+              "started_at": "2026-07-21T08:01:00Z",
+              "effective_at": "2026-07-21T08:11:00Z",
+              "emitted_at": "2026-07-21T08:11:00Z"
+            }
+          ]
+        },
+        "matchesOracle": true
+      },
+      "referenceWorkflow": {
+        "outcome": {
+          "final_state": "AtRisk",
+          "instantaneous": [
+            {
+              "kind": "leaves",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:01:00Z"
+            },
+            {
+              "kind": "enters",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:11:00Z"
+            }
+          ],
+          "sustained": [
+            {
+              "kind": "leaves",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "duration_seconds": 600.0,
+              "started_at": "2026-07-21T08:01:00Z",
+              "effective_at": "2026-07-21T08:11:00Z",
+              "emitted_at": "2026-07-21T08:11:00Z"
+            }
+          ]
+        },
+        "matchesOracle": true
+      },
+      "mutant": {
+        "id": "M-ORDER",
+        "singleChange": "process the sampled move before timers due at the same time",
+        "outcome": {
+          "final_state": "Safe",
+          "instantaneous": [
+            {
+              "kind": "leaves",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:01:00Z"
+            },
+            {
+              "kind": "enters",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:11:00Z"
+            }
+          ],
+          "sustained": []
+        },
+        "killedBySameOracle": true,
+        "changedFields": [
+          "finalState",
+          "sustainedTrace"
+        ]
+      }
+    },
+    {
+      "id": "startGuard",
+      "obligation": "A duration monitor starts only when its source-state guard holds",
+      "input": {
+        "timestamps": [
+          "2026-07-21T08:00:00Z",
+          "2026-07-21T08:01:00Z",
+          "2026-07-21T08:12:00Z"
+        ],
+        "memberships": [
+          true,
+          false,
+          false
+        ],
+        "initialState": "Maintenance",
+        "durationSeconds": 600.0
+      },
+      "oracle": {
+        "final_state": "Maintenance",
+        "instantaneous": [
+          {
+            "kind": "leaves",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "at": "2026-07-21T08:01:00Z"
+          }
+        ],
+        "sustained": []
+      },
+      "pulse": {
+        "outcome": {
+          "final_state": "Maintenance",
+          "instantaneous": [
+            {
+              "kind": "leaves",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:01:00Z"
+            }
+          ],
+          "sustained": []
+        },
+        "matchesOracle": true
+      },
+      "referenceWorkflow": {
+        "outcome": {
+          "final_state": "Maintenance",
+          "instantaneous": [
+            {
+              "kind": "leaves",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:01:00Z"
+            }
+          ],
+          "sustained": []
+        },
+        "matchesOracle": true
+      },
+      "mutant": {
+        "id": "M-START-GUARD",
+        "singleChange": "start the monitor without checking the source-state guard",
+        "outcome": {
+          "final_state": "Maintenance",
+          "instantaneous": [
+            {
+              "kind": "leaves",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:01:00Z"
+            }
+          ],
+          "sustained": [
+            {
+              "kind": "leaves",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "duration_seconds": 600.0,
+              "started_at": "2026-07-21T08:01:00Z",
+              "effective_at": "2026-07-21T08:11:00Z",
+              "emitted_at": "2026-07-21T08:12:00Z"
+            }
+          ]
+        },
+        "killedBySameOracle": true,
+        "changedFields": [
+          "sustainedTrace"
+        ]
+      }
+    },
+    {
+      "id": "durationExactness",
+      "obligation": "A declared ten-minute duration is neither shortened nor rounded",
+      "input": {
+        "timestamps": [
+          "2026-07-21T08:00:00Z",
+          "2026-07-21T08:01:00Z",
+          "2026-07-21T08:02:00Z"
+        ],
+        "memberships": [
+          true,
+          false,
+          false
+        ],
+        "initialState": "Safe",
+        "durationSeconds": 600.0
+      },
+      "oracle": {
+        "final_state": "Safe",
+        "instantaneous": [
+          {
+            "kind": "leaves",
+            "subject": "shipment_102",
+            "region": "ColdZone",
+            "at": "2026-07-21T08:01:00Z"
+          }
+        ],
+        "sustained": []
+      },
+      "pulse": {
+        "outcome": {
+          "final_state": "Safe",
+          "instantaneous": [
+            {
+              "kind": "leaves",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:01:00Z"
+            }
+          ],
+          "sustained": []
+        },
+        "matchesOracle": true
+      },
+      "referenceWorkflow": {
+        "outcome": {
+          "final_state": "Safe",
+          "instantaneous": [
+            {
+              "kind": "leaves",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:01:00Z"
+            }
+          ],
+          "sustained": []
+        },
+        "matchesOracle": true
+      },
+      "mutant": {
+        "id": "M-DURATION",
+        "singleChange": "scale the declared duration by 0.1",
+        "outcome": {
+          "final_state": "AtRisk",
+          "instantaneous": [
+            {
+              "kind": "leaves",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "at": "2026-07-21T08:01:00Z"
+            }
+          ],
+          "sustained": [
+            {
+              "kind": "leaves",
+              "subject": "shipment_102",
+              "region": "ColdZone",
+              "duration_seconds": 60.0,
+              "started_at": "2026-07-21T08:01:00Z",
+              "effective_at": "2026-07-21T08:02:00Z",
+              "emitted_at": "2026-07-21T08:02:00Z"
+            }
+          ]
+        },
+        "killedBySameOracle": true,
+        "changedFields": [
+          "finalState",
+          "sustainedTrace"
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "caseCount": 4,
+    "pulseMatchesOracle": 4,
+    "referenceMatchesOracle": 4,
+    "singleChangeMutantsKilled": 4
+  },
+  "claimBoundary": "A mutation-sensitivity experiment over four selected temporal obligations. It establishes observable consequences and locates the corresponding PULSE runtime contracts. It does not compare usability, productivity, defect prevalence, or the expressive power of PULSE and standards-based workflows."
+}

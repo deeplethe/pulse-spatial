@@ -13,7 +13,7 @@ ISO conformance implementation.
 
 ## Research thesis
 
-PULSE-S aims to answer four distinct questions in one authoritative model:
+PULSE-S co-locates four distinct roles in one typed executable model:
 
 | Mode | Spatial question |
 |---|---|
@@ -80,9 +80,10 @@ No runtime dependency is required for the core topological kernel. The
 `validation` extra adds pySHACL and Shapely/GEOS for independent projection
 checks. A pinned Apache Jena GeoSPARQL 6.1.0 container provides a genuinely
 external query-engine comparison without adding Java to the core runtime.
-A Lean 4.30.0 project mechanically checks the transition-safety kernel and a
-surface-to-Core compiler for the paper subset. The Python compiler exports the
-same canonical IR for the executable paper listing. A pinned PostgreSQL
+A Lean 4.30.0 project checks reduced transition, monitor, and surface-to-Core
+compiler models for the paper subset. These modules are not a general
+refinement of the Python runtime. The Python compiler exports the same canonical
+IR for the executable paper listing. A pinned PostgreSQL
 18/PostGIS 3.6 container supplies an on-disk GiST-indexed
 database baseline.
 
@@ -126,11 +127,12 @@ duration-qualified event, and final state. The checked-in artifact metrics are
 descriptive rather than a usability claim; see the
 [`composition comparison`](experiments/composition/README.md).
 
-A companion fault-localization probe changes only RDF-workflow orchestration
-code. Four seeded mutants escape unchanged RDF/SHACL artifact validation and
-are caught by external postcondition oracles; the corresponding PULSE boundary
-contracts all hold. This locates enforcement responsibility rather than
-measuring usability or defect prevalence; see the same
+A companion mutation-sensitivity experiment uses four pre-specified temporal
+traces with manually encoded exact outcomes. PULSE and an independent reference
+workflow match all four; changing one reference-workflow semantic switch at a
+time produces four oracle-visible trace differences. This establishes selected
+contract sensitivity rather than language superiority, usability, or defect
+prevalence; see the same
 [`composition protocol`](experiments/composition/README.md).
 
 A fourth experiment probes the Point/simple-Polygon kernel with 89 valid
@@ -169,8 +171,8 @@ is executed twice. The recorded run performs 3,534 determinism, preservation,
 finite-advance, atomic-failure, observation, and scenario checks with no
 failure; see the [`formal property protocol`](experiments/formal-properties/README.md).
 
-A ninth evidence path mechanizes the transition-safety kernel in Lean 4.30.0.
-Lean checks preservation, deterministic evaluation, observation
+A ninth evidence path checks reduced transition, monitor, and compiler models
+in Lean 4.30.0. Lean checks preservation, deterministic evaluation, observation
 non-interference, scenario isolation, finite time advance, and atomic failure.
 It also models duration-qualified rule matching, opposite-crossing monitor
 cancellation, and state-guarded monitor creation, proving guard eligibility,
@@ -183,9 +185,10 @@ positive durations, exact deadlines, finite horizons, and scenario execution
 under that desugaring. The Python compiler and Lean exporter produce the same
 canonical IR for `examples/paper_cold_chain_st.pulse`; CI regenerates both
 sides and rejects drift.
-The proof model abstracts computational geometry behind a total membership
-function, so it verifies execution discipline rather than floating-point
-topology; see [`formal/lean`](formal/lean/README.md).
+The Core and monitor models are not yet composed into one transition system,
+and no theorem refines the general Python runtime. Computational geometry is
+abstracted behind a total membership function; see
+[`formal/lean`](formal/lean/README.md).
 
 A tenth experiment loads the complete since-1980 workload into a persistent
 PostgreSQL 18/PostGIS 3.6 database. A GiST-indexed `ST_Covers` query returns

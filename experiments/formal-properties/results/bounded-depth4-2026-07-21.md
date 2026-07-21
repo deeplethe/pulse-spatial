@@ -19,4 +19,4 @@
 
 ## Claim boundary
 
-Exhaustive exploration of every move-only trace through the finite four-position abstraction up to depth 4. Record, advance, scenario, and invalid-action properties are checked separately. The result supports testing of proof assumptions but is not a general, machine-checked proof of the unbounded calculus.
+Exhaustive exploration of every move-only trace through the finite four-position abstraction up to depth 4. Record, advance, scenario, and invalid-action properties are checked separately. It supports testing of the proof assumptions but is not a general, machine-checked proof of the unbounded calculus.

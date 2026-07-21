@@ -154,8 +154,10 @@ class TemporalSpatialRuntime:
     """Discrete-time geofence runtime with sample-and-hold duration semantics.
 
     A duration-qualified rule is eligible at a sampled crossing only when its
-    source-state guard holds.  The guard is checked again at the deadline before
-    the attached state transition is applied.  The sustained event itself is
+    source-state guard holds in the pre-crossing state.  Monitor cancellation
+    and creation happen before instantaneous rules are applied, matching the
+    Core MOVE rule.  The guard is checked again at the deadline before the
+    attached state transition is applied.  The sustained event itself is
     emitted once an eligible monitor survives to its deadline.
     """
 
@@ -257,10 +259,11 @@ class TemporalSpatialRuntime:
                 f"{source.crs!r} != {target.crs!r}"
             )
         sustained = self.advance_to(observed_at)
-        instantaneous = SpatialRuntime(
-            self.world,
-            self.immediate_rules,
-        ).move(subject, target)
+        # Detect and commit the sampled crossing without applying state rules.
+        # Monitor eligibility is intentionally evaluated against the state at
+        # the crossing, before any instantaneous rule triggered by the same
+        # event mutates it.  This ordering is part of the language contract.
+        instantaneous = SpatialRuntime(self.world).move(subject, target)
         for event in instantaneous:
             cancelled = tuple(
                 name
@@ -289,4 +292,16 @@ class TemporalSpatialRuntime:
                     observed_at,
                     rule,
                 )
+        # Instantaneous rules run only after monitor reconciliation.  Rules are
+        # applied in declaration order, so later guards observe earlier writes.
+        for rule in self.immediate_rules:
+            if self.world.states.get(rule.subject) != rule.from_state:
+                continue
+            if any(
+                event.kind is rule.kind
+                and event.subject == rule.subject
+                and event.region == rule.region
+                for event in instantaneous
+            ):
+                self.world.states[rule.subject] = rule.to_state
         return TemporalStepResult(observed_at, instantaneous, sustained)

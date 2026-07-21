@@ -8,23 +8,18 @@ class ContractFaultExperimentTests(unittest.TestCase):
         result = run_contract_faults()
         summary = result["summary"]
         self.assertEqual(summary["caseCount"], 4)
-        self.assertEqual(summary["pulseContractsHeld"], 4)
-        self.assertEqual(summary["workflowMutantsEscapingArtifactValidation"], 4)
-        self.assertEqual(summary["workflowMutantsCaughtByExternalOracle"], 4)
+        self.assertEqual(summary["pulseMatchesOracle"], 4)
+        self.assertEqual(summary["referenceMatchesOracle"], 4)
+        self.assertEqual(summary["singleChangeMutantsKilled"], 4)
 
     def test_each_case_reports_enforcement_and_claim_boundary(self) -> None:
         result = run_contract_faults()
         for case in result["cases"]:
-            self.assertTrue(case["pulse"]["contractHeld"])
-            self.assertTrue(
-                case["standardsWorkflowMutant"][
-                    "unchangedRdfShaclInputConforms"
-                ]
-            )
-            self.assertTrue(
-                case["standardsWorkflowMutant"]["externalOracleCaught"]
-            )
-        self.assertIn("does not establish", result["claimBoundary"])
+            self.assertTrue(case["pulse"]["matchesOracle"])
+            self.assertTrue(case["referenceWorkflow"]["matchesOracle"])
+            self.assertTrue(case["mutant"]["killedBySameOracle"])
+            self.assertTrue(case["mutant"]["changedFields"])
+        self.assertIn("does not compare", result["claimBoundary"])
 
 
 if __name__ == "__main__":

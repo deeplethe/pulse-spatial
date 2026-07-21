@@ -16,8 +16,8 @@ Run the frozen checks with:
 
 ```powershell
 python -m pulse_spatial.experiments.semantic_sensitivity `
-  --output-json experiments/semantic-sensitivity/results/semantic-sensitivity-2026-07-19.json `
-  --output-markdown experiments/semantic-sensitivity/results/semantic-sensitivity-2026-07-19.md `
+  --output-json experiments/semantic-sensitivity/results/semantic-sensitivity-2026-07-21.json `
+  --output-markdown experiments/semantic-sensitivity/results/semantic-sensitivity-2026-07-21.md `
   --require-all-distinguished
 ```
 

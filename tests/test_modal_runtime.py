@@ -167,6 +167,71 @@ class ModalRuntimeTests(unittest.TestCase):
         self.assertEqual(len(events), 1)
         self.assertEqual(runtime.world.states["batch_102"], "Maintenance")
 
+    def test_duration_monitor_uses_state_before_same_crossing_immediate_rule(
+        self,
+    ) -> None:
+        started = datetime.fromisoformat("2026-07-19T08:00:00+00:00")
+        immediate = GeofenceRule(
+            name="ImmediateDeparture",
+            kind=EventKind.LEAVES,
+            subject="batch_102",
+            region="ColdZone",
+            from_state="Safe",
+            to_state="Mid",
+        )
+        sustained = GeofenceRule(
+            name="SustainedDeparture",
+            kind=EventKind.LEAVES,
+            subject="batch_102",
+            region="ColdZone",
+            from_state="Safe",
+            to_state="AtRisk",
+            minimum_duration_seconds=600,
+        )
+        runtime = TemporalSpatialRuntime(
+            self.make_world(), started, [immediate, sustained]
+        )
+
+        runtime.move_at("batch_102", Point(12, 5), started)
+        self.assertEqual(runtime.world.states["batch_102"], "Mid")
+
+        events = runtime.advance_to(started + timedelta(minutes=10))
+        self.assertEqual(len(events), 1)
+        self.assertEqual(events[0].specification, "SustainedDeparture")
+        self.assertEqual(runtime.world.states["batch_102"], "Mid")
+
+    def test_duration_monitor_does_not_use_same_crossing_post_rule_state(
+        self,
+    ) -> None:
+        started = datetime.fromisoformat("2026-07-19T08:00:00+00:00")
+        immediate = GeofenceRule(
+            name="ImmediateDeparture",
+            kind=EventKind.LEAVES,
+            subject="batch_102",
+            region="ColdZone",
+            from_state="Safe",
+            to_state="Mid",
+        )
+        sustained = GeofenceRule(
+            name="SustainedDeparture",
+            kind=EventKind.LEAVES,
+            subject="batch_102",
+            region="ColdZone",
+            from_state="Mid",
+            to_state="AtRisk",
+            minimum_duration_seconds=600,
+        )
+        runtime = TemporalSpatialRuntime(
+            self.make_world(), started, [immediate, sustained]
+        )
+
+        runtime.move_at("batch_102", Point(12, 5), started)
+        self.assertEqual(runtime.world.states["batch_102"], "Mid")
+
+        events = runtime.advance_to(started + timedelta(minutes=10))
+        self.assertEqual(events, ())
+        self.assertEqual(runtime.world.states["batch_102"], "Mid")
+
     def test_sustained_leave_is_cancelled_by_reentry(self) -> None:
         started = datetime.fromisoformat("2026-07-19T08:00:00+00:00")
         monitor = SustainedEventSpec(
