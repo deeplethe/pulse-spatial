@@ -21,9 +21,16 @@ def _position(inside: bool) -> Point:
     return Point(1.0 if inside else -1.0, 1.0, CRS84)
 
 
-def _event(kind: str, effective_at: int, emitted_at: int) -> dict[str, object]:
+def _event(
+    kind: str,
+    subject: int,
+    effective_at: int,
+    emitted_at: int,
+) -> dict[str, object]:
     return {
         "kind": kind,
+        "subject": subject,
+        "region": 9,
         "effectiveAt": effective_at,
         "emittedAt": emitted_at,
     }
@@ -34,6 +41,7 @@ def _run_case(
     first_inside: bool,
     second_inside: bool,
     immediate: bool,
+    dual_rule: bool,
 ) -> dict[str, object]:
     origin = datetime(2026, 7, 21, tzinfo=UTC)
     world = SpatialWorld(
@@ -43,12 +51,15 @@ def _run_case(
                 CRS84,
             )
         },
-        positions={"asset": _position(initial_inside)},
-        states={"asset": "Safe"},
+        positions={
+            "asset": _position(initial_inside),
+            "secondary": _position(True),
+        },
+        states={"asset": "Safe", "secondary": "Safe"},
     )
     rules = [
         GeofenceRule(
-            "duration",
+            "z-duration",
             EventKind.LEAVES,
             "asset",
             "zone",
@@ -68,25 +79,48 @@ def _run_case(
                 "Maintenance",
             )
         )
+    if dual_rule:
+        rules.append(
+            GeofenceRule(
+                "a-duration",
+                EventKind.LEAVES,
+                "secondary",
+                "zone",
+                "Safe",
+                "AtRisk",
+                2.0,
+            )
+        )
     runtime = TemporalSpatialRuntime(world, origin, rules)
     trace: list[dict[str, object]] = []
-    for offset, inside in ((1, first_inside), (2, second_inside)):
-        step = runtime.move_at("asset", _position(inside), origin + timedelta(seconds=offset))
+    moves = [(1, "asset", first_inside)]
+    if dual_rule:
+        moves.append((1, "secondary", False))
+    moves.append((2, "asset", second_inside))
+    for offset, subject, inside in moves:
+        step = runtime.move_at(subject, _position(inside), origin + timedelta(seconds=offset))
         trace.extend(
             _event(
                 "sustained",
+                0 if event.subject == "asset" else 1,
                 int((event.effective_at - origin).total_seconds()),
                 int((event.emitted_at - origin).total_seconds()),
             )
             for event in step.sustained
         )
         trace.extend(
-            _event(event.kind.value, offset, offset)
+            _event(
+                event.kind.value,
+                0 if event.subject == "asset" else 1,
+                offset,
+                offset,
+            )
             for event in step.instantaneous
         )
     trace.extend(
         _event(
             "sustained",
+            0 if event.subject == "asset" else 1,
             int((event.effective_at - origin).total_seconds()),
             int((event.emitted_at - origin).total_seconds()),
         )
@@ -97,20 +131,22 @@ def _run_case(
         "firstInside": first_inside,
         "secondInside": second_inside,
         "immediate": immediate,
+        "dualRule": dual_rule,
         "status": "ok",
         "finalState": _STATE_IDS[world.states["asset"]],
+        "secondaryState": _STATE_IDS[world.states["secondary"]],
         "pending": runtime.pending_count,
         "trace": trace,
     }
 
 
 def generated_python_traces() -> dict[str, object]:
-    """Execute the full 2^4 model/action grid with the production runtime."""
+    """Execute the full 2^5 model/action grid with the production runtime."""
 
     cases = [
-        _run_case(initial, first, second, immediate)
-        for initial, first, second, immediate in itertools.product(
-            (False, True), repeat=4
+        _run_case(initial, first, second, immediate, dual_rule)
+        for initial, first, second, immediate, dual_rule in itertools.product(
+            (False, True), repeat=5
         )
     ]
     return {"schemaVersion": 1, "caseCount": len(cases), "cases": cases}
@@ -133,7 +169,7 @@ def compare_with_lean(path: str | Path = DEFAULT_LEAN_FIXTURE) -> dict[str, obje
         "mismatchIndexes": mismatches,
         "allExact": lean == python,
         "claimBoundary": (
-            "Exact observable-trace correspondence over the declared 16-case "
+            "Exact observable-trace correspondence over the declared 32-case "
             "Boolean model/action grid; not a general refinement theorem."
         ),
     }

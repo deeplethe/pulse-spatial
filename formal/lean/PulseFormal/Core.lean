@@ -78,15 +78,32 @@ def ValidObservation (env : Env) (o : Observation) : Prop :=
 def WellFormed (env : Env) (x : Config) : Prop :=
   (∀ i p, x.asserted i = some p → p.crs = env.crs i) ∧
   (∀ o ∈ x.observations, ValidObservation env o) ∧
-  (∀ m ∈ x.pending, x.clock < m.deadline)
+  (∀ m ∈ x.pending, x.clock < m.deadline) ∧
+  (x.pending.map (·.name)).Nodup
 
 def updatePosition
     (positions : Id → Option Position) (subject : Id) (p : Position) :
     Id → Option Position :=
   fun candidate => if candidate = subject then some p else positions candidate
 
+def monitorBefore (first second : Monitor) : Bool :=
+  decide (
+    first.deadline < second.deadline ∨
+    (first.deadline = second.deadline ∧ first.name ≤ second.name))
+
+def insertMonitor (monitor : Monitor) : List Monitor → List Monitor
+  | [] => [monitor]
+  | candidate :: rest =>
+      if monitorBefore monitor candidate then
+        monitor :: candidate :: rest
+      else
+        candidate :: insertMonitor monitor rest
+
+def sortMonitors (pending : List Monitor) : List Monitor :=
+  pending.foldr insertMonitor []
+
 def due (pending : List Monitor) (time : Time) : List Monitor :=
-  pending.filter (fun monitor => decide (monitor.deadline ≤ time))
+  sortMonitors <| pending.filter (fun monitor => decide (monitor.deadline ≤ time))
 
 def remaining (pending : List Monitor) (time : Time) : List Monitor :=
   pending.filter (fun monitor => decide (time < monitor.deadline))
@@ -186,6 +203,67 @@ theorem remaining_future
     (h : monitor ∈ remaining pending time) : time < monitor.deadline := by
   simpa [remaining] using (List.mem_filter.mp h).2
 
+theorem length_insertMonitor (monitor : Monitor) (pending : List Monitor) :
+    (insertMonitor monitor pending).length = pending.length + 1 := by
+  induction pending with
+  | nil => rfl
+  | cons candidate rest inductionHypothesis =>
+      simp only [insertMonitor]
+      split
+      · simp
+      · simp [inductionHypothesis, Nat.add_comm]
+
+theorem length_sortMonitors (pending : List Monitor) :
+    (sortMonitors pending).length = pending.length := by
+  induction pending with
+  | nil => rfl
+  | cons monitor rest inductionHypothesis =>
+      unfold sortMonitors
+      simp only [List.foldr]
+      rw [length_insertMonitor]
+      change (sortMonitors rest).length + 1 = rest.length + 1
+      rw [inductionHypothesis]
+
+theorem due_length_le (pending : List Monitor) (time : Time) :
+    (due pending time).length ≤ pending.length := by
+  rw [due, length_sortMonitors]
+  exact List.length_filter_le _ _
+
+theorem due_two_equal_deadlines_follow_name_order
+    (first second : Monitor) (time : Time)
+    (sameDeadline : first.deadline = second.deadline)
+    (nameOrder : first.name < second.name)
+    (isDue : first.deadline ≤ time) :
+    due [second, first] time = [first, second] := by
+  have secondDue : second.deadline ≤ time := by
+    rw [← sameDeadline]
+    exact isDue
+  have notNameOrder : ¬ second.name ≤ first.name := Nat.not_le_of_lt nameOrder
+  have notBefore : monitorBefore second first = false := by
+    simp [monitorBefore, ← sameDeadline, notNameOrder]
+  simp [due, isDue, secondDue, sortMonitors, insertMonitor, notBefore]
+
+theorem remaining_names_nodup
+    {pending : List Monitor} {time : Time}
+    (unique : (pending.map (·.name)).Nodup) :
+    ((remaining pending time).map (·.name)).Nodup := by
+  unfold remaining
+  induction pending with
+  | nil => simp
+  | cons monitor rest inductionHypothesis =>
+      simp only [List.map_cons, List.nodup_cons] at unique
+      rcases unique with ⟨fresh, restUnique⟩
+      simp only [List.filter_cons]
+      split
+      · simp only [List.map_cons, List.nodup_cons]
+        refine ⟨?_, inductionHypothesis restUnique⟩
+        intro present
+        apply fresh
+        simp only [List.mem_map] at present ⊢
+        rcases present with ⟨candidate, inFiltered, sameName⟩
+        exact ⟨candidate, (List.mem_filter.mp inFiltered).1, sameName⟩
+      · exact inductionHypothesis restUnique
+
 theorem advance_preserves
     {env : Env} {x next : Config} {time : Time} {trace : List Event}
     (wf : WellFormed env x)
@@ -196,8 +274,8 @@ theorem advance_preserves
   · simp at evaluates
   · simp at evaluates
     rcases evaluates with ⟨rfl, rfl⟩
-    rcases wf with ⟨positions, observations, monitors⟩
-    refine ⟨positions, observations, ?_⟩
+    rcases wf with ⟨positions, observations, monitors, unique⟩
+    refine ⟨positions, observations, ?_, remaining_names_nodup unique⟩
     intro monitor present
     exact remaining_future present
 
@@ -210,8 +288,8 @@ theorem record_preserves
   split at evaluates
   · simp at evaluates
     rcases evaluates with ⟨rfl, rfl⟩
-    rcases wf with ⟨positions, observations, monitors⟩
-    refine ⟨positions, ?_, monitors⟩
+    rcases wf with ⟨positions, observations, monitors, unique⟩
+    refine ⟨positions, ?_, monitors, unique⟩
     intro candidate present
     simp only [List.mem_append, List.mem_singleton] at present
     rcases present with present | rfl
@@ -234,8 +312,8 @@ theorem move_preserves
     · simp at evaluates
       rcases evaluates with ⟨rfl, rfl⟩
       simp at ‹¬position.crs ≠ env.crs subject›
-      rcases wf with ⟨positions, observations, monitors⟩
-      refine ⟨?_, observations, ?_⟩
+      rcases wf with ⟨positions, observations, monitors, unique⟩
+      refine ⟨?_, observations, ?_, remaining_names_nodup unique⟩
       · intro candidate p assigned
         change updatePosition x.asserted subject position candidate = some p at assigned
         by_cases same : candidate = subject
@@ -289,8 +367,7 @@ theorem finite_advance
   · simp at evaluates
   · simp at evaluates
     rcases evaluates with ⟨rfl, rfl⟩
-    simp [dueEvents, due]
-    exact List.length_filter_le _ _
+    simpa [dueEvents] using due_length_le x.pending time
 
 theorem atomic_failure
     {env : Env} {x failed : Config} {action : Action} {code : Error}

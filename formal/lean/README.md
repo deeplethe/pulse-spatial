@@ -13,7 +13,8 @@ the following mechanisms explicit:
 - duration-qualified rule matching, opposite-crossing cancellation, and
   source-state-guarded monitor creation with exact deadlines;
 - timer-before-move execution, deadline guard rechecking, monitor
-  reconciliation against the pre-immediate state, and ordered immediate
+  reconciliation against the pre-immediate state, unique monitor identities,
+  total `(deadline, name)` timer ordering, and ordered immediate
   state updates;
 - pure scenario execution; and
 - the `record`, `move`, and `advance` core actions.
@@ -33,7 +34,8 @@ positive durations keep all deadlines in the future, and a batch of crossing
 events can grow the pending set by at most `events.length * rules.length`.
 The integrated module additionally defines environment/configuration
 well-formedness, checks atomic time/CRS failures, due-before-crossing event
-order, finite advance, compilation into the integrated environment, and
+order, finite advance, a generic equal-deadline/two-monitor name-order theorem,
+compilation into the integrated environment, and
 a concrete same-event regression in which the duration monitor is created from
 the pre-immediate state before an immediate transition changes that state.
 
@@ -42,8 +44,9 @@ and the mechanized compiler begins after parsing. The mechanization therefore
 does not prove floating-point geometry, full surface parsing, the production
 Python implementation, or a general refinement theorem between Lean and every
 runtime path. Lean/Python correspondence includes a byte-identical canonical-IR
-check for the executable paper model plus exact observable traces for 16
-generated combinations of memberships and an immediate-rule switch. This
+check for the executable paper model plus exact observable traces for 32
+generated combinations of memberships, an immediate-rule switch, and a second
+subject/rule that creates equal-deadline timers in reverse name order. This
 finite bridge is not a universal compiler-correctness or refinement result. The
 generated mutation corpus separately compares the Python runtime with an
 independent workflow implementation.
@@ -78,5 +81,5 @@ lake exe pulse_traces
 ```
 
 CI compares it byte-for-byte with `generated-integrated-traces.json`; the Python
-suite executes the same 16-case grid through the production runtime and compares
+suite executes the same 32-case grid through the production runtime and compares
 the parsed observable results.

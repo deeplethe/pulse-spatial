@@ -85,7 +85,7 @@ surface-to-Core compilation, clocks, sampled crossings, monitor lifecycle,
 deadline-guarded state changes, and compiled ordered immediate rules. It is not
 a general refinement of the Python runtime. The Python compiler exports the
 same canonical IR for the executable paper listing, and both runtimes generate
-identical observable traces for a 16-case model/action grid. A pinned PostgreSQL
+identical observable traces for a 32-case model/action grid. A pinned PostgreSQL
 18/PostGIS 3.6 container supplies an on-disk GiST-indexed
 database baseline.
 
@@ -190,9 +190,10 @@ sides and rejects drift. `PulseFormal.Integrated` composes due-timer state
 updates, sampled crossings, pre-immediate monitor reconciliation, ordered
 immediate transitions, and multi-action execution; it also contains a
 well-formedness predicate and proof-checked same-event ordering regression.
-The Lean and production Python executables independently run all 16 combinations
-of three membership bits and one immediate-rule switch; CI rejects any final
-state, pending-monitor, event-kind, or event-time difference. No theorem yet refines the
+The Lean and production Python executables independently run 32 combinations
+of three membership bits, an immediate-rule switch, and a dual-rule switch. The
+latter creates equal-deadline timers in reverse name order; CI rejects any
+state, pending-monitor, event-subject/kind, or event-time difference. No theorem yet refines the
 general Python runtime, and computational geometry is abstracted behind a total membership function; see
 [`formal/lean`](formal/lean/README.md).
 
@@ -276,7 +277,7 @@ budget. The 43,898.03 TPS exploratory completion peak is not SLO capacity. See t
 
 ## Near-term roadmap
 
-1. Extend the 16-case Python/Lean observable-trace correspondence to a generated
+1. Extend the 32-case Python/Lean observable-trace correspondence to a generated
    well-typed surface corpus and prove rule-aware, declaration-ordered runtime
    refinement beyond the current bounded bridge.
 2. Add explicit accuracy regions and coordinate transformations.

@@ -7,6 +7,7 @@ structure TraceCaseSpec where
   firstInside : Bool
   secondInside : Bool
   immediate : Bool
+  dualRule : Bool
 
 private def booleans : List Bool := [false, true]
 
@@ -14,8 +15,9 @@ private def traceCases : List TraceCaseSpec :=
   booleans.flatMap fun initialInside =>
     booleans.flatMap fun firstInside =>
       booleans.flatMap fun secondInside =>
-        booleans.map fun immediate =>
-          { initialInside, firstInside, secondInside, immediate }
+        booleans.flatMap fun immediate =>
+          booleans.map fun dualRule =>
+            { initialInside, firstInside, secondInside, immediate, dualRule }
 
 private def position (inside : Bool) : Position :=
   { x := if inside then 1 else -1
@@ -45,24 +47,36 @@ private def immediateRule : ImmediateRule :=
     fromState := 0
     toState := 1 }
 
-private def traceEnv (withImmediate : Bool) : IntegratedEnv :=
+private def secondDurationRule : DurationRule :=
+  { name := 0
+    trigger := .leaves
+    subject := 1
+    region := 9
+    fromState := 0
+    toState := 2
+    duration := 2 }
+
+private def traceEnv (withImmediate dualRule : Bool) : IntegratedEnv :=
   { core := coreEnv
-    durationRules := [durationRule]
+    durationRules :=
+      if dualRule then [durationRule, secondDurationRule] else [durationRule]
     immediateRules := if withImmediate then [immediateRule] else [] }
 
 private def initialConfig (inside : Bool) : IntegratedConfig :=
   { core :=
       { asserted := fun subject =>
-          if subject = 0 then some (position inside) else none
+          if subject = 0 then some (position inside)
+          else if subject = 1 then some (position true)
+          else none
         observations := []
         pending := []
         clock := 0 }
     states := fun _ => 0 }
 
 private def actions (spec : TraceCaseSpec) : List Action :=
-  [ .move 0 (position spec.firstInside) 1
-  , .move 0 (position spec.secondInside) 2
-  , .advance 4 ]
+  [ .move 0 (position spec.firstInside) 1 ] ++
+  (if spec.dualRule then [.move 1 (position false) 1] else []) ++
+  [ .move 0 (position spec.secondInside) 2, .advance 4 ]
 
 private def boolText (value : Bool) : String :=
   if value then "true" else "false"
@@ -74,6 +88,8 @@ private def renderKind : EventKind -> String
 
 private def renderEvent (event : Event) : String :=
   "{\"kind\":" ++ renderKind event.kind ++
+  ",\"subject\":" ++ toString event.subject ++
+  ",\"region\":" ++ toString event.region ++
   ",\"effectiveAt\":" ++ toString event.effectiveAt ++
   ",\"emittedAt\":" ++ toString event.emittedAt ++ "}"
 
@@ -85,17 +101,20 @@ private def renderCase (spec : TraceCaseSpec) : String :=
     "{\"initialInside\":" ++ boolText spec.initialInside ++
     ",\"firstInside\":" ++ boolText spec.firstInside ++
     ",\"secondInside\":" ++ boolText spec.secondInside ++
-    ",\"immediate\":" ++ boolText spec.immediate
-  match integratedRun (traceEnv spec.immediate)
+    ",\"immediate\":" ++ boolText spec.immediate ++
+    ",\"dualRule\":" ++ boolText spec.dualRule
+  match integratedRun (traceEnv spec.immediate spec.dualRule)
       (initialConfig spec.initialInside) (actions spec) with
   | .error _ source =>
       header ++ ",\"status\":\"error\",\"finalState\":" ++
         toString (source.states 0) ++
+        ",\"secondaryState\":" ++ toString (source.states 1) ++
         ",\"pending\":" ++ toString source.core.pending.length ++
         ",\"trace\":[]}"
   | .ok final trace =>
       header ++ ",\"status\":\"ok\",\"finalState\":" ++
         toString (final.states 0) ++
+        ",\"secondaryState\":" ++ toString (final.states 1) ++
         ",\"pending\":" ++ toString final.core.pending.length ++
         ",\"trace\":" ++ renderEvents trace ++ "}"
 

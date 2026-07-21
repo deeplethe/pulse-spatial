@@ -93,8 +93,9 @@ resolve, monitor durations are positive, and `t` is offset-aware.
 
 The calculus uses total deterministic helpers on well-formed inputs:
 
-- `due(Q,t')` returns monitors whose deadline is at most `t'`, sorted by
-  `(deadline,name)`;
+- `due(Q,t')` returns monitors whose deadline is at most `t'`, sorted by the
+  total key `(deadline,name)`; uniqueness of the name-keyed map makes ties
+  unambiguous;
 - `emit(X,due,t')` removes each due monitor, emits it with its semantic
   deadline and current emission time `t'`, and applies its attached rule only
   if the source state still matches;
@@ -153,8 +154,11 @@ q1 = applyRules(q0,E)
 ```
 
 If no old position exists, `cross` returns the empty trace and the accepted
-sample initializes `A(i)`.  Due timers precede a same-time move.  Same-time
-input moves follow caller order.
+sample initializes `A(i)`.  When `t'=t`, `cross` still compares the previous
+accepted sample with the new sample, so an equal-time move may emit a crossing
+and cancel or start monitors even though no time elapses.  Timers already due
+at `t` are emitted before the first equal-time move; multiple equal-time input
+moves then follow caller order.
 
 For any failed premise that is classified as a runtime validation error:
 

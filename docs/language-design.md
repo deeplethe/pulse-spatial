@@ -39,9 +39,11 @@ observations, constraints, processes, and scenarios before constructing a
 runtime world. `Point` instance properties and `Polygon` regions are executable.
 Duration-qualified `enters` and `leaves` process guards are executable under a
 timestamp-ordered, discrete sample-and-hold clock. The position asserted at one
-sample is retained until the next move. An inverse crossing before the deadline
-cancels a pending qualification. Timers due at the same time as a move fire
-first. `started_at` records the crossing, `effective_at` the duration deadline,
+sample is retained until the next move. Equal-time moves are accepted in caller
+order and may create crossings or reconcile monitors without advancing time. An
+inverse crossing before the deadline cancels a pending qualification. Timers
+due at the same time as a move fire first; equal deadlines are ordered by the
+unique specification name. `started_at` records the crossing, `effective_at` the duration deadline,
 and `emitted_at` the runtime clock advance that exposed the event. A guarded
 duration rule starts only when its source state matches at the crossing; its
 state transition is guarded again at emission. A scenario begins at an explicit

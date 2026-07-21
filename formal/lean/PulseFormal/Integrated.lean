@@ -262,8 +262,7 @@ theorem integratedAdvance_finite
   · simp at evaluates
   · simp at evaluates
     rcases evaluates with ⟨rfl, rfl⟩
-    simp [dueEvents, due]
-    exact List.length_filter_le _ _
+    simpa [dueEvents] using due_length_le x.core.pending time
 
 private def regressionState : RuleState := fun _ => 0
 
@@ -294,6 +293,17 @@ private def regressionLeave : Event :=
 theorem same_event_monitor_precedes_immediate_regression :
     (reconcileAll [] [regressionDuration] regressionState [regressionLeave] 5).length = 1 /\
     (applyImmediateRules regressionState [regressionImmediate] [regressionLeave]) 1 = 1 := by
+  decide
+
+private def tieMonitorLaterName : Monitor :=
+  { name := 9, subject := 1, region := 2, deadline := 10 }
+
+private def tieMonitorEarlierName : Monitor :=
+  { name := 3, subject := 4, region := 5, deadline := 10 }
+
+theorem equal_deadline_monitors_are_name_ordered_regression :
+    due [tieMonitorLaterName, tieMonitorEarlierName] 10 =
+      [tieMonitorEarlierName, tieMonitorLaterName] := by
   decide
 
 theorem paper_integrated_environment_exists (core : Env) :

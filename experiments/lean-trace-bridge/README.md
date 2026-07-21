@@ -1,15 +1,19 @@
 # Generated Lean/Python observable-trace bridge
 
-`TraceMain.lean` and the production Python runtime independently execute all 16
+`TraceMain.lean` and the production Python runtime independently execute all 32
 combinations of:
 
 - initial sampled membership;
 - membership at two successive moves; and
 - presence or absence of a same-event immediate transition.
+- presence or absence of a second subject/rule that creates an equal-deadline
+  timer after the first rule, with a lexically earlier specification name.
 
-Every case also includes a duration-qualified departure rule and a final clock
-advance. The bridge compares final state, live-monitor count, ordered event
-kinds, effective times, and emission times.
+Every case also includes a duration-qualified departure rule, same-time caller
+ordering, and a final clock advance. The bridge compares both final states,
+live-monitor count, ordered event subjects/kinds, effective times, and emission
+times. Dual-rule cases force the runtime to reorder equal-deadline monitors by
+unique specification name rather than insertion order.
 
 Regenerate the Lean fixture from `formal/lean` with:
 
