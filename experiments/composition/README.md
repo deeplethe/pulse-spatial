@@ -74,3 +74,21 @@ pulse-spatial-composition `
 ```
 
 The machine-readable and Markdown reports are in [`results/`](results/).
+
+## Contract fault localization
+
+The companion mutation probe changes orchestration code, not the checked-in
+RDF/SHACL inputs. It seeds four faults: automatic observation acceptance,
+scenario write-back, move-before-timer ordering at a tie, and source-state guard
+elision. Corresponding PULSE probes exercise observation non-interference,
+scenario isolation, timer-before-move ordering, and guard preservation.
+
+```powershell
+pulse-spatial-contract-faults `
+  --require-complete `
+  --output-json experiments/composition/results/contract-fault-localization-2026-07-21.json `
+  --output-markdown experiments/composition/results/contract-fault-localization-2026-07-21.md
+```
+
+This is a localization experiment: it does not measure defect prevalence,
+standards capability, usability, or developer productivity.

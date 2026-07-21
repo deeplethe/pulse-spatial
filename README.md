@@ -126,6 +126,13 @@ duration-qualified event, and final state. The checked-in artifact metrics are
 descriptive rather than a usability claim; see the
 [`composition comparison`](experiments/composition/README.md).
 
+A companion fault-localization probe changes only RDF-workflow orchestration
+code. Four seeded mutants escape unchanged RDF/SHACL artifact validation and
+are caught by external postcondition oracles; the corresponding PULSE boundary
+contracts all hold. This locates enforcement responsibility rather than
+measuring usability or defect prevalence; see the same
+[`composition protocol`](experiments/composition/README.md).
+
 A fourth experiment probes the Point/simple-Polygon kernel with 89 valid
 boundary, concavity, ring-orientation, and numeric-scale cases plus 9 explicit
 rejection cases. Of the 89 valid cases, 86 use CRS84 and form the shared
