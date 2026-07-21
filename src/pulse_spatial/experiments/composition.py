@@ -68,7 +68,12 @@ class WorkflowSemantics:
     timer_before_sample: bool = True
     cancel_inverse_crossing: bool = True
     require_start_guard: bool = True
+    require_deadline_guard: bool = True
+    inclusive_deadline: bool = True
     duration_scale: float = 1.0
+    deadline_as_emission_time: bool = False
+    transition_on_start: bool = False
+    monitor_after_immediate_rule: bool = False
 
     def __post_init__(self) -> None:
         if self.duration_scale <= 0:
@@ -95,6 +100,7 @@ def _reference_workflow(
     timestamps: tuple[datetime, ...],
     memberships: tuple[bool, ...],
     semantics: WorkflowSemantics = WorkflowSemantics(),
+    immediate_to_state: str | None = None,
 ) -> Outcome:
     if len(timestamps) != len(memberships) or len(timestamps) < 2:
         raise ValueError("Workflow requires equally sized time and membership traces")
@@ -110,12 +116,16 @@ def _reference_workflow(
     def emit_due(now: datetime) -> None:
         nonlocal state, pending_started_at
         effective_duration = policy.duration_seconds * semantics.duration_scale
-        if (
-            pending_started_at is None
-            or pending_started_at + timedelta(seconds=effective_duration) > now
-        ):
+        if pending_started_at is None:
             return
         effective_at = pending_started_at + timedelta(seconds=effective_duration)
+        is_due = (
+            effective_at <= now
+            if semantics.inclusive_deadline
+            else effective_at < now
+        )
+        if not is_due:
+            return
         sustained.append(
             SustainedRecord(
                 policy.trigger.value,
@@ -124,12 +134,40 @@ def _reference_workflow(
                 effective_duration,
                 _iso(pending_started_at),
                 _iso(effective_at),
-                _iso(now),
+                _iso(
+                    effective_at
+                    if semantics.deadline_as_emission_time
+                    else now
+                ),
             )
         )
-        if state == policy.from_state:
+        if not semantics.require_deadline_guard or state == policy.from_state:
             state = policy.to_state
         pending_started_at = None
+
+    def apply_immediate(kind: EventKind) -> None:
+        nonlocal state
+        if (
+            immediate_to_state is not None
+            and kind is policy.trigger
+            and state == policy.from_state
+        ):
+            state = immediate_to_state
+
+    def reconcile_monitor(kind: EventKind, now: datetime) -> None:
+        nonlocal state, pending_started_at
+        if (
+            semantics.cancel_inverse_crossing
+            and pending_started_at is not None
+            and kind is not policy.trigger
+        ):
+            pending_started_at = None
+        if kind is policy.trigger and (
+            not semantics.require_start_guard or state == policy.from_state
+        ):
+            pending_started_at = now
+            if semantics.transition_on_start:
+                state = policy.to_state
 
     for now, current in zip(timestamps[1:], memberships[1:]):
         if semantics.timer_before_sample:
@@ -148,16 +186,12 @@ def _reference_workflow(
                 _iso(now),
             )
         )
-        if (
-            semantics.cancel_inverse_crossing
-            and pending_started_at is not None
-            and kind is not policy.trigger
-        ):
-            pending_started_at = None
-        if kind is policy.trigger and (
-            not semantics.require_start_guard or state == policy.from_state
-        ):
-            pending_started_at = now
+        if semantics.monitor_after_immediate_rule:
+            apply_immediate(kind)
+            reconcile_monitor(kind, now)
+        else:
+            reconcile_monitor(kind, now)
+            apply_immediate(kind)
         previous = current
         if not semantics.timer_before_sample:
             emit_due(now)

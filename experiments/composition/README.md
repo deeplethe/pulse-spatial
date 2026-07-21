@@ -79,11 +79,15 @@ The machine-readable and Markdown reports are in [`results/`](results/).
 
 ## Temporal contract mutation sensitivity
 
-The companion experiment uses four pre-specified traces with manually encoded
-exact outcomes. The unmodified PULSE runtime and an independently implemented
-reference workflow must both match each oracle. The reference workflow is then
-rerun with exactly one semantic switch changed: inverse-monitor cancellation,
-timer-before-sample ordering, the monitor start guard, or duration scaling.
+The companion experiment exhaustively generates 37,440 traces from the declared
+finite grid: lengths 2--5, every Boolean membership sequence, time increments
+of 1/5/10/11 minutes, two initial states, and presence/absence of a same-trigger
+immediate transition. The unmodified PULSE runtime and an independently
+implemented reference workflow must match on every trace. Ten mutants are then
+run over the same corpus; each changes exactly one checked semantic field,
+covering cancellation, timer order, start/deadline guards, equality at the
+deadline, short/long durations, emission time, transition timing, and
+pre- versus post-immediate monitor eligibility.
 
 ```powershell
 pulse-spatial-contract-faults `
@@ -92,6 +96,6 @@ pulse-spatial-contract-faults `
   --output-markdown experiments/composition/results/temporal-contract-mutation-sensitivity-2026-07-21.md
 ```
 
-This is a mutation-sensitivity and localization experiment. It does not compare
-language expressiveness, standards capability, usability, defect prevalence,
-or developer productivity.
+This is exhaustive only over the declared finite trace and mutation domains.
+It does not establish general correctness or compare language expressiveness,
+standards capability, usability, defect prevalence, or developer productivity.

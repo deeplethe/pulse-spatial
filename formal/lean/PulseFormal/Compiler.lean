@@ -136,6 +136,7 @@ def CompiledRule.monitorRule (rule : CompiledRule) : DurationRule :=
     subject := rule.subject
     region := rule.region
     fromState := rule.fromState
+    toState := rule.toState
     duration := rule.duration }
 
 def compileRule

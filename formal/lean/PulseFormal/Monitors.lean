@@ -18,6 +18,7 @@ structure DurationRule where
   subject : Id
   region : Id
   fromState : Id
+  toState : Id
   duration : Time
   deriving DecidableEq, Repr
 

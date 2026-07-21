@@ -80,8 +80,9 @@ No runtime dependency is required for the core topological kernel. The
 `validation` extra adds pySHACL and Shapely/GEOS for independent projection
 checks. A pinned Apache Jena GeoSPARQL 6.1.0 container provides a genuinely
 external query-engine comparison without adding Java to the core runtime.
-A Lean 4.30.0 project checks reduced transition, monitor, and surface-to-Core
-compiler models for the paper subset. These modules are not a general
+A Lean 4.30.0 project checks an integrated paper-subset model that composes
+surface-to-Core compilation, clocks, sampled crossings, monitor lifecycle,
+deadline-guarded state changes, and ordered immediate rules. It is not a general
 refinement of the Python runtime. The Python compiler exports the same canonical
 IR for the executable paper listing. A pinned PostgreSQL
 18/PostGIS 3.6 container supplies an on-disk GiST-indexed
@@ -127,12 +128,12 @@ duration-qualified event, and final state. The checked-in artifact metrics are
 descriptive rather than a usability claim; see the
 [`composition comparison`](experiments/composition/README.md).
 
-A companion mutation-sensitivity experiment uses four pre-specified temporal
-traces with manually encoded exact outcomes. PULSE and an independent reference
-workflow match all four; changing one reference-workflow semantic switch at a
-time produces four oracle-visible trace differences. This establishes selected
-contract sensitivity rather than language superiority, usability, or defect
-prevalence; see the same
+A companion mutation-sensitivity experiment enumerates 37,440 traces over a
+declared finite temporal grid. PULSE and an independent reference workflow
+match all 37,440; each of ten single-field semantic mutants is distinguished,
+with 1,680--11,024 counterexample traces depending on the operator. This is
+finite-domain contract sensitivity rather than language superiority, usability,
+or defect prevalence; see the same
 [`composition protocol`](experiments/composition/README.md).
 
 A fourth experiment probes the Point/simple-Polygon kernel with 89 valid
@@ -171,8 +172,8 @@ is executed twice. The recorded run performs 3,534 determinism, preservation,
 finite-advance, atomic-failure, observation, and scenario checks with no
 failure; see the [`formal property protocol`](experiments/formal-properties/README.md).
 
-A ninth evidence path checks reduced transition, monitor, and compiler models
-in Lean 4.30.0. Lean checks preservation, deterministic evaluation, observation
+A ninth evidence path checks transition, monitor, compiler, and integrated
+execution models in Lean 4.30.0. Lean checks preservation, deterministic evaluation, observation
 non-interference, scenario isolation, finite time advance, and atomic failure.
 It also models duration-qualified rule matching, opposite-crossing monitor
 cancellation, and state-guarded monitor creation, proving guard eligibility,
@@ -184,10 +185,11 @@ actions, and proves preservation of rule triggers, source-state guards,
 positive durations, exact deadlines, finite horizons, and scenario execution
 under that desugaring. The Python compiler and Lean exporter produce the same
 canonical IR for `examples/paper_cold_chain_st.pulse`; CI regenerates both
-sides and rejects drift.
-The Core and monitor models are not yet composed into one transition system,
-and no theorem refines the general Python runtime. Computational geometry is
-abstracted behind a total membership function; see
+sides and rejects drift. `PulseFormal.Integrated` composes due-timer state
+updates, sampled crossings, pre-immediate monitor reconciliation, ordered
+immediate transitions, and multi-action execution; it also contains a
+proof-checked same-event ordering regression. No theorem yet refines the
+general Python runtime, and computational geometry is abstracted behind a total membership function; see
 [`formal/lean`](formal/lean/README.md).
 
 A tenth experiment loads the complete since-1980 workload into a persistent
