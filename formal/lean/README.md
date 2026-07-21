@@ -40,9 +40,10 @@ The geometry predicate remains an environment-supplied total Boolean function,
 and the mechanized compiler begins after parsing. The mechanization therefore
 does not prove floating-point geometry, full surface parsing, the production
 Python implementation, or a general refinement theorem between Lean and every
-runtime path. Cross-implementation correspondence is a byte-identical
-canonical-IR check for the executable paper model plus the generated mutation
-corpus, not a universal compiler-correctness result.
+runtime path. Lean/Python correspondence remains a byte-identical canonical-IR
+check for the executable paper model, not a universal compiler-correctness
+result. The generated mutation corpus separately compares the Python runtime
+with an independent workflow implementation.
 
 The toolchain is pinned to Lean 4.30.0.  Build locally with an installed Lean
 toolchain:
