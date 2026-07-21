@@ -20,7 +20,7 @@ the following mechanisms explicit:
 
 `PulseFormal.Compiler` lowers a post-parse surface subset to the reduced Core. It
 resolves symbolic identifiers, converts seconds/minutes/hours to seconds,
-compiles duration rules, and lowers Point-valued scenario assumptions plus a
+compiles immediate and duration rules, and lowers Point-valued scenario assumptions plus a
 horizon to `move`/`advance` actions. Lean proves trigger, guard, duration,
 deadline, horizon, well-typedness, and scenario-desugaring preservation.
 
@@ -31,8 +31,9 @@ removed, retained monitors preserve future deadlines, every newly started
 monitor has a satisfied source-state guard and the exact rule-defined deadline,
 positive durations keep all deadlines in the future, and a batch of crossing
 events can grow the pending set by at most `events.length * rules.length`.
-The integrated module additionally checks atomic time/CRS failures, timer-event
-trace order, finite advance, compilation into the integrated environment, and
+The integrated module additionally defines environment/configuration
+well-formedness, checks atomic time/CRS failures, due-before-crossing event
+order, finite advance, compilation into the integrated environment, and
 a concrete same-event regression in which the duration monitor is created from
 the pre-immediate state before an immediate transition changes that state.
 
@@ -40,10 +41,12 @@ The geometry predicate remains an environment-supplied total Boolean function,
 and the mechanized compiler begins after parsing. The mechanization therefore
 does not prove floating-point geometry, full surface parsing, the production
 Python implementation, or a general refinement theorem between Lean and every
-runtime path. Lean/Python correspondence remains a byte-identical canonical-IR
-check for the executable paper model, not a universal compiler-correctness
-result. The generated mutation corpus separately compares the Python runtime
-with an independent workflow implementation.
+runtime path. Lean/Python correspondence includes a byte-identical canonical-IR
+check for the executable paper model plus exact observable traces for 16
+generated combinations of memberships and an immediate-rule switch. This
+finite bridge is not a universal compiler-correctness or refinement result. The
+generated mutation corpus separately compares the Python runtime with an
+independent workflow implementation.
 
 The toolchain is pinned to Lean 4.30.0.  Build locally with an installed Lean
 toolchain:
@@ -67,3 +70,13 @@ lake exe pulse_ir
 
 CI compares that output with `paper-cold-chain-ir.json`; the Python suite
 independently compiles `examples/paper_cold_chain_st.pulse` to the same bytes.
+
+Generate the finite integrated trace suite with:
+
+```text
+lake exe pulse_traces
+```
+
+CI compares it byte-for-byte with `generated-integrated-traces.json`; the Python
+suite executes the same 16-case grid through the production runtime and compares
+the parsed observable results.

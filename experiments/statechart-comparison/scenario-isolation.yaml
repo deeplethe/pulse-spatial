@@ -1,0 +1,14 @@
+statechart:
+  name: Scenario branch
+  root state:
+    name: Scenario
+    initial: Ready
+    states:
+      - name: Ready
+        transitions:
+          - event: assume_departure
+            target: Complete
+            action: |
+              world['status'] = 'AtRisk'
+      - name: Complete
+        type: final

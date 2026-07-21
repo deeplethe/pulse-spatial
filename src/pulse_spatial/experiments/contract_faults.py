@@ -349,8 +349,8 @@ def run_contract_faults(root: str | Path = DEFAULT_ROOT) -> dict[str, object]:
             "generation": "Cartesian product over every declared finite domain",
             "oracle": "independent executable workflow with the unmodified contract",
             "mutation": (
-                "each operator changes exactly one checked semantic field; the set "
-                "covers every field, with short and long variants for duration_scale"
+                "each operator changes exactly one switch in the declared nine-switch "
+                "experimental model; duration_scale has short and long variants"
             ),
         },
         "summary": {

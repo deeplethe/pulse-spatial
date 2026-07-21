@@ -2,15 +2,24 @@
 # artifact environment. Install this file, then install the local package with
 # `python -m pip install -e . --no-deps`.
 colorama==0.4.6
+behave==1.3.3
+cucumber-expressions==20.0.0
+cucumber-tag-expressions==10.0.0
 html5rdf==1.2.1
 numpy==2.4.6; python_version < "3.12"
 numpy==2.5.1; python_version >= "3.12"
 owlrl==7.6.2
 packaging==26.2
+parse==1.22.1
+parse-type==0.6.6
 prettytable==3.18.0
 pyparsing==3.3.2
 pyshacl==0.40.0
 rdflib==7.6.0
+ruamel.yaml==0.19.1
 ruff==0.15.22
+schema==0.7.8
 shapely==2.1.2
+sismic==1.6.11
+six==1.17.0
 wcwidth==0.8.2

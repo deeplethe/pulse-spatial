@@ -1,0 +1,8 @@
+{
+  "leanCaseCount": 16,
+  "pythonCaseCount": 16,
+  "exactMatches": 16,
+  "mismatchIndexes": [],
+  "allExact": true,
+  "claimBoundary": "Exact observable-trace correspondence over the declared 16-case Boolean model/action grid; not a general refinement theorem."
+}

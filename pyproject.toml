@@ -50,6 +50,8 @@ pulse-spatial-ogc-source-audit = "pulse_spatial.experiments.ogc_source_audit:mai
 pulse-spatial-postgis-concurrency = "pulse_spatial.experiments.postgis_concurrency:main"
 pulse-spatial-postgis-slo = "pulse_spatial.experiments.postgis_concurrency:main_slo"
 pulse-spatial-postgis-slo-evidence = "pulse_spatial.experiments.postgis_slo_evidence:main"
+pulse-spatial-statechart-comparison = "pulse_spatial.experiments.statechart_comparison:main"
+pulse-spatial-lean-trace-bridge = "pulse_spatial.experiments.lean_trace_bridge:main"
 
 [project.optional-dependencies]
 validation = [
@@ -59,7 +61,11 @@ validation = [
 test = [
   "pyshacl>=0.40,<1",
   "rdflib>=7.1,<8",
-  "shapely>=2.1,<3"
+  "shapely>=2.1,<3",
+  "sismic==1.6.11"
+]
+statechart = [
+  "sismic==1.6.11"
 ]
 
 [tool.setuptools.packages.find]

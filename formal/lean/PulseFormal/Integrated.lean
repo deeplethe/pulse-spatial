@@ -27,9 +27,23 @@ structure IntegratedEnv where
   durationRules : List DurationRule
   immediateRules : List ImmediateRule
 
+def IntegratedEnv.WellFormed (env : IntegratedEnv) : Prop :=
+  (∀ rule ∈ env.durationRules,
+    0 < rule.duration ∧ rule.fromState ≠ rule.toState) ∧
+  (∀ rule ∈ env.immediateRules, rule.fromState ≠ rule.toState) ∧
+  (env.durationRules.map (·.name) ++
+    env.immediateRules.map (·.name)).Nodup
+
 structure IntegratedConfig where
   core : Config
   states : RuleState
+
+def IntegratedConfig.WellFormed
+    (env : IntegratedEnv) (x : IntegratedConfig) : Prop :=
+  ∀ monitor ∈ x.core.pending,
+    ∃ rule ∈ env.durationRules,
+      rule.name = monitor.name ∧ rule.subject = monitor.subject ∧
+      rule.region = monitor.region ∧ x.core.clock < monitor.deadline
 
 inductive IntegratedOutcome where
   | ok (config : IntegratedConfig) (trace : List Event)
@@ -168,22 +182,26 @@ def integratedRun
           | .ok final restTrace => .ok final (firstTrace ++ restTrace)
 
 def Compiler.CoreProgram.integratedEnv
-    (program : Compiler.CoreProgram) (core : Env)
-    (immediateRules : List ImmediateRule := []) : IntegratedEnv :=
+    (program : Compiler.CoreProgram) (core : Env) : IntegratedEnv :=
   { core
     durationRules := program.rules.map Compiler.CompiledRule.monitorRule
-    immediateRules }
+    immediateRules := program.immediateRules.map fun rule =>
+      { name := rule.name
+        trigger := rule.trigger
+        subject := rule.subject
+        region := rule.region
+        fromState := rule.fromState
+        toState := rule.toState } }
 
 def Compiler.compileIntegratedEnv
-    (core : Env) (program : Compiler.SurfaceProgram) (initialTime : Time)
-    (immediateRules : List ImmediateRule := []) : Option IntegratedEnv :=
+    (core : Env) (program : Compiler.SurfaceProgram) (initialTime : Time) :
+    Option IntegratedEnv :=
   (Compiler.compileProgram program initialTime).map fun compiled =>
-    compiled.integratedEnv core immediateRules
+    compiled.integratedEnv core
 
 theorem Compiler.compileIntegratedEnv_isSome
-    (core : Env) (program : Compiler.SurfaceProgram) (initialTime : Time)
-    (immediateRules : List ImmediateRule := []) :
-    (Compiler.compileIntegratedEnv core program initialTime immediateRules).isSome =
+    (core : Env) (program : Compiler.SurfaceProgram) (initialTime : Time) :
+    (Compiler.compileIntegratedEnv core program initialTime).isSome =
       (Compiler.compileProgram program initialTime).isSome := by
   unfold Compiler.compileIntegratedEnv
   cases Compiler.compileProgram program initialTime <;> rfl
@@ -282,5 +300,33 @@ theorem paper_integrated_environment_exists (core : Env) :
     (Compiler.compileIntegratedEnv core Compiler.paperSurface 0).isSome := by
   rw [Compiler.compileIntegratedEnv_isSome]
   exact Compiler.paper_compiles
+
+private def paperIntegratedDurationRule : DurationRule :=
+  { name := 3
+    trigger := .leaves
+    subject := 5
+    region := 4
+    fromState := 2
+    toState := 0
+    duration := 600 }
+
+private def paperIntegratedEnv (core : Env) : IntegratedEnv :=
+  { core
+    durationRules := [paperIntegratedDurationRule]
+    immediateRules := [] }
+
+theorem paper_compileIntegratedEnv_exact (core : Env) :
+    Compiler.compileIntegratedEnv core Compiler.paperSurface 0 =
+      some (paperIntegratedEnv core) := by
+  rfl
+
+theorem paper_integrated_environment_wellFormed (core : Env) :
+    ∀ env, Compiler.compileIntegratedEnv core Compiler.paperSurface 0 = some env →
+      env.WellFormed := by
+  intro env compiled
+  rw [paper_compileIntegratedEnv_exact] at compiled
+  cases compiled
+  simp [IntegratedEnv.WellFormed, paperIntegratedEnv,
+    paperIntegratedDurationRule]
 
 end PulseFormal

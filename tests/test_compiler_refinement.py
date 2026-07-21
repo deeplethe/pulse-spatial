@@ -27,6 +27,7 @@ class CompilerRefinementTests(unittest.TestCase):
         self.assertEqual(symbols[rule["fromState"]], "Safe")
         self.assertEqual(symbols[rule["toState"]], "AtRisk")
         self.assertEqual(rule["durationSeconds"], 600)
+        self.assertEqual(value["immediateRules"], [])
         self.assertEqual(actions[-1], {"kind": "advance", "time": 1200})
         json.dumps(value)
 

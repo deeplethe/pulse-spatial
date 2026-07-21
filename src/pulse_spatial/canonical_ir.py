@@ -51,31 +51,40 @@ def canonical_ir(model: CompiledModel) -> dict[str, object]:
 
     The IR intentionally covers the constructs connected to ``Compiler.lean``:
     resolved duration-qualified geofence rules and Point-valued scenario
-    assumptions with an optional finite horizon.  Unsupported immediate rules
-    fail closed instead of being silently omitted.
+    assumptions with an optional finite horizon. Immediate and duration rules
+    are kept in distinct declaration-ordered lists.
     """
 
     symbols, symbol_ids = _symbol_table(model)
     duration_rules: list[dict[str, object]] = []
+    immediate_rules: list[dict[str, object]] = []
     for rule in model.rules:
         if rule.minimum_duration_seconds is None:
-            raise PulseModelError(
-                "canonical compiler IR currently requires duration-qualified rules"
+            immediate_rules.append(
+                {
+                    "name": symbol_ids[rule.name],
+                    "trigger": rule.kind.value,
+                    "subject": symbol_ids[rule.subject],
+                    "region": symbol_ids[rule.region],
+                    "fromState": symbol_ids[rule.from_state],
+                    "toState": symbol_ids[rule.to_state],
+                }
             )
-        duration_rules.append(
-            {
-                "name": symbol_ids[rule.name],
-                "trigger": rule.kind.value,
-                "subject": symbol_ids[rule.subject],
-                "region": symbol_ids[rule.region],
-                "fromState": symbol_ids[rule.from_state],
-                "toState": symbol_ids[rule.to_state],
-                "durationSeconds": _exact_integer(
-                    rule.minimum_duration_seconds,
-                    f"duration for {rule.name}",
-                ),
-            }
-        )
+        else:
+            duration_rules.append(
+                {
+                    "name": symbol_ids[rule.name],
+                    "trigger": rule.kind.value,
+                    "subject": symbol_ids[rule.subject],
+                    "region": symbol_ids[rule.region],
+                    "fromState": symbol_ids[rule.from_state],
+                    "toState": symbol_ids[rule.to_state],
+                    "durationSeconds": _exact_integer(
+                        rule.minimum_duration_seconds,
+                        f"duration for {rule.name}",
+                    ),
+                }
+            )
 
     scenarios: list[dict[str, object]] = []
     for name, scenario in model.scenarios.items():
@@ -121,6 +130,7 @@ def canonical_ir(model: CompiledModel) -> dict[str, object]:
         "schemaVersion": SCHEMA_VERSION,
         "symbols": list(symbols),
         "durationRules": duration_rules,
+        "immediateRules": immediate_rules,
         "scenarios": scenarios,
     }
 

@@ -1,0 +1,9 @@
+{
+  "subject": "shipment_102",
+  "region": "ColdZone",
+  "trigger": "leaves",
+  "fromState": "Safe",
+  "toState": "AtRisk",
+  "durationSeconds": 600.0,
+  "stateDomain": ["Safe", "AtRisk", "Maintenance"]
+}

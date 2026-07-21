@@ -54,6 +54,15 @@ structure SurfaceRule where
   duration : SurfaceDuration
   deriving DecidableEq, Repr
 
+structure SurfaceImmediateRule where
+  name : String
+  trigger : SurfaceTrigger
+  subject : String
+  region : String
+  fromState : String
+  toState : String
+  deriving DecidableEq, Repr
+
 structure SurfaceMove where
   subject : String
   position : SurfacePosition
@@ -68,6 +77,7 @@ structure SurfaceScenario where
 structure SurfaceProgram where
   symbols : List String
   rules : List SurfaceRule
+  immediateRules : List SurfaceImmediateRule
   scenarios : List SurfaceScenario
   deriving DecidableEq, Repr
 
@@ -107,6 +117,18 @@ def resolveRuleNames
                   | some toState =>
                       some { name, subject, region, fromState, toState }
 
+def resolveImmediateRuleNames
+    (symbols : List String) (rule : SurfaceImmediateRule) :
+    Option ResolvedRuleNames :=
+  resolveRuleNames symbols
+    { name := rule.name
+      trigger := rule.trigger
+      subject := rule.subject
+      region := rule.region
+      fromState := rule.fromState
+      toState := rule.toState
+      duration := { value := 1, unit := .seconds } }
+
 theorem resolveRuleNames_preserves_fromState
     {symbols : List String} {rule : SurfaceRule} {names : ResolvedRuleNames}
     (resolved : resolveRuleNames symbols rule = some names) :
@@ -130,6 +152,15 @@ structure CompiledRule where
   duration : Time
   deriving DecidableEq, Repr
 
+structure CompiledImmediateRule where
+  name : Id
+  trigger : EventKind
+  subject : Id
+  region : Id
+  fromState : Id
+  toState : Id
+  deriving DecidableEq, Repr
+
 def CompiledRule.monitorRule (rule : CompiledRule) : DurationRule :=
   { name := rule.name
     trigger := rule.trigger
@@ -149,6 +180,17 @@ def compileRule
       fromState := names.fromState
       toState := names.toState
       duration := durationSeconds rule.duration }
+
+def compileImmediateRule
+    (symbols : List String) (rule : SurfaceImmediateRule) :
+    Option CompiledImmediateRule :=
+  (resolveImmediateRuleNames symbols rule).map fun names =>
+    { name := names.name
+      trigger := rule.trigger.toEventKind
+      subject := names.subject
+      region := names.region
+      fromState := names.fromState
+      toState := names.toState }
 
 def compilePosition
     (symbols : List String) (position : SurfacePosition) : Option Position :=
@@ -210,21 +252,32 @@ def compileScenario
 structure CoreProgram where
   symbols : List String
   rules : List CompiledRule
+  immediateRules : List CompiledImmediateRule
   scenarios : List CompiledScenario
   deriving DecidableEq, Repr
 
 def compileProgram
     (program : SurfaceProgram) (initialTime : Time) : Option CoreProgram := do
   let rules ← program.rules.mapM (compileRule program.symbols)
+  let immediateRules ← program.immediateRules.mapM
+    (compileImmediateRule program.symbols)
   let scenarios ← program.scenarios.mapM
     (compileScenario program.symbols initialTime)
-  pure { symbols := program.symbols, rules, scenarios }
+  pure { symbols := program.symbols, rules, immediateRules, scenarios }
 
 def SurfaceRule.WellTyped (symbols : List String) (rule : SurfaceRule) : Prop :=
   (resolveRuleNames symbols rule).isSome ∧ 0 < durationSeconds rule.duration
 
 def CompiledRule.WellFormed (rule : CompiledRule) : Prop :=
   0 < rule.duration
+
+def SurfaceImmediateRule.WellTyped
+    (symbols : List String) (rule : SurfaceImmediateRule) : Prop :=
+  (resolveImmediateRuleNames symbols rule).isSome
+
+def CompiledImmediateRule.WellFormed
+    (rule : CompiledImmediateRule) : Prop :=
+  rule.fromState ≠ rule.toState
 
 def SurfaceScenario.WellTyped
     (symbols : List String) (scenario : SurfaceScenario) : Prop :=
@@ -277,6 +330,40 @@ theorem compileRule_deadline_exact
       time + durationSeconds surface.duration := by
   simp only [monitorOf, CompiledRule.monitorRule]
   exact congrArg (time + ·) (compileRule_preserves_fields compiled).2
+
+theorem compileImmediateRule_preserves_fields
+    {symbols : List String} {surface : SurfaceImmediateRule}
+    {core : CompiledImmediateRule}
+    (compiled : compileImmediateRule symbols surface = some core) :
+    core.trigger = surface.trigger.toEventKind ∧
+    resolveName symbols surface.fromState = some core.fromState ∧
+    resolveName symbols surface.toState = some core.toState := by
+  unfold compileImmediateRule at compiled
+  unfold resolveImmediateRuleNames at compiled
+  cases resolved : resolveRuleNames symbols
+      { name := surface.name
+        trigger := surface.trigger
+        subject := surface.subject
+        region := surface.region
+        fromState := surface.fromState
+        toState := surface.toState
+        duration := { value := 1, unit := .seconds } } with
+  | none => simp [resolved] at compiled
+  | some names =>
+      simp [resolved] at compiled
+      subst core
+      constructor
+      · rfl
+      · constructor
+        · exact resolveRuleNames_preserves_fromState resolved
+        · unfold resolveRuleNames at resolved
+          split at resolved <;> try simp_all
+          split at resolved <;> try simp_all
+          split at resolved <;> try simp_all
+          split at resolved <;> try simp_all
+          split at resolved <;> try simp_all
+          cases resolved
+          rfl
 
 theorem compileScenario_preserves_horizon
     {symbols : List String} {initialTime : Time}
@@ -351,6 +438,7 @@ def paperSurface : SurfaceProgram :=
           fromState := "Safe"
           toState := "AtRisk"
           duration := ⟨10, .minutes⟩ } ]
+    immediateRules := []
     scenarios :=
       [ { name := "Reroute"
           assumptions :=
@@ -386,6 +474,14 @@ private def renderRule (rule : CompiledRule) : String :=
   ",\"toState\":" ++ toString rule.toState ++
   ",\"durationSeconds\":" ++ toString rule.duration ++ "}"
 
+private def renderImmediateRule (rule : CompiledImmediateRule) : String :=
+  "{\"name\":" ++ toString rule.name ++
+  ",\"trigger\":" ++ renderTrigger rule.trigger ++
+  ",\"subject\":" ++ toString rule.subject ++
+  ",\"region\":" ++ toString rule.region ++
+  ",\"fromState\":" ++ toString rule.fromState ++
+  ",\"toState\":" ++ toString rule.toState ++ "}"
+
 private def renderPosition (position : Position) : String :=
   "{\"xMicrodegrees\":" ++ toString position.x ++
   ",\"yMicrodegrees\":" ++ toString position.y ++
@@ -411,6 +507,8 @@ def renderCanonical (initialTime : Time) (program : CoreProgram) : String :=
   "{\"schemaVersion\":1,\"symbols\":" ++
   renderList (program.symbols.map renderSymbol) ++
   ",\"durationRules\":" ++ renderList (program.rules.map renderRule) ++
+  ",\"immediateRules\":" ++
+  renderList (program.immediateRules.map renderImmediateRule) ++
   ",\"scenarios\":" ++
   renderList (program.scenarios.map (renderScenario initialTime)) ++ "}\n"
 

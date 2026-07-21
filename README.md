@@ -82,9 +82,10 @@ checks. A pinned Apache Jena GeoSPARQL 6.1.0 container provides a genuinely
 external query-engine comparison without adding Java to the core runtime.
 A Lean 4.30.0 project checks an integrated paper-subset model that composes
 surface-to-Core compilation, clocks, sampled crossings, monitor lifecycle,
-deadline-guarded state changes, and ordered immediate rules. It is not a general
-refinement of the Python runtime. The Python compiler exports the same canonical
-IR for the executable paper listing. A pinned PostgreSQL
+deadline-guarded state changes, and compiled ordered immediate rules. It is not
+a general refinement of the Python runtime. The Python compiler exports the
+same canonical IR for the executable paper listing, and both runtimes generate
+identical observable traces for a 16-case model/action grid. A pinned PostgreSQL
 18/PostGIS 3.6 container supplies an on-disk GiST-indexed
 database baseline.
 
@@ -181,16 +182,29 @@ exact deadlines, future-deadline preservation, cancellation filtering, and a
 finite batch-growth bound.
 The `PulseFormal.Compiler` module additionally resolves names, normalizes
 seconds/minutes/hours, lowers Point assumptions and scenario horizons to Core
-actions, and proves preservation of rule triggers, source-state guards,
+actions, compiles immediate as well as duration rules, and proves preservation of rule triggers, source-state guards,
 positive durations, exact deadlines, finite horizons, and scenario execution
 under that desugaring. The Python compiler and Lean exporter produce the same
 canonical IR for `examples/paper_cold_chain_st.pulse`; CI regenerates both
 sides and rejects drift. `PulseFormal.Integrated` composes due-timer state
 updates, sampled crossings, pre-immediate monitor reconciliation, ordered
 immediate transitions, and multi-action execution; it also contains a
-proof-checked same-event ordering regression. No theorem yet refines the
+well-formedness predicate and proof-checked same-event ordering regression.
+The Lean and production Python executables independently run all 16 combinations
+of three membership bits and one immediate-rule switch; CI rejects any final
+state, pending-monitor, event-kind, or event-time difference. No theorem yet refines the
 general Python runtime, and computational geometry is abstracted behind a total membership function; see
 [`formal/lean`](formal/lean/README.md).
+
+A matched composition experiment retains the RDF/SHACL cold-chain inputs and
+executes the temporal policy in the third-party Sismic 1.6.11 statechart
+interpreter. The exact baseline outcome matches PULSE. Four single-site faults
+then locate identifier, effect-domain, clock-adapter, and scenario-isolation
+obligations across PULSE, an unprofiled RDF+statechart composition, and a
+profiled composition with explicit binding/invariant/adapter contracts. This is
+contract-location evidence on one task, not a usability or language-superiority
+study; see the
+[`statechart comparison`](experiments/statechart-comparison/README.md).
 
 A tenth experiment loads the complete since-1980 workload into a persistent
 PostgreSQL 18/PostGIS 3.6 database. A GiST-indexed `ST_Covers` query returns
@@ -245,7 +259,9 @@ budget. The 43,898.03 TPS exploratory completion peak is not SLO capacity. See t
 - `experiments/geosparql-external/` — Apache Jena external-system agreement
 - `experiments/ogc-geosparql-1.1/` — complete ATS inventory and class audit
 - `experiments/formal-properties/` — bounded exhaustive semantic checks
+- `experiments/lean-trace-bridge/` — finite Lean/Python observable-trace bridge
 - `experiments/composition/` — three-path executable composition comparison
+- `experiments/statechart-comparison/` — matched Sismic fault-location study
 - `experiments/topology/` — Point/Polygon boundary differential corpus
 - `experiments/end-to-end/` — real-track four-mode integration case
 - `experiments/semantic-sensitivity/` — semantic policy mutation checks
@@ -260,9 +276,9 @@ budget. The 43,898.03 TPS exploratory completion peak is not SLO capacity. See t
 
 ## Near-term roadmap
 
-1. Extend the one-model Python/Lean canonical-IR correspondence to a generated
-   well-typed corpus and prove rule-aware, declaration-ordered runtime
-   refinement beyond the current scenario-action desugaring theorem.
+1. Extend the 16-case Python/Lean observable-trace correspondence to a generated
+   well-typed surface corpus and prove rule-aware, declaration-ordered runtime
+   refinement beyond the current bounded bridge.
 2. Add explicit accuracy regions and coordinate transformations.
 3. Add polygon holes, multipolygons, and explicit antimeridian handling.
 4. Project temporal events and intervals through an OWL-Time profile.

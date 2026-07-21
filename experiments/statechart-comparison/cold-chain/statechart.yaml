@@ -1,0 +1,46 @@
+statechart:
+  name: Cold-chain duration policy
+  preamble: |
+    domain_state = setdefault('domain_state', 'Safe')
+    allowed_states = setdefault('allowed_states', ('Safe', 'AtRisk', 'Maintenance'))
+    pending = False
+    monitor_token = 0
+    sustained = []
+  root state:
+    name: Policy
+    initial: Safe
+    contract:
+      - always: domain_state in allowed_states
+    states:
+      - name: Safe
+        transitions:
+          - event: leaves__shipment_102__ColdZone
+            action: |
+              monitor_token += 1
+              pending = True
+              send('duration_elapsed', delay=600, token=monitor_token, started=time)
+          - event: enters__shipment_102__ColdZone
+            action: |
+              monitor_token += 1
+              pending = False
+          - event: duration_elapsed
+            guard: pending and event.token == monitor_token
+            target: AtRisk
+            action: |
+              sustained.append((event.started, event.started + 600, time))
+              pending = False
+              domain_state = 'AtRisk'
+      - name: AtRisk
+        transitions:
+          - event: enters__shipment_102__ColdZone
+      - name: Maintenance
+        transitions:
+          - event: enters__shipment_102__ColdZone
+            action: |
+              monitor_token += 1
+              pending = False
+          - event: duration_elapsed
+            guard: pending and event.token == monitor_token
+            action: |
+              sustained.append((event.started, event.started + 600, time))
+              pending = False

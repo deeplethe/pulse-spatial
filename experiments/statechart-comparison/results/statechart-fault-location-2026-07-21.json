@@ -1,0 +1,180 @@
+{
+  "experiment": "rdf-shacl-sismic-fault-location-v1",
+  "generatedAt": "2026-07-21T11:25:16.918539+00:00",
+  "baseline": {
+    "task": "cold-chain cancellation and ten-minute sustained departure",
+    "statechartEngine": "Sismic 1.6.11",
+    "statechartSemantics": "SCXML-oriented run-to-completion interpreter",
+    "shaclConforms": true,
+    "rdfTriples": 61,
+    "shapeTriples": 60,
+    "pulseOutcome": {
+      "final_state": "AtRisk",
+      "instantaneous": [
+        {
+          "kind": "leaves",
+          "subject": "shipment_102",
+          "region": "ColdZone",
+          "at": "2026-07-19T08:05:00Z"
+        },
+        {
+          "kind": "enters",
+          "subject": "shipment_102",
+          "region": "ColdZone",
+          "at": "2026-07-19T08:12:00Z"
+        },
+        {
+          "kind": "leaves",
+          "subject": "shipment_102",
+          "region": "ColdZone",
+          "at": "2026-07-19T08:20:00Z"
+        }
+      ],
+      "sustained": [
+        {
+          "kind": "leaves",
+          "subject": "shipment_102",
+          "region": "ColdZone",
+          "duration_seconds": 600.0,
+          "started_at": "2026-07-19T08:20:00Z",
+          "effective_at": "2026-07-19T08:30:00Z",
+          "emitted_at": "2026-07-19T08:31:00Z"
+        }
+      ]
+    },
+    "rdfStatechartOutcome": {
+      "final_state": "AtRisk",
+      "instantaneous": [
+        {
+          "kind": "leaves",
+          "subject": "shipment_102",
+          "region": "ColdZone",
+          "at": "2026-07-19T08:05:00Z"
+        },
+        {
+          "kind": "enters",
+          "subject": "shipment_102",
+          "region": "ColdZone",
+          "at": "2026-07-19T08:12:00Z"
+        },
+        {
+          "kind": "leaves",
+          "subject": "shipment_102",
+          "region": "ColdZone",
+          "at": "2026-07-19T08:20:00Z"
+        }
+      ],
+      "sustained": [
+        {
+          "kind": "leaves",
+          "subject": "shipment_102",
+          "region": "ColdZone",
+          "duration_seconds": 600.0,
+          "started_at": "2026-07-19T08:20:00Z",
+          "effective_at": "2026-07-19T08:30:00Z",
+          "emitted_at": "2026-07-19T08:31:00Z"
+        }
+      ]
+    },
+    "exactOutcomeMatch": true
+  },
+  "faultDesign": {
+    "paths": [
+      "PULSE compiler/runtime",
+      "RDF+SHACL+Sismic without cross-artifact profile",
+      "RDF+SHACL+Sismic with binding, invariant, and adapter contracts"
+    ],
+    "unchangedOracle": "exact final state and event traces",
+    "detectionStages": [
+      "compile/load",
+      "statechart or adapter contract",
+      "outcome oracle",
+      "prevented by fixed runtime/adapter"
+    ]
+  },
+  "faults": [
+    {
+      "id": "F-IDENTIFIER-DRIFT",
+      "fault": "statechart region binding differs from the RDF/PULSE region",
+      "pulse": {
+        "stage": "compile",
+        "detected": true,
+        "detail": "process 'SustainedDeparture' references unknown region 'ColdStorage'"
+      },
+      "unprofiledRdfStatechart": {
+        "stage": "outcome-oracle",
+        "detected": true,
+        "detail": "changed: finalState, sustainedTrace"
+      },
+      "profiledRdfStatechart": {
+        "stage": "load-binding",
+        "detected": true,
+        "detail": "RDF/statechart binding mismatch: region"
+      }
+    },
+    {
+      "id": "F-EFFECT-DOMAIN",
+      "fault": "workflow action writes a value outside the RDF/PULSE state domain",
+      "pulse": {
+        "stage": "compile",
+        "detected": true,
+        "detail": "process 'SustainedDeparture' uses a state outside ('Safe', 'AtRisk')"
+      },
+      "unprofiledRdfStatechart": {
+        "stage": "outcome-oracle",
+        "detected": true,
+        "detail": "changed: finalState"
+      },
+      "profiledRdfStatechart": {
+        "stage": "statechart-invariant",
+        "detected": true,
+        "detail": "InvariantError"
+      }
+    },
+    {
+      "id": "F-SAMPLE-BEFORE-CLOCK",
+      "fault": "adapter executes a sampled crossing before advancing its clock",
+      "pulse": {
+        "stage": "prevented-by-runtime-api",
+        "detected": true,
+        "detail": "move_at advances due timers before deriving the crossing"
+      },
+      "unprofiledRdfStatechart": {
+        "stage": "outcome-oracle",
+        "detected": true,
+        "detail": "changed: finalState, sustainedTrace"
+      },
+      "profiledRdfStatechart": {
+        "stage": "adapter-precondition",
+        "detected": true,
+        "detail": "sample event cannot execute before its observation clock"
+      }
+    },
+    {
+      "id": "F-SCENARIO-ALIAS",
+      "fault": "scenario interpreter receives the authoritative state by alias",
+      "pulse": {
+        "stage": "prevented-by-scenario-runtime",
+        "detected": true,
+        "detail": "source world remained unchanged"
+      },
+      "unprofiledRdfStatechart": {
+        "stage": "source-state-oracle",
+        "detected": true,
+        "detail": "authoritative source ended in AtRisk"
+      },
+      "profiledRdfStatechart": {
+        "stage": "prevented-by-clone-adapter",
+        "detected": true,
+        "detail": "authoritative source remained Safe"
+      }
+    }
+  ],
+  "summary": {
+    "faultCount": 4,
+    "pulsePreventedOrDetected": 4,
+    "unprofiledDetectedByOracle": 4,
+    "profiledPreventedOrDetected": 4
+  },
+  "claimBoundary": "One matched task and four deliberately injected integration faults. The result locates enforcement and shows that an explicit statechart profile can recover the checked obligations with extra binding, invariant, and adapter contracts. It is not a usability, maintenance, fault-prevalence, or language-superiority study."
+}

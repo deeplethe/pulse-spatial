@@ -114,6 +114,11 @@ jobs:
         run: |
           lake exe pulse_ir > /tmp/paper-cold-chain-ir.json
           diff -u paper-cold-chain-ir.json /tmp/paper-cold-chain-ir.json
+      - name: Verify generated integrated trace fixture
+        working-directory: formal/lean
+        run: |
+          lake exe pulse_traces > /tmp/generated-integrated-traces.json
+          diff -u generated-integrated-traces.json /tmp/generated-integrated-traces.json
 
   persistent-postgis:
     runs-on: ubuntu-latest

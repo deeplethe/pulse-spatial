@@ -198,6 +198,12 @@ class TemporalSpatialRuntime:
         self._rules_by_specification = rules_by_name
         self._pending: dict[str, _PendingSustainedEvent] = {}
 
+    @property
+    def pending_count(self) -> int:
+        """Return the number of live duration monitors."""
+
+        return len(self._pending)
+
     def advance_to(self, target_time: datetime) -> tuple[SustainedGeofenceEvent, ...]:
         _require_aware(target_time, "Target time")
         if target_time < self.current_time:
