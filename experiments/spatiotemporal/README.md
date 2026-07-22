@@ -67,11 +67,18 @@ Machine-readable and Markdown reports are in [`results/`](results/).
 
 The full `since1980` report is
 `results/ibtracs-since1980-multizone-duration-2026-07-19.*`. It covers 4,775
-tracks and 1,476,290 transition-zone pairs, including 4,832 instantaneous and
-12,870 sustained events. Membership, instantaneous-event, and sustained-event
+tracks and 1,476,290 transition-zone pairs, including 4,800 instantaneous and
+12,831 sustained events. Membership, instantaneous-event, and sustained-event
 timestamp comparisons all have zero differences. The smaller snapshot above
 remains the self-contained artifact/CI workload; the large input is fetched
 from NOAA and verified by the hash in its result.
+
+The full-data protocol also audits normalized-longitude jumps larger than 180
+degrees. The latitude-band polygons include both -180 and +180, preventing a
+planar seam from creating band entry/exit events. The Western Pacific study
+zone deliberately stops at 179.999E, so changes there are reported as sampled
+membership changes at that explicit experimental edge. No continuous segment
+or antimeridian-crossing polygon semantics is inferred.
 
 ## Reproduce
 

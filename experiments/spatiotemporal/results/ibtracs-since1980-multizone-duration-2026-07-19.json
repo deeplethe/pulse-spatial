@@ -1,7 +1,7 @@
 {
   "experiment": "ibtracs-multizone-duration-parity-v1",
-  "generatedAt": "2026-07-19T13:45:51.904684+00:00",
-  "claimBoundary": "Exact discrete sample-and-hold parity for five experiment-defined Point/Polygon zones and 6/12/24-hour sustained events; not continuous trajectory, geodesic, or full GeoSPARQL conformance.",
+  "generatedAt": "2026-07-22T02:28:51.115723+00:00",
+  "claimBoundary": "Exact discrete sample-and-hold parity for five experiment-defined Point/Polygon zones and 6/12/24-hour sustained events; not continuous trajectory, geodesic, antimeridian-crossing geometry, or full GeoSPARQL conformance.",
   "dataset": {
     "name": "NOAA IBTrACS v04r01 since1980 list CSV",
     "doi": "10.25921/82ty-9e16",
@@ -22,23 +22,23 @@
         "name": "EquatorialBand",
         "coordinates": [
           [
-            -179.999,
+            -180.0,
             -10.0
           ],
           [
-            179.999,
+            180.0,
             -10.0
           ],
           [
-            179.999,
+            180.0,
             10.0
           ],
           [
-            -179.999,
+            -180.0,
             10.0
           ],
           [
-            -179.999,
+            -180.0,
             -10.0
           ]
         ],
@@ -48,23 +48,23 @@
         "name": "NorthernTropics",
         "coordinates": [
           [
-            -179.999,
+            -180.0,
             10.0
           ],
           [
-            179.999,
+            180.0,
             10.0
           ],
           [
-            179.999,
+            180.0,
             30.0
           ],
           [
-            -179.999,
+            -180.0,
             30.0
           ],
           [
-            -179.999,
+            -180.0,
             10.0
           ]
         ],
@@ -165,59 +165,59 @@
   },
   "workload": {
     "transitionZonePairs": 1476290,
-    "instantaneousEvents": 4832,
-    "eventTransitionZonePairs": 4832,
-    "nonEventTransitionZonePairs": 1471458,
-    "tracksWithInstantaneousEvents": 2424,
-    "sustainedMonitorStarts": 14496,
-    "sustainedEvents": 12870,
-    "unemittedByTrackEndOrInverseCrossing": 1626,
+    "instantaneousEvents": 4800,
+    "eventTransitionZonePairs": 4800,
+    "nonEventTransitionZonePairs": 1471490,
+    "tracksWithInstantaneousEvents": 2422,
+    "sustainedMonitorStarts": 14400,
+    "sustainedEvents": 12831,
+    "unemittedByTrackEndOrInverseCrossing": 1569,
     "sustainedCounts": {
-      "12h:enters": 1225,
+      "12h:enters": 1212,
       "12h:leaves": 3123,
-      "24h:enters": 1116,
+      "24h:enters": 1105,
       "24h:leaves": 2836,
-      "6h:enters": 1290,
+      "6h:enters": 1275,
       "6h:leaves": 3280
     },
     "byRegion": [
       {
         "region": "EquatorialBand",
         "transitionPairs": 295258,
-        "insidePairs": 25886,
-        "outsidePairs": 269372,
-        "eventPairs": 1482,
-        "nonEventPairs": 293776,
-        "tracksWithEvents": 1184,
-        "enters": 238,
-        "leaves": 1244,
-        "sustainedEvents": 4120,
+        "insidePairs": 25890,
+        "outsidePairs": 269368,
+        "eventPairs": 1473,
+        "nonEventPairs": 293785,
+        "tracksWithEvents": 1183,
+        "enters": 233,
+        "leaves": 1240,
+        "sustainedEvents": 4107,
         "sustainedCounts": {
-          "12h:enters": 187,
+          "12h:enters": 183,
           "12h:leaves": 1191,
-          "24h:enters": 144,
+          "24h:enters": 140,
           "24h:leaves": 1160,
-          "6h:enters": 217,
+          "6h:enters": 212,
           "6h:leaves": 1221
         }
       },
       {
         "region": "NorthernTropics",
         "transitionPairs": 295258,
-        "insidePairs": 151430,
-        "outsidePairs": 143828,
-        "eventPairs": 2150,
-        "nonEventPairs": 293108,
-        "tracksWithEvents": 1611,
-        "enters": 854,
-        "leaves": 1296,
-        "sustainedEvents": 5873,
+        "insidePairs": 151442,
+        "outsidePairs": 143816,
+        "eventPairs": 2127,
+        "nonEventPairs": 293131,
+        "tracksWithEvents": 1608,
+        "enters": 843,
+        "leaves": 1284,
+        "sustainedEvents": 5847,
         "sustainedCounts": {
-          "12h:enters": 811,
+          "12h:enters": 802,
           "12h:leaves": 1177,
-          "24h:enters": 771,
+          "24h:enters": 764,
           "24h:leaves": 1048,
-          "6h:enters": 838,
+          "6h:enters": 828,
           "6h:leaves": 1228
         }
       },
@@ -283,11 +283,30 @@
       }
     ],
     "emissionLag": {
-      "emittedAtDeadline": 12817,
+      "emittedAtDeadline": 12778,
       "medianSeconds": 0.0,
       "p95Seconds": 0.0,
       "maximumSeconds": 7800.0
     }
+  },
+  "datelineAudit": {
+    "normalizedLongitudeJumpThresholdDegrees": 180.0,
+    "wrappedTransitions": 420,
+    "tracksWithWrappedTransitions": 366,
+    "wrappedTransitionsByBasin": {
+      "EP": 73,
+      "SP": 176,
+      "WP": 171
+    },
+    "membershipChangesOnWrappedTransitions": {
+      "EquatorialBand": 2,
+      "NorthernTropics": 1,
+      "NorthAtlanticStudyZone": 0,
+      "WesternPacificStudyZone": 108,
+      "SouthIndianStudyZone": 0
+    },
+    "latitudeBandSeamOnlyChanges": 0,
+    "interpretation": "The two latitude-band polygons include both -180 and +180, so their reported changes at wrapped transitions come only from latitude. The WesternPacificStudyZone deliberately ends at 179.999E; its changes are sampled membership changes at that explicit edge. No segment interpolation or antimeridian-crossing polygon is evaluated."
   },
   "parity": {
     "matches": true,
@@ -301,19 +320,19 @@
   "timing": {
     "repetitions": 3,
     "internalSeconds": [
-      18.986426800023764,
-      18.475105799967423,
-      17.6520104999654
+      25.304866200021934,
+      25.431119600019883,
+      26.33949380001286
     ],
     "referenceSeconds": [
-      7.22095490002539,
-      7.709527699975297,
-      7.319602700008545
+      10.984674600011203,
+      11.982495700009167,
+      10.736217199999373
     ],
-    "internalMedianSeconds": 18.475105799967423,
-    "referenceMedianSeconds": 7.319602700008545,
-    "internalTransitionZonePairsPerSecond": 79906.98489004611,
-    "referenceTransitionZonePairsPerSecond": 201689.90866106388
+    "internalMedianSeconds": 25.431119600019883,
+    "referenceMedianSeconds": 10.984674600011203,
+    "internalTransitionZonePairsPerSecond": 58050.531129539646,
+    "referenceTransitionZonePairsPerSecond": 134395.4239662679
   },
   "environment": {
     "python": "3.12.3",

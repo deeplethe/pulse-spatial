@@ -1,6 +1,6 @@
 {
   "experiment": "rdf-shacl-sismic-fault-location-v1",
-  "generatedAt": "2026-07-21T11:25:16.918539+00:00",
+  "generatedAt": "2026-07-22T02:24:54.847895+00:00",
   "baseline": {
     "task": "cold-chain cancellation and ten-minute sustained departure",
     "statechartEngine": "Sismic 1.6.11",
@@ -90,7 +90,8 @@
       "statechart or adapter contract",
       "outcome oracle",
       "prevented by fixed runtime/adapter"
-    ]
+    ],
+    "selectionRationale": "One deliberately injected fault exercises each of six contract sites: identifier binding, effect domain, sample/clock order, scenario isolation, evidence/source role, and monitor start guard."
   },
   "faults": [
     {
@@ -168,13 +169,51 @@
         "detected": true,
         "detail": "authoritative source remained Safe"
       }
+    },
+    {
+      "id": "F-OBSERVATION-OVERWRITE",
+      "fault": "observation adapter replaces authoritative position without acceptance",
+      "pulse": {
+        "stage": "record-api",
+        "detected": true,
+        "detail": "recorded evidence remained distinct from authoritative position"
+      },
+      "unprofiledRdfStatechart": {
+        "stage": "source-state-oracle",
+        "detected": true,
+        "detail": "authoritative position was replaced by observed evidence"
+      },
+      "profiledRdfStatechart": {
+        "stage": "role-adapter",
+        "detected": true,
+        "detail": "observed evidence cannot replace authoritative position without acceptance"
+      }
+    },
+    {
+      "id": "F-MONITOR-START-GUARD",
+      "fault": "duration monitor starts while its declared source-state guard is false",
+      "pulse": {
+        "stage": "runtime-start-guard",
+        "detected": true,
+        "detail": "Maintenance source state created no pending or emitted sustained event"
+      },
+      "unprofiledRdfStatechart": {
+        "stage": "outcome-oracle",
+        "detected": true,
+        "detail": "changed: sustainedTrace"
+      },
+      "profiledRdfStatechart": {
+        "stage": "adapter-precondition",
+        "detected": true,
+        "detail": "duration monitor start rejected outside its declared source state"
+      }
     }
   ],
   "summary": {
-    "faultCount": 4,
-    "pulsePreventedOrDetected": 4,
-    "unprofiledDetectedByOracle": 4,
-    "profiledPreventedOrDetected": 4
+    "faultCount": 6,
+    "pulsePreventedOrDetected": 6,
+    "unprofiledDetectedByOracle": 6,
+    "profiledPreventedOrDetected": 6
   },
-  "claimBoundary": "One matched task and four deliberately injected integration faults. The result locates enforcement and shows that an explicit statechart profile can recover the checked obligations with extra binding, invariant, and adapter contracts. It is not a usability, maintenance, fault-prevalence, or language-superiority study."
+  "claimBoundary": "One matched task and six deliberately injected integration faults. The result locates enforcement and shows that an explicit statechart profile can recover the checked obligations with extra binding, invariant, and adapter contracts. It is not a usability, maintenance, fault-prevalence, or language-superiority study."
 }

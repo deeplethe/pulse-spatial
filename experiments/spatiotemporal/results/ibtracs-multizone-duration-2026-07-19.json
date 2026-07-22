@@ -1,9 +1,9 @@
 {
   "experiment": "ibtracs-multizone-duration-parity-v1",
-  "generatedAt": "2026-07-19T11:14:34.914384+00:00",
-  "claimBoundary": "Exact discrete sample-and-hold parity for five experiment-defined Point/Polygon zones and 6/12/24-hour sustained events; not continuous trajectory, geodesic, or full GeoSPARQL conformance.",
+  "generatedAt": "2026-07-22T02:29:33.175549+00:00",
+  "claimBoundary": "Exact discrete sample-and-hold parity for five experiment-defined Point/Polygon zones and 6/12/24-hour sustained events; not continuous trajectory, geodesic, antimeridian-crossing geometry, or full GeoSPARQL conformance.",
   "dataset": {
-    "name": "NOAA IBTrACS v04r01 normalized main-track snapshot",
+    "name": "NOAA IBTrACS v04r01 last3years list CSV",
     "doi": "10.25921/82ty-9e16",
     "sourceUrl": "https://www.ncei.noaa.gov/data/international-best-track-archive-for-climate-stewardship-ibtracs/v04r01/access/csv/ibtracs.last3years.list.v04r01.csv",
     "path": "experiments/ibtracs/snapshots/ibtracs-last3years-main-2026-07-16.csv",
@@ -22,23 +22,23 @@
         "name": "EquatorialBand",
         "coordinates": [
           [
-            -179.999,
+            -180.0,
             -10.0
           ],
           [
-            179.999,
+            180.0,
             -10.0
           ],
           [
-            179.999,
+            180.0,
             10.0
           ],
           [
-            -179.999,
+            -180.0,
             10.0
           ],
           [
-            -179.999,
+            -180.0,
             -10.0
           ]
         ],
@@ -48,23 +48,23 @@
         "name": "NorthernTropics",
         "coordinates": [
           [
-            -179.999,
+            -180.0,
             10.0
           ],
           [
-            179.999,
+            180.0,
             10.0
           ],
           [
-            179.999,
+            180.0,
             30.0
           ],
           [
-            -179.999,
+            -180.0,
             30.0
           ],
           [
-            -179.999,
+            -180.0,
             10.0
           ]
         ],
@@ -289,6 +289,25 @@
       "maximumSeconds": 3600.0
     }
   },
+  "datelineAudit": {
+    "normalizedLongitudeJumpThresholdDegrees": 180.0,
+    "wrappedTransitions": 20,
+    "tracksWithWrappedTransitions": 16,
+    "wrappedTransitionsByBasin": {
+      "EP": 2,
+      "SP": 6,
+      "WP": 12
+    },
+    "membershipChangesOnWrappedTransitions": {
+      "EquatorialBand": 0,
+      "NorthernTropics": 0,
+      "NorthAtlanticStudyZone": 0,
+      "WesternPacificStudyZone": 5,
+      "SouthIndianStudyZone": 0
+    },
+    "latitudeBandSeamOnlyChanges": 0,
+    "interpretation": "The two latitude-band polygons include both -180 and +180, so their reported changes at wrapped transitions come only from latitude. The WesternPacificStudyZone deliberately ends at 179.999E; its changes are sampled membership changes at that explicit edge. No segment interpolation or antimeridian-crossing polygon is evaluated."
+  },
   "parity": {
     "matches": true,
     "membershipMismatches": 0,
@@ -299,25 +318,21 @@
     "sustainedDifferenceSample": []
   },
   "timing": {
-    "repetitions": 5,
+    "repetitions": 3,
     "internalSeconds": [
-      0.7657558000064455,
-      0.746991700027138,
-      0.7577676000073552,
-      0.9025147000211291,
-      1.5571237000403926
+      0.8549437000183389,
+      0.8242157999775372,
+      0.8651516999816522
     ],
     "referenceSeconds": [
-      0.7905074000009336,
-      0.5135748999891803,
-      0.5243260000133887,
-      0.5774439999950118,
-      0.5621857999940403
+      0.5579797999816947,
+      0.44862239999929443,
+      0.45837559999199584
     ],
-    "internalMedianSeconds": 0.7657558000064455,
-    "referenceMedianSeconds": 0.5621857999940403,
-    "internalTransitionZonePairsPerSecond": 88546.50529506832,
-    "referenceTransitionZonePairsPerSecond": 120609.59206141243
+    "internalMedianSeconds": 0.8549437000183389,
+    "referenceMedianSeconds": 0.45837559999199584,
+    "internalTransitionZonePairsPerSecond": 79309.31592167479,
+    "referenceTransitionZonePairsPerSecond": 147924.54048859497
   },
   "environment": {
     "python": "3.12.3",

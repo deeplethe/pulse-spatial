@@ -10,7 +10,7 @@ class StatechartComparisonTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.result = run_statechart_comparison()
 
-    def test_independent_statechart_matches_pulse_on_the_baseline(self) -> None:
+    def test_researcher_authored_statechart_matches_pulse_on_baseline(self) -> None:
         baseline = self.result["baseline"]
         self.assertTrue(baseline["shaclConforms"])
         self.assertTrue(baseline["exactOutcomeMatch"])
@@ -21,10 +21,14 @@ class StatechartComparisonTests(unittest.TestCase):
 
     def test_all_faults_are_located_in_each_contract_configuration(self) -> None:
         summary = self.result["summary"]
-        self.assertEqual(summary["faultCount"], 4)
-        self.assertEqual(summary["pulsePreventedOrDetected"], 4)
-        self.assertEqual(summary["unprofiledDetectedByOracle"], 4)
-        self.assertEqual(summary["profiledPreventedOrDetected"], 4)
+        self.assertEqual(summary["faultCount"], 6)
+        self.assertEqual(summary["pulsePreventedOrDetected"], 6)
+        self.assertEqual(summary["unprofiledDetectedByOracle"], 6)
+        self.assertEqual(summary["profiledPreventedOrDetected"], 6)
+
+        fault_ids = {fault["id"] for fault in self.result["faults"]}
+        self.assertIn("F-OBSERVATION-OVERWRITE", fault_ids)
+        self.assertIn("F-MONITOR-START-GUARD", fault_ids)
 
     def test_unprofiled_composition_requires_an_outcome_or_source_oracle(self) -> None:
         oracle_stages = {"outcome-oracle", "source-state-oracle"}

@@ -10,8 +10,8 @@ must not be reported as evidence for another.
   hypothetical spatiotemporal content coexist without silent overwrites?
 - **RQ2 -- spatial correctness:** Do PULSE Point/Polygon membership and
   crossing traces agree with an independent geometry engine?
-- **RQ3 -- temporal correctness:** Do duration-qualified events agree with an
-  independent event-sweep implementation under a frozen clock policy?
+- **RQ3 -- temporal correctness:** Do duration-qualified events agree with a
+  separately implemented, researcher-authored event sweep under a frozen clock policy?
 - **RQ4 -- projection fidelity:** Do RDF, GeoSPARQL, SOSA, SHACL, and OWL-Time
   views preserve their declared subset of the authoritative model?
 - **RQ5 -- composition burden:** For the same executable workload, which
@@ -25,10 +25,10 @@ must not be reported as evidence for another.
 
 | ID | Evidence | Baseline | Status | Permitted claim |
 |---|---|---|---|---|
-| E0 | 87 semantic and integration tests | Explicit expected contracts | Executed | Core invariants, the paper listing, live scenario cloning, identifier rejection, and the finite Python/Lean bridge hold for tested cases |
+| E0 | 88 semantic and integration tests | Explicit expected contracts | Executed | Core invariants, the paper listing, live scenario cloning, identifier rejection, and the finite Python/Lean bridge hold for tested cases |
 | E1 | RDF/SHACL cross-view validation | pySHACL + GEOS functions | Executed | Tested projection outcomes agree |
 | E2 | 223 IBTrACS tracks, one polygon | Shapely/GEOS `covers` | Executed | Single-zone event-label parity |
-| E3 | Five zones; 6/12/24-hour events | GEOS + independent event sweep | Executed | Discrete multizone spatiotemporal parity |
+| E3 | Five zones; 6/12/24-hour events | GEOS + separately implemented, researcher-authored event sweep | Executed | Discrete multizone spatiotemporal parity |
 | E4 | 89 boundary/numeric cases; 9 rejection cases; 86 CRS84 shared-workload cases | Shapely/GEOS | Executed | Differential parity for the frozen Point/simple-Polygon corpus |
 | E5 | Frozen cold-chain implementation | GeoSPARQL/SHACL and MF-JSON Prism compositions | Executed | Outcome equivalence and descriptive composition only |
 | E6 | Chronological frozen-rule holdout | Moving Features/workflow baseline | Planned | Limited temporal transfer |

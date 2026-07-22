@@ -82,8 +82,8 @@ The machine-readable and Markdown reports are in [`results/`](results/).
 The companion experiment exhaustively generates 37,440 traces from the declared
 finite grid: lengths 2--5, every Boolean membership sequence, time increments
 of 1/5/10/11 minutes, two initial states, and presence/absence of a same-trigger
-immediate transition. The unmodified PULSE runtime and an independently
-implemented reference workflow must match on every trace. Ten mutants are then
+immediate transition. The unmodified PULSE runtime and a separately implemented,
+researcher-authored reference workflow must match on every trace. Ten mutants are then
 run over the same corpus; each changes exactly one checked semantic field,
 covering cancellation, timer order, start/deadline guards, equality at the
 deadline, short/long durations, emission time, transition timing, and

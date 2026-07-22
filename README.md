@@ -112,7 +112,7 @@ checked-in snapshot. It loads 4,775 tracks; 4,768 contain at least two accepted
 points and therefore contribute replay transitions. The workload has 300,033
 points and 295,258 transitions from 1980--2025 across seven basins. All 571 event-bearing
 transitions agree with the GEOS path. The five-zone duration run evaluates
-1,476,290 transition-zone pairs, including 4,832 instantaneous and 12,870
+1,476,290 transition-zone pairs, including 4,800 instantaneous and 12,831
 sustained events, with zero membership, event, or timestamp differences. The
 143 MB source is downloaded by DOI/URL and verified by SHA-256; it is not
 vendored into the repository.
@@ -132,7 +132,8 @@ descriptive rather than a usability claim; see the
 [`composition comparison`](experiments/composition/README.md).
 
 A companion mutation-sensitivity experiment enumerates 37,440 traces over a
-declared finite temporal grid. PULSE and an independent reference workflow
+declared finite temporal grid. PULSE and a separately implemented,
+researcher-authored reference workflow
 match all 37,440; each of ten single-field semantic mutants is distinguished,
 with 1,680--11,024 counterexample traces depending on the operator. This is
 finite-domain contract sensitivity rather than language superiority, usability,
@@ -202,9 +203,10 @@ general Python runtime, and computational geometry is abstracted behind a total 
 
 A matched composition experiment retains the RDF/SHACL cold-chain inputs and
 executes the temporal policy in the third-party Sismic 1.6.11 statechart
-interpreter. The exact baseline outcome matches PULSE. Four single-site faults
-then locate identifier, effect-domain, clock-adapter, and scenario-isolation
-obligations across PULSE, an unprofiled RDF+statechart composition, and a
+interpreter. The exact baseline outcome matches PULSE. Six single-site faults
+then locate identifier, effect-domain, clock-adapter, scenario-isolation,
+evidence-role, and monitor-start obligations across PULSE, an unprofiled
+RDF+statechart composition, and a
 profiled composition with explicit binding/invariant/adapter contracts. This is
 contract-location evidence on one task, not a usability or language-superiority
 study; see the
@@ -212,9 +214,9 @@ study; see the
 
 A tenth experiment loads the complete since-1980 workload into a persistent
 PostgreSQL 18/PostGIS 3.6 database. A GiST-indexed `ST_Covers` query returns
-371,340 positive membership rows over 300,033 stored points. Replacing the
+371,358 positive membership rows over 300,033 stored points. Replacing the
 container while retaining its volume preserves every point and the index; the
-derived membership, 4,832 instantaneous-event, and 12,870 sustained-event
+derived membership, 4,800 instantaneous-event, and 12,831 sustained-event
 layers have zero differences from PULSE across 1,476,290 transition-zone
 pairs. See the [`PostGIS baseline`](experiments/postgis/README.md).
 

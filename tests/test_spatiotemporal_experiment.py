@@ -1,7 +1,9 @@
 import unittest
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-from pulse_spatial.experiments.spatiotemporal import run_experiment
+from pulse_spatial.experiments.ibtracs import Track, TrackPoint
+from pulse_spatial.experiments.spatiotemporal import _dateline_audit, run_experiment
 
 
 FIXTURE = (
@@ -30,6 +32,28 @@ class SpatiotemporalExperimentTests(unittest.TestCase):
         )
         self.assertEqual(len(result["workload"]["byRegion"]), 5)
         self.assertEqual(result["workload"]["sustainedEvents"], 2)
+        self.assertIn("datelineAudit", result)
+
+    def test_dateline_audit_keeps_latitude_bands_seam_free(self) -> None:
+        start = datetime(2026, 1, 1, tzinfo=UTC)
+        track = Track(
+            "wrapped",
+            "wrapped",
+            2026,
+            "WP",
+            (
+                TrackPoint(start, 20.0, -179.6),
+                TrackPoint(start + timedelta(hours=6), 20.0, 180.0),
+            ),
+        )
+        audit = _dateline_audit((track,))
+        self.assertEqual(audit["wrappedTransitions"], 1)
+        self.assertEqual(audit["tracksWithWrappedTransitions"], 1)
+        self.assertEqual(audit["latitudeBandSeamOnlyChanges"], 0)
+        self.assertEqual(
+            audit["membershipChangesOnWrappedTransitions"]["NorthernTropics"],
+            0,
+        )
 
 
 if __name__ == "__main__":

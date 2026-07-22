@@ -2,8 +2,9 @@
 
 The experiment enumerates every Boolean membership trace of length two through
 five over a declared time-increment grid, two initial states, and the presence
-or absence of a same-trigger immediate transition.  PULSE is checked against an
-independent workflow oracle on every generated trace.  Ten single-field
+or absence of a same-trigger immediate transition.  PULSE is checked against a
+separately implemented, researcher-authored workflow oracle on every generated
+trace.  Ten single-field
 semantic mutants are then compared with that oracle over the same corpus.
 
 This is exhaustive only for the declared finite input and mutation domains. It
@@ -347,7 +348,10 @@ def run_contract_faults(root: str | Path = DEFAULT_ROOT) -> dict[str, object]:
             "initialStates": list(INITIAL_STATES),
             "sameTriggerImmediateTargets": list(IMMEDIATE_TARGETS),
             "generation": "Cartesian product over every declared finite domain",
-            "oracle": "independent executable workflow with the unmodified contract",
+            "oracle": (
+                "separately implemented, researcher-authored executable workflow "
+                "with the unmodified contract"
+            ),
             "mutation": (
                 "each operator changes exactly one switch in the declared nine-switch "
                 "experimental model; duration_scale has short and long variants"

@@ -2,9 +2,9 @@
 
 The baseline validates the checked-in SOSA/GeoSPARQL/OWL-Time graph with SHACL,
 then executes the temporal policy with the third-party Sismic 1.6.11 statechart
-interpreter.  Four fault injections locate identifier, effect, clock-order, and
-scenario-isolation obligations across PULSE, an unprofiled composition, and the
-same composition with explicit binding/adapter contracts.
+interpreter. Six fault injections locate identifier, effect, clock-order,
+scenario-isolation, evidence-role, and monitor-start obligations across PULSE,
+an unprofiled composition, and the same composition with explicit contracts.
 
 The experiment compares where selected faults are prevented or detected.  It
 does not measure usability, productivity, or general language superiority.
@@ -15,7 +15,7 @@ from __future__ import annotations
 import argparse
 import copy
 import json
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -39,7 +39,7 @@ DEFAULT_EXPERIMENT_ROOT = Path("experiments/statechart-comparison")
 
 
 class BindingContractError(ValueError):
-    """Raised when independently authored artifact bindings disagree."""
+    """Raised when separately maintained artifact bindings disagree."""
 
 
 class AdapterContractError(ValueError):
@@ -333,6 +333,52 @@ def _scenario_source_after(
     return str(source["status"])
 
 
+def _promote_observation(
+    source: dict[str, object],
+    observed_position: object,
+    *,
+    enforce_role_contract: bool,
+) -> None:
+    """Execute the deliberately faulty evidence-to-source adapter."""
+
+    if enforce_role_contract:
+        raise AdapterContractError(
+            "observed evidence cannot replace authoritative position without acceptance"
+        )
+    source["position"] = observed_position
+
+
+def _pulse_monitor_start_guard_detection(source: str) -> Detection:
+    guarded_source = source.replace(
+        "state status oneof [Safe, AtRisk]",
+        "state status oneof [Safe, AtRisk, Maintenance]",
+    ).replace("status = Safe", "status = Maintenance", 1)
+    model = compile_pulse(guarded_source, "monitor-start-guard.pulse")
+    observations = tuple(
+        sorted(model.world.observations, key=lambda item: item.observed_at)
+    )
+    runtime = model.temporal_runtime(observations[0].observed_at)
+    sustained = []
+    for observation in observations[1:]:
+        sustained.extend(
+            runtime.move_at(
+                observation.subject,
+                observation.value,
+                observation.observed_at,
+            ).sustained
+        )
+    protected = (
+        model.world.states["shipment_102"] == "Maintenance"
+        and runtime.pending_count == 0
+        and not sustained
+    )
+    return Detection(
+        "runtime-start-guard",
+        protected,
+        "Maintenance source state created no pending or emitted sustained event",
+    )
+
+
 def _tie_trace(policy: Policy) -> StandardsTrace:
     first = datetime(2026, 7, 21, 8, 0, tzinfo=UTC)
     return StandardsTrace(
@@ -377,6 +423,7 @@ def run_statechart_comparison(
     effect_pulse = _pulse_compile_detection(
         pulse_source.replace("Safe -> AtRisk", "Safe -> Quarantined")
     )
+    monitor_guard_pulse = _pulse_monitor_start_guard_detection(pulse_source)
 
     identifier_chart = chart_text.replace("ColdZone", "ColdStorage")
     identifier_basic_outcome = _statechart_outcome(
@@ -481,6 +528,74 @@ def run_statechart_comparison(
     paper_model.run_scenario("Reroute")
     pulse_isolated = paper_model.world.states["batch"] == source_state
 
+    authoritative_position = paper_model.world.positions["batch"]
+    observed_position = paper_model.world.observations[-1].value
+    evidence_pulse = Detection(
+        "record-api",
+        paper_model.world.positions["batch"] == authoritative_position
+        and observed_position != authoritative_position,
+        "recorded evidence remained distinct from authoritative position",
+    )
+    unprofiled_source: dict[str, object] = {"position": authoritative_position}
+    _promote_observation(
+        unprofiled_source,
+        observed_position,
+        enforce_role_contract=False,
+    )
+    evidence_basic = Detection(
+        "source-state-oracle",
+        unprofiled_source["position"] != authoritative_position,
+        "authoritative position was replaced by observed evidence",
+    )
+    try:
+        _promote_observation(
+            {"position": authoritative_position},
+            observed_position,
+            enforce_role_contract=True,
+        )
+    except AdapterContractError as error:
+        evidence_profiled = Detection("role-adapter", True, str(error))
+    else:
+        evidence_profiled = Detection("none", False, "role adapter accepted promotion")
+
+    maintenance_policy = replace(standards.policy, initial_state="Maintenance")
+    maintenance_trace = _tie_trace(maintenance_policy)
+    maintenance_chart = chart_text.replace("initial: Safe", "initial: Maintenance", 1)
+    guard_expected = _statechart_outcome(
+        maintenance_trace,
+        maintenance_chart,
+        check_contracts=True,
+    )
+    faulty_guard_chart = maintenance_chart.replace(
+        "      - name: Maintenance\n        transitions:\n",
+        "      - name: Maintenance\n"
+        "        transitions:\n"
+        "          - event: leaves__shipment_102__ColdZone\n"
+        "            action: |\n"
+        "              monitor_token += 1\n"
+        "              pending = True\n"
+        "              send('duration_elapsed', delay=600, token=monitor_token, started=time)\n",
+        1,
+    )
+    guard_basic_outcome = _statechart_outcome(
+        maintenance_trace,
+        faulty_guard_chart,
+        check_contracts=False,
+    )
+    guard_basic = Detection(
+        "outcome-oracle",
+        guard_basic_outcome != guard_expected,
+        "changed: " + ", ".join(_outcome_changed(guard_expected, guard_basic_outcome)),
+    )
+    if maintenance_policy.initial_state != maintenance_policy.from_state:
+        guard_profiled = Detection(
+            "adapter-precondition",
+            True,
+            "duration monitor start rejected outside its declared source state",
+        )
+    else:
+        guard_profiled = Detection("none", False, "start guard unexpectedly matched")
+
     faults = (
         {
             "id": "F-IDENTIFIER-DRIFT",
@@ -522,6 +637,20 @@ def run_statechart_comparison(
             "unprofiledRdfStatechart": asdict(isolation_basic),
             "profiledRdfStatechart": asdict(isolation_profiled),
         },
+        {
+            "id": "F-OBSERVATION-OVERWRITE",
+            "fault": "observation adapter replaces authoritative position without acceptance",
+            "pulse": asdict(evidence_pulse),
+            "unprofiledRdfStatechart": asdict(evidence_basic),
+            "profiledRdfStatechart": asdict(evidence_profiled),
+        },
+        {
+            "id": "F-MONITOR-START-GUARD",
+            "fault": "duration monitor starts while its declared source-state guard is false",
+            "pulse": asdict(monitor_guard_pulse),
+            "unprofiledRdfStatechart": asdict(guard_basic),
+            "profiledRdfStatechart": asdict(guard_profiled),
+        },
     )
 
     return {
@@ -551,6 +680,11 @@ def run_statechart_comparison(
                 "outcome oracle",
                 "prevented by fixed runtime/adapter",
             ],
+            "selectionRationale": (
+                "One deliberately injected fault exercises each of six contract "
+                "sites: identifier binding, effect domain, sample/clock order, "
+                "scenario isolation, evidence/source role, and monitor start guard."
+            ),
         },
         "faults": list(faults),
         "summary": {
@@ -570,7 +704,7 @@ def run_statechart_comparison(
             ),
         },
         "claimBoundary": (
-            "One matched task and four deliberately injected integration faults. "
+            "One matched task and six deliberately injected integration faults. "
             "The result locates enforcement and shows that an explicit statechart "
             "profile can recover the checked obligations with extra binding, "
             "invariant, and adapter contracts. It is not a usability, maintenance, "

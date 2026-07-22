@@ -1,6 +1,6 @@
 {
   "experiment": "postgis-persistent-gist-baseline-v1",
-  "generatedAt": "2026-07-19T23:06:28.733717+00:00",
+  "generatedAt": "2026-07-22T02:31:06.159303+00:00",
   "claimBoundary": "Persistent PostgreSQL/PostGIS geometry baseline using an on-disk Docker volume, GiST indexes, and ST_Covers for the five experiment-defined Polygon zones. Event and duration labels are derived from returned sampled memberships. This is not a concurrent service benchmark, continuous-trajectory evaluation, or comparison with an RDF triplestore.",
   "dataset": {
     "name": "NOAA IBTrACS v04r01 since1980 list CSV",
@@ -15,7 +15,7 @@
     "transitionZonePairs": 1476290
   },
   "database": {
-    "image": "postgis/postgis:18-3.6",
+    "image": "postgis/postgis:18-3.6@sha256:c893f6f2652d11e13f50f8623045b3523991b41d038b4d213dc040f42641f0d7",
     "imageId": "sha256:4f755ac224323a73961dfb21bdddffcb97f40bb916fda3e8a627b116489c9e12",
     "postgresVersion": "PostgreSQL 18.4 (Debian 18.4-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
     "postgisVersion": "POSTGIS=\"3.6.4 94d984b\" [EXTENSION] PGSQL=\"180\" GEOS=\"3.13.1-CAPI-1.19.2\" PROJ=\"9.6.0 NETWORK_ENABLED=OFF URL_ENDPOINT=https://cdn.proj.org USER_WRITABLE_DIRECTORY=/var/lib/postgresql/.local/share/proj DATABASE_PATH=/usr/share/proj/proj.db\" (compiled against PROJ 9.6.0) LIBXML=\"2.9.14\" LIBJSON=\"0.18\" LIBPROTOBUF=\"1.5.1\" WAGYU=\"0.5.0 (Internal)\" TOPOLOGY",
@@ -23,7 +23,7 @@
     "pointSrid": 4326,
     "indexMethod": "GiST",
     "planUsesSamplesGistIndex": true,
-    "positiveMembershipRows": 371340,
+    "positiveMembershipRows": 371358,
     "sampleTableBytes": 55746560,
     "sampleIndexBytes": 37036032,
     "databaseBytes": 112252607,
@@ -44,20 +44,20 @@
     "sustainedDifferenceSample": []
   },
   "workload": {
-    "instantaneousEvents": 4832,
-    "sustainedEvents": 12870
+    "instantaneousEvents": 4800,
+    "sustainedEvents": 12831
   },
   "timingSeconds": {
     "imagePull": null,
-    "csvSerialization": 0.7069234000518918,
-    "initialDatabaseStart": 3.0897243000217713,
-    "schema": 0.15138520003529266,
-    "copyAndMaterialize": 2.306678000022657,
-    "indexAnalyzeCheckpoint": 0.6636000000289641,
-    "indexedMembershipQuery": 0.6371687999926507,
-    "persistentRestart": 1.479682800010778,
-    "eventDerivation": 4.865795199992135,
-    "pulseExecution": 23.59060480003245
+    "csvSerialization": 0.7925209999666549,
+    "initialDatabaseStart": 5.690651800017804,
+    "schema": 0.20727379998425022,
+    "copyAndMaterialize": 2.7366325999610126,
+    "indexAnalyzeCheckpoint": 0.8503375999862328,
+    "indexedMembershipQuery": 0.8209956000209786,
+    "persistentRestart": 1.6593277999782003,
+    "eventDerivation": 5.6587949999957345,
+    "pulseExecution": 27.372369799995795
   },
   "environment": {
     "python": "3.12.3",

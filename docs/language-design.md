@@ -107,7 +107,7 @@ The scale real-data experiment replays the official NOAA IBTrACS `since1980`
 main tracks through frozen experiment-defined polygons. It covers 4,775 tracks,
 300,033 points, and 295,258 transitions. The single-zone trace has 571 event
 transitions; the five-zone duration protocol evaluates 1,476,290
-transition-region pairs, 4,832 instantaneous events, and 12,870 sustained
+transition-region pairs, 4,800 instantaneous events, and 12,831 sustained
 events. PULSE and the separately implemented GEOS/event-sweep path have zero
 differences at membership, instantaneous-event, and timestamp layers.
 

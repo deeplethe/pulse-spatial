@@ -8,6 +8,7 @@ import math
 import platform
 import statistics
 import time
+from collections import Counter
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -27,21 +28,21 @@ STUDY_ZONES: tuple[tuple[str, tuple[tuple[float, float], ...]], ...] = (
     (
         "EquatorialBand",
         (
-            (-179.999, -10.0),
-            (179.999, -10.0),
-            (179.999, 10.0),
-            (-179.999, 10.0),
-            (-179.999, -10.0),
+            (-180.0, -10.0),
+            (180.0, -10.0),
+            (180.0, 10.0),
+            (-180.0, 10.0),
+            (-180.0, -10.0),
         ),
     ),
     (
         "NorthernTropics",
         (
-            (-179.999, 10.0),
-            (179.999, 10.0),
-            (179.999, 30.0),
-            (-179.999, 30.0),
-            (-179.999, 10.0),
+            (-180.0, 10.0),
+            (180.0, 10.0),
+            (180.0, 30.0),
+            (-180.0, 30.0),
+            (-180.0, 10.0),
         ),
     ),
     (
@@ -395,6 +396,61 @@ def _lag_summary(labels: Iterable[SustainedEventLabel]) -> dict[str, float | int
     }
 
 
+def _dateline_audit(tracks: Iterable[Track]) -> dict[str, object]:
+    """Audit normalized-longitude jumps without inferring a continuous path."""
+
+    regions = _regions()
+    wrapped_tracks: set[str] = set()
+    wrapped_transitions = 0
+    basins: Counter[str] = Counter()
+    membership_changes = {name: 0 for name in regions}
+    latitude_band_seam_only = 0
+    latitude_bounds = {
+        "EquatorialBand": (-10.0, 10.0),
+        "NorthernTropics": (10.0, 30.0),
+    }
+    for track in tracks:
+        for previous, current in zip(track.points, track.points[1:]):
+            if abs(current.longitude - previous.longitude) <= 180.0:
+                continue
+            wrapped_transitions += 1
+            wrapped_tracks.add(track.sid)
+            basins[track.basin] += 1
+            for name, region in regions.items():
+                old_membership = covered_by(
+                    Point(previous.longitude, previous.latitude, CRS84),
+                    region,
+                )
+                new_membership = covered_by(
+                    Point(current.longitude, current.latitude, CRS84),
+                    region,
+                )
+                if old_membership == new_membership:
+                    continue
+                membership_changes[name] += 1
+                if name in latitude_bounds:
+                    lower, upper = latitude_bounds[name]
+                    old_latitude_membership = lower <= previous.latitude <= upper
+                    new_latitude_membership = lower <= current.latitude <= upper
+                    if old_latitude_membership == new_latitude_membership:
+                        latitude_band_seam_only += 1
+    return {
+        "normalizedLongitudeJumpThresholdDegrees": 180.0,
+        "wrappedTransitions": wrapped_transitions,
+        "tracksWithWrappedTransitions": len(wrapped_tracks),
+        "wrappedTransitionsByBasin": dict(sorted(basins.items())),
+        "membershipChangesOnWrappedTransitions": membership_changes,
+        "latitudeBandSeamOnlyChanges": latitude_band_seam_only,
+        "interpretation": (
+            "The two latitude-band polygons include both -180 and +180, so their "
+            "reported changes at wrapped transitions come only from latitude. The "
+            "WesternPacificStudyZone deliberately ends at 179.999E; its changes "
+            "are sampled membership changes at that explicit edge. No segment "
+            "interpolation or antimeridian-crossing polygon is evaluated."
+        ),
+    }
+
+
 def run_experiment(
     dataset_path: str | Path,
     *,
@@ -435,6 +491,7 @@ def run_experiment(
 
     dataset_name, source_url = source_descriptor(path)
     transitions = sum(max(len(track.points) - 1, 0) for track in dataset.tracks)
+    dateline_audit = _dateline_audit(dataset.tracks)
     monitor_starts = len(internal.instantaneous) * len(DURATIONS_HOURS)
     internal_median = statistics.median(internal_times)
     reference_median = statistics.median(reference_times)
@@ -444,7 +501,8 @@ def run_experiment(
         "claimBoundary": (
             "Exact discrete sample-and-hold parity for five experiment-defined "
             "Point/Polygon zones and 6/12/24-hour sustained events; not "
-            "continuous trajectory, geodesic, or full GeoSPARQL conformance."
+            "continuous trajectory, geodesic, antimeridian-crossing geometry, "
+            "or full GeoSPARQL conformance."
         ),
         "dataset": {
             "name": dataset_name,
@@ -490,6 +548,7 @@ def run_experiment(
             "byRegion": _workload_breakdown(internal),
             "emissionLag": _lag_summary(internal.sustained),
         },
+        "datelineAudit": dateline_audit,
         "parity": {
             "matches": matches,
             "membershipMismatches": membership_mismatches,
@@ -535,10 +594,12 @@ def render_markdown(result: dict[str, object]) -> str:
     workload = result["workload"]
     parity = result["parity"]
     timing = result["timing"]
+    dateline_audit = result["datelineAudit"]
     assert isinstance(dataset, dict)
     assert isinstance(workload, dict)
     assert isinstance(parity, dict)
     assert isinstance(timing, dict)
+    assert isinstance(dateline_audit, dict)
     return "\n".join(
         (
             "# IBTrACS multizone duration result",
@@ -562,6 +623,19 @@ def render_markdown(result: dict[str, object]) -> str:
             f"- Sustained counts: `{workload['sustainedCounts']}`",
             f"- Emission lag: `{workload['emissionLag']}`",
             f"- Per-region breakdown: `{workload['byRegion']}`",
+            "",
+            "## Normalized-longitude audit",
+            "",
+            f"- Wrapped transitions: {dateline_audit['wrappedTransitions']:,}",
+            "- Tracks with wrapped transitions: "
+            f"{dateline_audit['tracksWithWrappedTransitions']:,}",
+            "- Wrapped transitions by basin: "
+            f"`{dateline_audit['wrappedTransitionsByBasin']}`",
+            "- Membership changes on wrapped transitions: "
+            f"`{dateline_audit['membershipChangesOnWrappedTransitions']}`",
+            "- Latitude-band seam-only changes: "
+            f"{dateline_audit['latitudeBandSeamOnlyChanges']:,}",
+            f"- Interpretation: {dateline_audit['interpretation']}",
             "",
             "## Exact parity",
             "",

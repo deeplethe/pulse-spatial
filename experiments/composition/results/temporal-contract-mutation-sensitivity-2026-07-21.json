@@ -1,6 +1,6 @@
 {
   "experiment": "generated-temporal-mutation-matrix-v3",
-  "generatedAt": "2026-07-21T09:28:36.722213+00:00",
+  "generatedAt": "2026-07-22T02:39:12.394743+00:00",
   "design": {
     "traceLengths": [
       2,
@@ -27,7 +27,7 @@
       "Maintenance"
     ],
     "generation": "Cartesian product over every declared finite domain",
-    "oracle": "independent executable workflow with the unmodified contract",
+    "oracle": "separately implemented, researcher-authored executable workflow with the unmodified contract",
     "mutation": "each operator changes exactly one switch in the declared nine-switch experimental model; duration_scale has short and long variants"
   },
   "summary": {

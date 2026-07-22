@@ -25,7 +25,7 @@ host-dependent; these commands impose no portable performance expectation.
 
 | Paper evidence | Command | Expected result/output | Inputs and practical requirements |
 |---|---|---|---|
-| Table 4, core regression suite | `python -m unittest discover -s tests -v` | 87 tests pass | Local Python; under 1 GiB; normally seconds |
+| Table 4, core regression suite | `python -m unittest discover -s tests -v` | 88 tests pass | Local Python; under 1 GiB; normally seconds |
 | Table 4, bounded core checks | `python -m pulse_spatial.experiments.formal_properties --max-depth 4 --output-json experiments/formal-properties/results/bounded-depth4.json --output-markdown experiments/formal-properties/results/bounded-depth4.md` | 340 bounded move traces and 3,534 checks, no failures | Local Python; under 1 GiB; normally seconds |
 | Table 4, Lean kernel | `docker build --tag pulse-lean:4.30.0 formal/lean`, then `docker run --rm pulse-lean:4.30.0` | Lean build succeeds without `sorry` or `admit` | Docker; allow several minutes and image-build disk |
 | Table 4, Lean/Python bridge | From `formal/lean`, run `lake exe pulse_traces > generated-integrated-traces.json`; then run `pulse-spatial-lean-trace-bridge --require-exact` at the root | 32/32 aligned finite cases | Lean toolchain plus local Python |
