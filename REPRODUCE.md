@@ -7,7 +7,8 @@ boundaries in the linked protocols.
 
 ## Common environment
 
-- Python: 3.12 or newer. Install exact direct and transitive versions with
+- Python: CPython 3.11 and 3.12 are tested; the primary CI job uses 3.12.
+  Install exact direct and transitive versions with
   `python -m pip install -r requirements-lock.txt`, followed by
   `python -m pip install --no-deps -e .`.
 - Lightweight Python checks require less than 1 GiB RAM and no external
@@ -24,7 +25,7 @@ host-dependent; these commands impose no portable performance expectation.
 
 | Paper evidence | Command | Expected result/output | Inputs and practical requirements |
 |---|---|---|---|
-| Table 4, core regression suite | `python -m pytest -q` | `87 passed` | Local Python; under 1 GiB; normally seconds |
+| Table 4, core regression suite | `python -m unittest discover -s tests -v` | 87 tests pass | Local Python; under 1 GiB; normally seconds |
 | Table 4, bounded core checks | `python -m pulse_spatial.experiments.formal_properties --max-depth 4 --output-json experiments/formal-properties/results/bounded-depth4.json --output-markdown experiments/formal-properties/results/bounded-depth4.md` | 340 bounded move traces and 3,534 checks, no failures | Local Python; under 1 GiB; normally seconds |
 | Table 4, Lean kernel | `docker build --tag pulse-lean:4.30.0 formal/lean`, then `docker run --rm pulse-lean:4.30.0` | Lean build succeeds without `sorry` or `admit` | Docker; allow several minutes and image-build disk |
 | Table 4, Lean/Python bridge | From `formal/lean`, run `lake exe pulse_traces > generated-integrated-traces.json`; then run `pulse-spatial-lean-trace-bridge --require-exact` at the root | 32/32 aligned finite cases | Lean toolchain plus local Python |
@@ -43,7 +44,7 @@ host-dependent; these commands impose no portable performance expectation.
 
 Paper Tables 1--3 describe contract placement, event rules, and projection
 fidelity. They are specifications rather than benchmark outputs. Projection
-regressions are exercised by `python -m pytest -q`; `docs/projections.md`
+regressions are exercised by `python -m unittest discover -s tests -v`; `docs/projections.md`
 defines what each RDF/SHACL view preserves, approximates, or omits. No reverse
 round trip from the generated views to the authoritative PULSE model is claimed.
 
