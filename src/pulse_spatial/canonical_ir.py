@@ -27,7 +27,12 @@ def _microdegrees(value: float, label: str) -> int:
 
 
 def _symbol_table(model: CompiledModel) -> tuple[tuple[str, ...], dict[str, int]]:
-    names: set[str] = set()
+    # Grounded rule identifiers occupy the leading slots in source declaration
+    # order.  Their numeric ids are therefore stable under alpha-renaming and
+    # can serve as the Lean kernel's equal-deadline tie-breaker.  Other symbols
+    # are sorted only to keep the remainder of the interchange deterministic.
+    grounded_rule_names = tuple(dict.fromkeys(rule.name for rule in model.rules))
+    names: set[str] = set(grounded_rule_names)
     for rule in model.rules:
         names.update(
             (
@@ -42,7 +47,7 @@ def _symbol_table(model: CompiledModel) -> tuple[tuple[str, ...], dict[str, int]
         names.add(name)
         for subject, position in scenario.moves:
             names.update((subject, position.crs))
-    symbols = tuple(sorted(names))
+    symbols = (*grounded_rule_names, *sorted(names.difference(grounded_rule_names)))
     return symbols, {name: index for index, name in enumerate(symbols)}
 
 

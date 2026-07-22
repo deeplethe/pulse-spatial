@@ -14,8 +14,9 @@ the following mechanisms explicit:
   source-state-guarded monitor creation with exact deadlines;
 - timer-before-move execution, deadline guard rechecking, monitor
   reconciliation against the pre-immediate state, unique monitor identities,
-  total `(deadline, name)` timer ordering, and ordered immediate
-  state updates;
+  total `(deadline, grounded declaration id)` timer ordering (the compact Core
+  record retains `name` as the field label for this numeric id), and ordered
+  immediate state updates;
 - pure scenario execution; and
 - the `record`, `move`, and `advance` core actions.
 
@@ -34,7 +35,7 @@ positive durations keep all deadlines in the future, and a batch of crossing
 events can grow the pending set by at most `events.length * rules.length`.
 The integrated module additionally defines environment/configuration
 well-formedness, checks atomic time/CRS failures, due-before-crossing event
-order, finite advance, a generic equal-deadline/two-monitor name-order theorem,
+order, finite advance, a generic equal-deadline/two-monitor ground-id theorem,
 compilation into the integrated environment, and
 a concrete same-event regression in which the duration monitor is created from
 the pre-immediate state before an immediate transition changes that state.
@@ -46,10 +47,16 @@ Python implementation, or a general refinement theorem between Lean and every
 runtime path. Lean/Python correspondence includes a byte-identical canonical-IR
 check for the executable paper model plus exact observable traces for 32
 generated combinations of memberships, an immediate-rule switch, and a second
-subject/rule that creates equal-deadline timers in reverse name order. This
+subject/rule that creates equal-deadline timers in declaration order. This
 finite bridge is not a universal compiler-correctness or refinement result. The
 generated mutation corpus separately compares the Python runtime with an
 independent workflow implementation.
+
+The Python canonical-IR exporter places grounded rule symbols in the leading
+slots in declaration order, and an alpha-renaming regression checks that their
+numeric ids remain `0,1`. Lean proves the corresponding two-symbol prefix
+resolution and orders equal deadlines by those ids. Arbitrary caller-supplied
+symbol tables are not covered by a general rank-preservation theorem.
 
 The toolchain is pinned to Lean 4.30.0.  Build locally with an installed Lean
 toolchain:

@@ -295,15 +295,15 @@ theorem same_event_monitor_precedes_immediate_regression :
     (applyImmediateRules regressionState [regressionImmediate] [regressionLeave]) 1 = 1 := by
   decide
 
-private def tieMonitorLaterName : Monitor :=
+private def tieMonitorLaterGroundId : Monitor :=
   { name := 9, subject := 1, region := 2, deadline := 10 }
 
-private def tieMonitorEarlierName : Monitor :=
+private def tieMonitorEarlierGroundId : Monitor :=
   { name := 3, subject := 4, region := 5, deadline := 10 }
 
-theorem equal_deadline_monitors_are_name_ordered_regression :
-    due [tieMonitorLaterName, tieMonitorEarlierName] 10 =
-      [tieMonitorEarlierName, tieMonitorLaterName] := by
+theorem equal_deadline_monitors_follow_ground_id_order_regression :
+    due [tieMonitorLaterGroundId, tieMonitorEarlierGroundId] 10 =
+      [tieMonitorEarlierGroundId, tieMonitorLaterGroundId] := by
   decide
 
 theorem paper_integrated_environment_exists (core : Env) :
@@ -312,12 +312,12 @@ theorem paper_integrated_environment_exists (core : Env) :
   exact Compiler.paper_compiles
 
 private def paperIntegratedDurationRule : DurationRule :=
-  { name := 3
+  { name := 0
     trigger := .leaves
     subject := 5
     region := 4
-    fromState := 2
-    toState := 0
+    fromState := 3
+    toState := 1
     duration := 600 }
 
 private def paperIntegratedEnv (core : Env) : IntegratedEnv :=

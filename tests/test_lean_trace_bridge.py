@@ -16,7 +16,7 @@ class LeanTraceBridgeTests(unittest.TestCase):
         self.assertTrue(result["allExact"])
         self.assertIn("not a general refinement theorem", result["claimBoundary"])
 
-    def test_equal_deadlines_are_ordered_by_unique_monitor_name(self) -> None:
+    def test_equal_deadlines_are_ordered_by_ground_declaration_rank(self) -> None:
         cases = generated_python_traces()["cases"]
         case = next(
             candidate
@@ -30,7 +30,7 @@ class LeanTraceBridgeTests(unittest.TestCase):
         sustained = [
             event for event in case["trace"] if event["kind"] == "sustained"
         ]
-        self.assertEqual([event["subject"] for event in sustained], [1, 0])
+        self.assertEqual([event["subject"] for event in sustained], [0, 1])
         self.assertEqual(
             [(event["effectiveAt"], event["emittedAt"]) for event in sustained],
             [(3, 4), (3, 4)],

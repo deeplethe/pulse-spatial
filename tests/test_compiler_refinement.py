@@ -2,7 +2,7 @@ import json
 import unittest
 from pathlib import Path
 
-from pulse_spatial import load_pulse
+from pulse_spatial import compile_pulse, load_pulse
 from pulse_spatial.canonical_ir import canonical_ir, canonical_ir_text
 
 
@@ -30,6 +30,37 @@ class CompilerRefinementTests(unittest.TestCase):
         self.assertEqual(value["immediateRules"], [])
         self.assertEqual(actions[-1], {"kind": "advance", "time": 1200})
         json.dumps(value)
+
+    def test_grounded_rule_ids_follow_declaration_order_under_alpha_renaming(
+        self,
+    ) -> None:
+        def source(first: str, second: str) -> str:
+            return f"""
+model MultiAsset version "0.1"
+crs C = "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+region Z crs C = polygon [[0,0], [10,0], [10,10], [0,10], [0,0]]
+entity Shipment {{
+  property position: Point crs C
+  state condition oneof [Safe, AtRisk]
+}}
+instance {first}: Shipment {{ position = point(5,5) condition = Safe }}
+instance {second}: Shipment {{ position = point(5,5) condition = Safe }}
+process Departure(s: Shipment) {{
+  when leaves(s.position,Z) for 1 min
+  changes s.condition: Safe -> AtRisk
+}}
+"""
+
+        for names in (("zeta", "alpha"), ("aardvark", "omega")):
+            value = canonical_ir(compile_pulse(source(*names)))
+            self.assertEqual(
+                [rule["name"] for rule in value["durationRules"]],
+                [0, 1],
+            )
+            self.assertEqual(
+                value["symbols"][:2],
+                [f"Departure@{names[0]}", f"Departure@{names[1]}"],
+            )
 
 
 if __name__ == "__main__":

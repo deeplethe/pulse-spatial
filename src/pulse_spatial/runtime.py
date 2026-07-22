@@ -90,16 +90,24 @@ class ScenarioResult:
 
 class SpatialRuntime:
     def __init__(
-        self, world: SpatialWorld, rules: Iterable[GeofenceRule] = ()
+        self,
+        world: SpatialWorld,
+        rules: Iterable[GeofenceRule] = (),
+        declared_subjects: Iterable[str] | None = None,
     ) -> None:
         self.world = world
         self.rules = tuple(rules)
+        self.declared_subjects = (
+            None if declared_subjects is None else frozenset(declared_subjects)
+        )
         if any(rule.minimum_duration_seconds is not None for rule in self.rules):
             raise ValueError(
                 "Duration-qualified rules require TemporalSpatialRuntime"
             )
 
     def move(self, subject: str, target: Point) -> tuple[GeofenceEvent, ...]:
+        if self.declared_subjects is not None and subject not in self.declared_subjects:
+            raise ValueError(f"Unknown declared subject: {subject!r}")
         source = self.world.positions.get(subject)
         if source is None:
             self.world.assert_position(subject, target)
@@ -136,7 +144,11 @@ class SpatialRuntime:
 
     def scenario(self, moves: Iterable[tuple[str, Point]]) -> ScenarioResult:
         scenario_world = self.world.clone()
-        scenario_runtime = SpatialRuntime(scenario_world, self.rules)
+        scenario_runtime = SpatialRuntime(
+            scenario_world,
+            self.rules,
+            self.declared_subjects,
+        )
         events = tuple(
             event
             for subject, target in moves
@@ -167,11 +179,16 @@ class TemporalSpatialRuntime:
         initial_time: datetime,
         rules: Iterable[GeofenceRule] = (),
         sustained_events: Iterable[SustainedEventSpec] = (),
+        declared_subjects: Iterable[str] | None = None,
     ) -> None:
         _require_aware(initial_time, "Initial time")
         self.world = world
         self.current_time = initial_time
         self.rules = tuple(rules)
+        self.declared_subjects = (
+            None if declared_subjects is None else frozenset(declared_subjects)
+        )
+        self._declared_sustained_events = tuple(sustained_events)
         self.immediate_rules = tuple(
             rule for rule in self.rules if rule.minimum_duration_seconds is None
         )
@@ -186,10 +203,17 @@ class TemporalSpatialRuntime:
             for rule in self.rules
             if rule.minimum_duration_seconds is not None
         )
-        self.specifications = (*tuple(sustained_events), *rule_specs)
+        self.specifications = (*self._declared_sustained_events, *rule_specs)
         names = [specification.name for specification in self.specifications]
         if len(names) != len(set(names)):
             raise ValueError("Sustained event names must be unique")
+        # Names identify compiler-grounded specifications (for example,
+        # ``Rule@subject``), while declaration rank is the alpha-invariant
+        # tie-breaker for monitors with the same deadline.
+        self._specification_rank = {
+            specification.name: rank
+            for rank, specification in enumerate(self.specifications)
+        }
         rules_by_name = {
             rule.name: rule
             for rule in self.rules
@@ -197,6 +221,19 @@ class TemporalSpatialRuntime:
         }
         self._rules_by_specification = rules_by_name
         self._pending: dict[str, _PendingSustainedEvent] = {}
+
+    def clone(self) -> "TemporalSpatialRuntime":
+        """Return an isolated copy of the complete temporal configuration."""
+
+        branch = TemporalSpatialRuntime(
+            self.world.clone(),
+            self.current_time,
+            self.rules,
+            self._declared_sustained_events,
+            self.declared_subjects,
+        )
+        branch._pending = dict(self._pending)
+        return branch
 
     @property
     def pending_count(self) -> int:
@@ -219,7 +256,7 @@ class TemporalSpatialRuntime:
             key=lambda pending: (
                 pending.started_at
                 + timedelta(seconds=pending.specification.duration_seconds),
-                pending.specification.name,
+                self._specification_rank[pending.specification.name],
             ),
         )
         emitted: list[SustainedGeofenceEvent] = []
@@ -256,6 +293,8 @@ class TemporalSpatialRuntime:
         observed_at: datetime,
     ) -> TemporalStepResult:
         _require_aware(observed_at, "Observation time")
+        if self.declared_subjects is not None and subject not in self.declared_subjects:
+            raise ValueError(f"Unknown declared subject: {subject!r}")
         if observed_at < self.current_time:
             raise ValueError("Temporal runtime cannot move backwards")
         source = self.world.positions.get(subject)
@@ -269,7 +308,10 @@ class TemporalSpatialRuntime:
         # Monitor eligibility is intentionally evaluated against the state at
         # the crossing, before any instantaneous rule triggered by the same
         # event mutates it.  This ordering is part of the language contract.
-        instantaneous = SpatialRuntime(self.world).move(subject, target)
+        instantaneous = SpatialRuntime(
+            self.world,
+            declared_subjects=self.declared_subjects,
+        ).move(subject, target)
         for event in instantaneous:
             cancelled = tuple(
                 name

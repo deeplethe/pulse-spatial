@@ -6,14 +6,15 @@ combinations of:
 - initial sampled membership;
 - membership at two successive moves; and
 - presence or absence of a same-event immediate transition.
-- presence or absence of a second subject/rule that creates an equal-deadline
-  timer after the first rule, with a lexically earlier specification name.
+- presence or absence of a second grounded subject/rule that creates an
+  equal-deadline timer after the first grounded rule.
 
 Every case also includes a duration-qualified departure rule, same-time caller
 ordering, and a final clock advance. The bridge compares both final states,
 live-monitor count, ordered event subjects/kinds, effective times, and emission
-times. Dual-rule cases force the runtime to reorder equal-deadline monitors by
-unique specification name rather than insertion order.
+times. Dual-rule cases check that equal-deadline monitors are discharged by
+their unique compiler-assigned declaration rank, independent of source-name
+spelling.
 
 Regenerate the Lean fixture from `formal/lean` with:
 

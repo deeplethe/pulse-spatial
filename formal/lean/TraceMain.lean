@@ -31,7 +31,7 @@ private def coreEnv : Env :=
       region == 9 && decide (0 <= candidate.x) }
 
 private def durationRule : DurationRule :=
-  { name := 1
+  { name := 0
     trigger := .leaves
     subject := 0
     region := 9
@@ -48,7 +48,7 @@ private def immediateRule : ImmediateRule :=
     toState := 1 }
 
 private def secondDurationRule : DurationRule :=
-  { name := 0
+  { name := 1
     trigger := .leaves
     subject := 1
     region := 9

@@ -90,6 +90,12 @@ private def resolveFrom : List String → String → Nat → Option Id
 def resolveName (symbols : List String) (name : String) : Option Id :=
   resolveFrom symbols name 0
 
+theorem resolveName_two_declaration_prefix
+    (first second : String) (different : first ≠ second) :
+    resolveName [first, second] first = some 0 ∧
+      resolveName [first, second] second = some 1 := by
+  simp [resolveName, resolveFrom, different]
+
 structure ResolvedRuleNames where
   name : Id
   subject : Id
@@ -420,10 +426,10 @@ theorem compileScenario_simulates_execution
       rfl
 
 def paperSymbols : List String :=
-  [ "AtRisk"
+  [ "SustainedDeparture@batch"
+  , "AtRisk"
   , "Reroute"
   , "Safe"
-  , "SustainedDeparture@batch"
   , "Z"
   , "batch"
   , "http://www.opengis.net/def/crs/OGC/1.3/CRS84" ]

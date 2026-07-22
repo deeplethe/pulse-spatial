@@ -1,4 +1,4 @@
-"""Modal spatial records and authoritative world state."""
+"""Role-aware spatial records and authoritative world state."""
 
 from __future__ import annotations
 

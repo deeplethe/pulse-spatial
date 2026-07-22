@@ -24,7 +24,8 @@ PULSE-S co-locates four distinct roles in one typed executable model:
 
 The executable slice derives `enters` and `leaves` events from position
 changes, applies declaration-ordered geofence rules, keeps observations from
-overwriting asserted positions, and evaluates scenarios on cloned worlds.
+overwriting asserted positions, and evaluates scenarios on cloned temporal
+configurations. Compiled runners reject undeclared subjects before mutation.
 PULSE-S source is parsed into an immutable typed document and then compiled
 into a validated runtime model; syntax and semantic failures are kept distinct.
 Duration-qualified spatial events use an explicit discrete sample-and-hold
@@ -56,9 +57,10 @@ remains inside `ColdZone`; its later GPS observation is outside but does not
 silently replace that assertion. The scenario moves an isolated copy and
 changes its state from `Safe` to `AtRisk`.
 
-The exact paper listing is also executable. Its relative scenario clock starts
-at the latest observation timestamp, applies assumptions in declaration order,
-and advances the isolated branch through the declared horizon:
+The exact paper listing is also executable. By default its relative scenario
+clock starts at the latest observation timestamp; the API can instead clone an
+active runtime's state, clock, and pending monitors. It applies assumptions in
+declaration order and advances the isolated branch through the declared horizon:
 
 ```powershell
 .\.venv\Scripts\pulse-spatial examples\paper_cold_chain_st.pulse `
@@ -192,7 +194,8 @@ immediate transitions, and multi-action execution; it also contains a
 well-formedness predicate and proof-checked same-event ordering regression.
 The Lean and production Python executables independently run 32 combinations
 of three membership bits, an immediate-rule switch, and a dual-rule switch. The
-latter creates equal-deadline timers in reverse name order; CI rejects any
+latter creates equal-deadline timers for two grounded subjects; declaration
+rank, rather than lexical spelling, breaks the tie, and CI rejects any
 state, pending-monitor, event-subject/kind, or event-time difference. No theorem yet refines the
 general Python runtime, and computational geometry is abstracted behind a total membership function; see
 [`formal/lean`](formal/lean/README.md).

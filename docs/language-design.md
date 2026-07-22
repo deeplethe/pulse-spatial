@@ -43,11 +43,14 @@ sample is retained until the next move. Equal-time moves are accepted in caller
 order and may create crossings or reconcile monitors without advancing time. An
 inverse crossing before the deadline cancels a pending qualification. Timers
 due at the same time as a move fire first; equal deadlines are ordered by the
-unique specification name. `started_at` records the crossing, `effective_at` the duration deadline,
+compiler-assigned grounded declaration rank. `started_at` records the crossing, `effective_at` the duration deadline,
 and `emitted_at` the runtime clock advance that exposed the event. A guarded
 duration rule starts only when its source state matches at the crossing; its
-state transition is guarded again at emission. A scenario begins at an explicit
-start or, by default, the latest observation timestamp (Unix epoch if none),
+state transition is guarded again at emission. A scenario over an active
+runtime clones its asserted state, evidence, object states, clock, and pending
+monitors, then begins no earlier than that clock, the latest observation, or an
+explicit start. Without an active runtime it clones the compiled base world
+with no pending monitors and defaults to the latest timestamp (Unix epoch if none),
 applies untimed assumptions at that instant in declaration order, and advances
 its isolated clock by the declared `run` duration. This remains discrete
 sample-and-hold execution, not continuous simulation.

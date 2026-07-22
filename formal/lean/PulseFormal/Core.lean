@@ -40,6 +40,8 @@ structure Event where
   deriving DecidableEq, Repr
 
 structure Monitor where
+  /-- Numeric ground identifier assigned in declaration order; it is not a
+      source-level or lexically compared name. -/
   name : Id
   subject : Id
   region : Id
@@ -229,21 +231,21 @@ theorem due_length_le (pending : List Monitor) (time : Time) :
   rw [due, length_sortMonitors]
   exact List.length_filter_le _ _
 
-theorem due_two_equal_deadlines_follow_name_order
+theorem due_two_equal_deadlines_follow_ground_id_order
     (first second : Monitor) (time : Time)
     (sameDeadline : first.deadline = second.deadline)
-    (nameOrder : first.name < second.name)
+    (groundIdOrder : first.name < second.name)
     (isDue : first.deadline ≤ time) :
     due [second, first] time = [first, second] := by
   have secondDue : second.deadline ≤ time := by
     rw [← sameDeadline]
     exact isDue
-  have notNameOrder : ¬ second.name ≤ first.name := Nat.not_le_of_lt nameOrder
+  have notNameOrder : ¬ second.name ≤ first.name := Nat.not_le_of_lt groundIdOrder
   have notBefore : monitorBefore second first = false := by
     simp [monitorBefore, ← sameDeadline, notNameOrder]
   simp [due, isDue, secondDue, sortMonitors, insertMonitor, notBefore]
 
-theorem remaining_names_nodup
+theorem remaining_ground_ids_nodup
     {pending : List Monitor} {time : Time}
     (unique : (pending.map (·.name)).Nodup) :
     ((remaining pending time).map (·.name)).Nodup := by
@@ -275,7 +277,7 @@ theorem advance_preserves
   · simp at evaluates
     rcases evaluates with ⟨rfl, rfl⟩
     rcases wf with ⟨positions, observations, monitors, unique⟩
-    refine ⟨positions, observations, ?_, remaining_names_nodup unique⟩
+    refine ⟨positions, observations, ?_, remaining_ground_ids_nodup unique⟩
     intro monitor present
     exact remaining_future present
 
@@ -313,7 +315,7 @@ theorem move_preserves
       rcases evaluates with ⟨rfl, rfl⟩
       simp at ‹¬position.crs ≠ env.crs subject›
       rcases wf with ⟨positions, observations, monitors, unique⟩
-      refine ⟨?_, observations, ?_, remaining_names_nodup unique⟩
+      refine ⟨?_, observations, ?_, remaining_ground_ids_nodup unique⟩
       · intro candidate p assigned
         change updatePosition x.asserted subject position candidate = some p at assigned
         by_cases same : candidate = subject

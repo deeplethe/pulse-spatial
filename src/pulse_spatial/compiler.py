@@ -74,10 +74,15 @@ class CompiledModel:
     instance_values: dict[tuple[str, str], object]
 
     def runtime(self) -> SpatialRuntime:
-        return SpatialRuntime(self.world, self.rules)
+        return SpatialRuntime(self.world, self.rules, self.instance_entities)
 
     def temporal_runtime(self, initial_time: datetime) -> TemporalSpatialRuntime:
-        return TemporalSpatialRuntime(self.world, initial_time, self.rules)
+        return TemporalSpatialRuntime(
+            self.world,
+            initial_time,
+            self.rules,
+            declared_subjects=self.instance_entities,
+        )
 
     def validate(self) -> tuple[SpatialViolation, ...]:
         return self.world.validate(self.constraints)
@@ -86,13 +91,17 @@ class CompiledModel:
         self,
         name: str,
         initial_time: datetime | None = None,
+        source_runtime: TemporalSpatialRuntime | None = None,
     ) -> ScenarioReport:
         """Execute a scenario on an isolated temporal branch.
 
-        Untimed assumptions are applied in declaration order at ``initial_time``.
-        If no start is supplied, the latest observation timestamp is used, with
-        the Unix epoch as the deterministic fallback.  ``run N`` then advances
-        the branch clock by exactly ``N`` seconds before questions are answered.
+        When ``source_runtime`` is supplied, its asserted state, evidence,
+        object states, clock, and pending monitors are cloned.  Otherwise the
+        compiled base world is cloned with an empty monitor set.  Untimed
+        assumptions are applied in declaration order after advancing the branch
+        to the later of its clock, latest observation, and ``initial_time``.
+        ``run N`` then advances by exactly ``N`` seconds before questions are
+        answered.  The source runtime and compiled world are never mutated.
         """
 
         try:
@@ -100,16 +109,42 @@ class CompiledModel:
         except KeyError as error:
             raise PulseModelError(f"unknown scenario {name!r}") from error
 
-        if initial_time is None:
-            initial_time = max(
-                (observation.observed_at for observation in self.world.observations),
-                default=datetime(1970, 1, 1, tzinfo=timezone.utc),
+        source_world = self.world if source_runtime is None else source_runtime.world
+        latest_observation = max(
+            (observation.observed_at for observation in source_world.observations),
+            default=datetime(1970, 1, 1, tzinfo=timezone.utc),
+        )
+        if initial_time is not None and initial_time.utcoffset() is None:
+            raise PulseModelError("scenario start time must include a UTC offset")
+
+        if source_runtime is None:
+            branch_clock = latest_observation
+            runtime = TemporalSpatialRuntime(
+                self.world.clone(),
+                branch_clock,
+                self.rules,
+                declared_subjects=self.instance_entities,
             )
+        else:
+            if source_runtime.rules != self.rules:
+                raise PulseModelError("scenario source runtime uses different rules")
+            if source_runtime.world.regions != self.world.regions:
+                raise PulseModelError("scenario source runtime uses different regions")
+            if source_runtime.declared_subjects != frozenset(self.instance_entities):
+                raise PulseModelError(
+                    "scenario source runtime uses different declared subjects"
+                )
+            runtime = source_runtime.clone()
+            branch_clock = runtime.current_time
+
+        initial_time = max(
+            branch_clock,
+            latest_observation,
+            initial_time or branch_clock,
+        )
 
         horizon_seconds = _duration_seconds(scenario.declaration.run_for)
-        scenario_world = self.world.clone()
-        runtime = TemporalSpatialRuntime(scenario_world, initial_time, self.rules)
-        events = []
+        events = list(runtime.advance_to(initial_time))
         for subject, target in scenario.moves:
             step = runtime.move_at(subject, target, initial_time)
             events.extend(step.sustained)

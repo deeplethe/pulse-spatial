@@ -63,7 +63,8 @@ X = <A, O, q, Q, t>
 
 where `A : I ⇀ G` is authoritative asserted position, `O` is an append-only
 sequence of observations, `q(i) ∈ S_i` is current state, `Q` is a finite map of
-pending sustained-event monitors keyed by specification name, and `t` is an
+pending sustained-event monitors keyed by grounded specification identifier,
+and `t` is an
 offset-aware logical time.  A pending monitor is
 
 ```text
@@ -86,16 +87,17 @@ finite ordered sequences of instantaneous or sustained events.
 
 Well-formedness `Γ ⊢ X ok` requires that all identifiers resolve, geometries
 have their declared CRS, every `q(i)` belongs to `S_i`, observations are typed
-and offset-aware, monitor names are unique, monitor subjects and regions
-resolve, monitor durations are positive, and `t` is offset-aware.
+and offset-aware, grounded monitor identifiers are unique, monitor subjects and
+regions resolve, monitor durations are positive, and `t` is offset-aware.
 
 ## 3. Deterministic helper functions
 
 The calculus uses total deterministic helpers on well-formed inputs:
 
 - `due(Q,t')` returns monitors whose deadline is at most `t'`, sorted by the
-  total key `(deadline,name)`; uniqueness of the name-keyed map makes ties
-  unambiguous;
+  total key `(deadline,groundId)`. The compiler assigns `groundId` in process
+  and compatible-instance declaration order; source spelling is not a
+  tie-breaker, and unique grounded identifiers make ties unambiguous;
 - `emit(X,due,t')` removes each due monitor, emits it with its semantic
   deadline and current emission time `t'`, and applies its attached rule only
   if the source state still matches;
@@ -180,9 +182,11 @@ clone(X) = Xs    Γ ⊢ <Xs,as> ⇓* ok(Xs',T)
 Γ ⊢ scenario(X,as) ⇓ <Xs',T>       and the source X is unchanged
 ```
 
-For an untimestamped surface scenario, `t0` is explicit when supplied and
-otherwise is the latest observation timestamp (or the Unix epoch when there is
-no observation). Assumption moves execute at `t0` in declaration order; `run d`
+For a scenario over source configuration `X`, `t0` is the maximum of `X.t`, the
+latest observation timestamp, and an optional explicit start. A scenario with
+no active source runtime uses the compiled base world with an empty monitor set
+and the latest observation timestamp (or the Unix epoch when there is no
+observation). Assumption moves execute at `t0` in declaration order; `run d`
 then executes `advance(t0+d)` before questions are answered. This advances the
 discrete sample-and-hold clock and exposes due monitors; it does not introduce
 continuous interpolation.
