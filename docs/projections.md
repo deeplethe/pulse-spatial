@@ -18,6 +18,9 @@ The default resource IRI root is
 `https://w3id.org/pulse-spatial/resource`. The vocabulary IRI
 `https://w3id.org/pulse-spatial/vocab#` is provisional during pre-alpha
 development and must not yet be treated as a stable published ontology.
+The provisional names `pulse:modality` and `pulse:Modality` are legacy RDF
+labels for PULSE's operational role partition; they do not denote modal-logic
+or deontic operators.
 
 ## Data graph mapping
 
