@@ -6,7 +6,7 @@ must not be reported as evidence for another.
 
 ## Research questions
 
-- **RQ1 -- modal preservation:** Can asserted, observed, normative, and
+- **RQ1 -- role confinement:** Can asserted, observed, normative, and
   hypothetical spatiotemporal content coexist without silent overwrites?
 - **RQ2 -- spatial correctness:** Do PULSE Point/Polygon membership and
   crossing traces agree with an independent geometry engine?
@@ -25,7 +25,7 @@ must not be reported as evidence for another.
 
 | ID | Evidence | Baseline | Status | Permitted claim |
 |---|---|---|---|---|
-| E0 | 74 semantic and integration tests | Explicit expected contracts | Executed | Core invariants, the paper listing, and the Python/Lean canonical IR fixture hold for tested cases |
+| E0 | 87 semantic and integration tests | Explicit expected contracts | Executed | Core invariants, the paper listing, live scenario cloning, identifier rejection, and the finite Python/Lean bridge hold for tested cases |
 | E1 | RDF/SHACL cross-view validation | pySHACL + GEOS functions | Executed | Tested projection outcomes agree |
 | E2 | 223 IBTrACS tracks, one polygon | Shapely/GEOS `covers` | Executed | Single-zone event-label parity |
 | E3 | Five zones; 6/12/24-hour events | GEOS + independent event sweep | Executed | Discrete multizone spatiotemporal parity |
@@ -40,7 +40,7 @@ must not be reported as evidence for another.
 | E12 | Separated-container concurrency, PostgreSQL/WAL/resource telemetry, SIGKILL recovery, open-loop SLO | PostgreSQL 18/PostGIS 3.6 + pgbench | Executed | Reset-state single-node scaling; 10k TPS host-scoped repeated-window lower bound; recovery evidence |
 | E13 | Official RDF source integrity and inventory audit | OGC `ogc-geosparql` tag `1.1.0-ghpages` | Executed | 55 Annex allocations are source-corroborated; 55/58/52 inventory differences are explicit, not treated as an ETS |
 | E14 | Same 7,396 Point/Polygon pairs and four predicates as E8 | PostgreSQL 18/PostGIS 3.6 | Executed | Zero-mismatch PULSE/Jena/PostGIS triangulation on one shared workload |
-| E15 | Lean surface-to-Core compiler plus canonical IR for the paper listing | Lean 4.30.0 exporter + Python compiler | Executed | General preservation for the mechanized subset; exact cross-implementation IR equality for one executable model |
+| E15 | Lean post-parse compiler subset plus canonical IR for the paper listing | Lean 4.30.0 exporter + Python compiler | Executed | Conditional/local compiler lemmas for the mechanized subset; exact cross-implementation IR equality for one executable model |
 
 ## Current E3 protocol
 
@@ -94,9 +94,10 @@ are excluded because the current language slice cannot represent them.
 - Do not call E2 or E3 GeoSPARQL conformance tests.
 - Do not call E4 an OGC or GeoSPARQL conformance suite.
 - Do not describe E9 or E15 as a proof of floating-point geometry, the complete
-  parser/compiler, or arbitrary Python-runtime refinement. E15 proves the Lean
-  subset compiler generally and checks one Python/Lean canonical-IR fixture;
-  declaration-ordered rule-aware runtime refinement remains future work.
+  parser/compiler, state-domain preservation, or arbitrary Python-runtime
+  refinement. E15 checks conditional/local Lean compiler lemmas and one
+  Python/Lean canonical-IR fixture; declaration-ordered rule-aware runtime
+  refinement remains future work.
 - Keep E10's parity claim separate from E12's concurrency and SLO evidence.
 - Report E12's 10,000 TPS value only with its scheduled-start 20 ms p99,
   100 ms pgbench admission threshold, 0.1% skip budget, three-repeat 60-second

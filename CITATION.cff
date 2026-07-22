@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this research prototype, please cite the repository."
-title: "PULSE Spatial: Modal Spatiotemporal Semantics for Executable Knowledge Graphs"
+title: "PULSE Spatial: Executable Spatiotemporal Contracts for Knowledge Graph Engineering"
 type: software
 authors:
   - family-names: Yang

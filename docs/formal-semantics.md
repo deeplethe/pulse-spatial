@@ -242,7 +242,7 @@ If `Γ ⊢ <X,a> ⇓ u1` and `Γ ⊢ <X,a> ⇓ u2`, then `u1 = u2`.
 fixes every intermediate result and all order-sensitive operations use explicit
 orders.  The error rule preserves `X` and returns the unique validation code.
 
-### Theorem 3 — observation non-interference
+### Theorem 3 — record confinement
 
 If `Γ ⊢ <X,record(o)> ⇓ ok(X',ε)`, then
 `X'.A=X.A`, `X'.q=X.q`, `X'.Q=X.Q`, and `X'.t=X.t`.
@@ -324,20 +324,22 @@ scenario desugaring. The checked declarations include:
   `compileScenario_preserves_wellTyped`; and
 - `compileScenario_simulates_execution`.
 
-The last theorem relates surface scenario semantics to `Core.run` over the
-generated move/advance action sequence. A Lean executable emits canonical IR
-for Listing 1.1; a Python regression test compiles the actual `.pulse` file and
-requires byte-identical IR. Thus the general preservation result is for the
-mechanized subset, while the cross-implementation result currently covers the
-paper model rather than every accepted Python program.
+The last theorem relates the post-parse subset's scenario semantics to
+`Core.run` over the generated move/advance action sequence. A Lean executable
+emits canonical IR for Listing 1.1; a Python regression test compiles the actual
+`.pulse` file and requires byte-identical IR. These are conditional/local
+compiler lemmas for the mechanized subset. The cross-implementation result
+currently covers the paper model rather than every accepted Python program.
 
 The mechanization is intentionally narrower than this normative draft. It
 abstracts geometry as an environment-supplied total Boolean membership
-function and does not yet encode the text parser, declaration-ordered state
-updates, RDF projection, or a general refinement relation to every Python
-compiler/runtime path. Consequently it checks the transition, monitor, and
-paper-subset compilation disciplines; it is not a mechanized proof of the
-floating-point geometry kernel or full-language refinement.
+function and does not yet encode the text parser, RDF projection, or a general
+refinement relation to every Python compiler/runtime path. The integrated
+module executes declaration-ordered state updates, but proves no general state-
+domain preservation theorem. Consequently the development checks selected
+transition, monitor, and paper-subset compilation disciplines; it is not a
+mechanized proof of the floating-point geometry kernel or full-language
+refinement.
 
 ## 9. Claims intentionally excluded
 

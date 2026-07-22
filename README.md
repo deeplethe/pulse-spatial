@@ -7,9 +7,9 @@ spatiotemporal proposition can be treated differently when it is asserted,
 observed, normative, or hypothetical, and how topological and temporal changes
 can drive deterministic process transitions.
 
-The repository is intentionally separate from the PULSE v0.1 paper artifact.
-It is a pre-alpha research workspace, not a GeoSPARQL, OGC Moving Features, or
-ISO conformance implementation.
+This repository extends the PULSE v0.1 line and is the executable artifact for
+the current spatiotemporal contract paper. It is a pre-alpha research workspace,
+not a GeoSPARQL, OGC Moving Features, or ISO conformance implementation.
 
 ## Research thesis
 
@@ -68,7 +68,7 @@ declaration order and advances the isolated branch through the declared horizon:
 ```
 
 Projection export writes two UTF-8 Turtle files. The data graph combines
-asserted GeoSPARQL geometry and SOSA observations while retaining PULSE-S modal
+asserted GeoSPARQL geometry and SOSA observations while retaining PULSE-S role
 annotations. The shapes graph expresses normative geofences as SHACL-SPARQL.
 Executing those shapes requires a SHACL engine with GeoSPARQL function support;
 SHACL Core alone is insufficient.
@@ -148,7 +148,7 @@ regression corpus, not an OGC or GeoSPARQL conformance suite; see the
 [`topology corpus`](experiments/topology/README.md).
 
 A fifth experiment replays one frozen 91-point IBTrACS track through the full
-four-mode chain: evidence recording, explicit authoritative acceptance,
+four-role chain: evidence recording, explicit authoritative acceptance,
 duration-qualified process execution, guarded normative validation, an
 isolated scenario, and RDF/SHACL projection. All checks pass and internal
 validation matches the projected result; see the
@@ -156,7 +156,7 @@ validation matches the projected result; see the
 
 A sixth experiment checks whether six declared semantic policies are
 observable by executing a counterexample against one alternative per policy.
-All six alternatives change a modal state or event trace; see the
+All six alternatives change authoritative state or an event trace; see the
 [`semantic sensitivity protocol`](experiments/semantic-sensitivity/README.md).
 
 A seventh experiment evaluates the generated graph with unmodified Apache Jena
@@ -238,7 +238,7 @@ A twelfth experiment exercises a durable mixed PostGIS component workload: 60% p
 membership, 20% GiST window scans, and 20% synchronous position updates plus
 event appends. The database and pgbench load generator run in separate
 containers; every measured run starts from the same rebuilt, checkpointed
-50,000-device state. It bypasses the PULSE parser, modal runtime, and projection
+50,000-device state. It bypasses the PULSE parser, role-aware runtime, and projection
 path, so its throughput is not end-to-end PULSE throughput. A 32/64/96-client closed-loop resource sweep reaches
 24,683.86 TPS at 96 clients with 17.402 ms p99 and zero failures; the database
 uses 13.71 CPU cores on average while the generator uses 4.79. SIGKILL recovery
@@ -251,6 +251,8 @@ budget. The 43,898.03 TPS exploratory completion peak is not SLO capacity. See t
 [`production-oriented concurrency protocol`](experiments/postgis/CONCURRENCY.md).
 
 ## Repository map
+
+- `REPRODUCE.md` — top-level paper-to-command reproduction manifest
 
 - `docs/formal-semantics.md` — core calculus, judgments, theorems, and proofs
 - `docs/language-design.md` — semantic scope and research plan

@@ -5,7 +5,7 @@ claim equivalence to or conformance with them in the pre-alpha kernel.
 
 | Standard | Reused concern | PULSE-S-specific concern |
 |---|---|---|
-| GeoSPARQL 1.1 | Geometry literals, CRS identifiers, topological vocabulary | Modal status and transition execution |
+| GeoSPARQL 1.1 | Geometry literals, CRS identifiers, topological vocabulary | Operational role and transition execution |
 | OWL-Time | Instants, intervals, temporal ordering | Discrete event timestamps, duration deadlines, and sample-and-hold execution |
 | SOSA/SSN | Observation, feature of interest, result quality | Evidence does not overwrite assertions |
 | OGC Moving Features | Time-varying geometry and trajectory exchange | Counterfactual trajectories and process effects |
@@ -15,7 +15,7 @@ claim equivalence to or conformance with them in the pre-alpha kernel.
 
 Current executable projections cover GeoSPARQL geometry, SOSA observation
 records, and SHACL-SPARQL geofence constraints. PULSE-S-specific terms retain
-modality, confidence, accuracy, and runtime state where the target standards do
+role annotations, confidence, accuracy, and runtime state where the target standards do
 not encode the language's distinction directly. See `projections.md` for the
 precise mapping and execution boundary.
 
